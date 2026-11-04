@@ -18,11 +18,12 @@
   display: block;
   overflow: hidden;
   background: var(--bg-lavender);
+  aspect-ratio: 4 / 3;
 }
 
 .product-card-img {
   width: 100%;
-  height: 190px;
+  height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }

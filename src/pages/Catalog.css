@@ -2,6 +2,15 @@
   padding: 32px 0 60px;
 }
 
+.catalog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .catalog-page h1 {
   font-size: 28px;
   font-weight: 800;
@@ -11,7 +20,8 @@
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  /* Responsive: fills up to 4 columns, min 240px per card */
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 24px;
   width: 100%;
 }
@@ -24,4 +34,17 @@
   border: 1px dashed var(--border);
   color: var(--text-muted);
   font-size: 15px;
+}
+
+@media (max-width: 520px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import LogoSVG from './LogoSVG.jsx'
 import './Navbar.css'
 
 export default function Navbar() {
@@ -20,7 +21,7 @@ export default function Navbar() {
         <div className="navbar-glass-pill">
           {/* Brand Logo */}
           <Link to="/" className="navbar-brand" onClick={closeMenu}>
-            <span className="brand-icon">🐟</span>
+            <LogoSVG size={32} className="brand-logo-svg" />
             <span>Fishcommerce</span>
           </Link>
 

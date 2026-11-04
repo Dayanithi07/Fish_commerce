@@ -45,10 +45,16 @@
   white-space: nowrap;
 }
 
-.brand-icon {
-  font-size: 20px;
-  display: inline-block;
-  transform: scaleX(-1);
+.brand-logo-svg {
+  flex-shrink: 0;
+  display: block;
+  /* Drop shadow glow effect on the SVG logo in the navbar */
+  filter: drop-shadow(0 0 6px rgba(111, 63, 245, 0.45));
+  transition: filter 0.25s ease;
+}
+
+.navbar-brand:hover .brand-logo-svg {
+  filter: drop-shadow(0 0 10px rgba(111, 63, 245, 0.75));
 }
 
 .navbar-links {
