@@ -87,7 +87,7 @@ export default function App() {
           <ProductProvider>
             <CartProvider>
               <OrderProvider>
-                <BrowserRouter>
+                <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                   <ScrollToTop />
                   <Suspense fallback={<p className="route-loading">Loading...</p>}>
                     <Routes>

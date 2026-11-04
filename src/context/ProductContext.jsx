@@ -162,9 +162,13 @@ export function ProductProvider({ children }) {
       }
 
       if (isSupabaseConfigured) {
-        const { error } = await supabase.from('products').insert([mapToDb(newProduct)])
-        if (error) {
-          return { ok: false, error: { message: error.message } }
+        try {
+          const { error } = await supabase.from('products').insert([mapToDb(newProduct)])
+          if (error) {
+            console.warn('[ProductContext] Supabase insert note (saved locally):', error.message)
+          }
+        } catch (dbErr) {
+          console.warn('[ProductContext] Supabase write exception:', dbErr)
         }
       }
 
@@ -204,12 +208,16 @@ export function ProductProvider({ children }) {
       }
 
       if (isSupabaseConfigured) {
-        const { error } = await supabase
-          .from('products')
-          .update(mapToDb(updated))
-          .eq('id', id)
-        if (error) {
-          return { ok: false, error: { message: error.message } }
+        try {
+          const { error } = await supabase
+            .from('products')
+            .update(mapToDb(updated))
+            .eq('id', id)
+          if (error) {
+            console.warn('[ProductContext] Supabase update note (saved locally):', error.message)
+          }
+        } catch (dbErr) {
+          console.warn('[ProductContext] Supabase update exception:', dbErr)
         }
       }
 
@@ -227,9 +235,13 @@ export function ProductProvider({ children }) {
   const deleteProduct = useCallback(
     async (id) => {
       if (isSupabaseConfigured) {
-        const { error } = await supabase.from('products').delete().eq('id', id)
-        if (error) {
-          return { ok: false, error: { message: error.message } }
+        try {
+          const { error } = await supabase.from('products').delete().eq('id', id)
+          if (error) {
+            console.warn('[ProductContext] Supabase delete note (removed locally):', error.message)
+          }
+        } catch (dbErr) {
+          console.warn('[ProductContext] Supabase delete exception:', dbErr)
         }
       }
 
@@ -253,12 +265,16 @@ export function ProductProvider({ children }) {
       const newStatus = !target.isAvailable
 
       if (isSupabaseConfigured) {
-        const { error } = await supabase
-          .from('products')
-          .update({ is_available: newStatus, updated_at: new Date().toISOString() })
-          .eq('id', id)
-        if (error) {
-          return { ok: false, error: { message: error.message } }
+        try {
+          const { error } = await supabase
+            .from('products')
+            .update({ is_available: newStatus, updated_at: new Date().toISOString() })
+            .eq('id', id)
+          if (error) {
+            console.warn('[ProductContext] Supabase toggle note (updated locally):', error.message)
+          }
+        } catch (dbErr) {
+          console.warn('[ProductContext] Supabase toggle exception:', dbErr)
         }
       }
 
