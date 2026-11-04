@@ -1,0 +1,250 @@
+# Fishcommerce — Implementation Plan
+
+A modern, client-side pet fish e-commerce application with a customer storefront and admin portal.
+
+## Tech Stack
+
+| Layer | Choice | Rationale |
+|---|---|---|
+| Framework | **Vite + React** | Fast dev server, modern bundler |
+| Routing | **React Router v7** | Standard SPA routing with nested routes |
+| Styling | **Vanilla CSS** with CSS variables | Per design-system spec, maximum control |
+| State | **React Context** + `useReducer` | No external deps; Cart, Auth, Orders, Products |
+| Persistence | **localStorage** | Survives refresh; no backend needed |
+| Fonts | **Plus Jakarta Sans** via Google Fonts | Brand typography |
+| Animation | **CSS animations + JS** | Betta fish tank animation, micro-interactions |
+
+---
+
+## Architecture
+
+```
+src/
+├── main.jsx                 # App entry, router mount
+├── App.jsx                  # Router + layout wrapper
+├── index.css                # Design tokens, resets, global styles
+├── data/
+│   └── fishData.js          # Seed product array (12–15 fish)
+├── context/
+│   ├── AuthContext.jsx       # Login, signup, guest, profile state
+│   ├── CartContext.jsx       # Cart items, add/remove/quantity
+│   ├── OrderContext.jsx      # Orders, status transitions, notifications
+│   └── ProductContext.jsx    # Products CRUD, backed by localStorage
+├── components/
+│   ├── Navbar.jsx + Navbar.css
+│   ├── Footer.jsx + Footer.css
+│   ├── ProductCard.jsx + ProductCard.css
+│   ├── FilterBar.jsx + FilterBar.css
+│   ├── Modal.jsx + Modal.css
+│   └── Toast.jsx + Toast.css
+├── pages/
+│   ├── Home.jsx + Home.css                   # Hero section + trust strip
+│   ├── Catalog.jsx + Catalog.css             # Product grid + filters
+│   ├── ProductDetail.jsx + ProductDetail.css # Single product view
+│   ├── Checkout.jsx + Checkout.css           # Auth gate + order form
+│   ├── OrderSuccess.jsx + OrderSuccess.css   # Confirmation card
+│   ├── admin/
+│   │   ├── AdminLayout.jsx + AdminLayout.css # Top-bar + tab nav wrapper
+│   │   ├── AdminProducts.jsx + AdminProducts.css   # Product CRUD table
+│   │   └── AdminOrders.jsx + AdminOrders.css       # Order management table
+│   └── Auth.jsx + Auth.css                   # Login / Signup page
+└── assets/                   # Generated fish images, logo
+```
+
+---
+
+## Proposed Changes
+
+### Design System & Global Styles
+
+#### [NEW] [index.css](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/index.css)
+- CSS custom properties (`:root`) for all design tokens from the spec
+- Import Plus Jakarta Sans from Google Fonts
+- Reset styles, body defaults, utility classes
+- Button variant classes (`.btn-primary`, `.btn-secondary`, `.btn-outline`)
+- Card base styles, badge pill styles, transitions
+
+---
+
+### Data Layer
+
+#### [NEW] [fishData.js](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/data/fishData.js)
+- Array of 12–15 fish objects, each with: `id`, `name`, `price`, `image`, `category` (Freshwater/Saltwater), `careLevel`, `temperament`, `minTankSize`, `diet`, `waterType`, `description`, `stock`, `badges[]`
+- Serves as initial seed; ProductContext copies to localStorage on first load
+
+#### [NEW] [AuthContext.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/context/AuthContext.jsx)
+- `user` state (null = guest, object = logged in)
+- `login(email, password)`, `signup(name, email, password)`, `logout()`
+- `isAdmin` flag (hardcoded admin credentials: `admin@fishcommerce.com`)
+- Persists to localStorage
+
+#### [NEW] [CartContext.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/context/CartContext.jsx)
+- `items[]` with `{ productId, quantity }`
+- `addToCart`, `removeFromCart`, `updateQuantity`, `clearCart`, `cartTotal` derived value
+- Persists to localStorage
+
+#### [NEW] [OrderContext.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/context/OrderContext.jsx)
+- `orders[]` array with `{ id, items, customer, address, status, createdAt }`
+- `placeOrder(orderData)` — generates UUID, pushes to array
+- `updateOrderStatus(orderId, newStatus)` — Confirmed/Shipped/Delivered
+- `pendingCount` derived for admin badge
+- Persists to localStorage
+
+#### [NEW] [ProductContext.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/context/ProductContext.jsx)
+- Initializes from localStorage, falls back to `fishData.js` seed
+- `addProduct`, `updateProduct`, `deleteProduct`, `toggleAvailability`
+- Persists every mutation to localStorage
+
+---
+
+### Shared Components
+
+#### [NEW] [Navbar.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/components/Navbar.jsx)
+- Left: "Fishcommerce" logo text in `--text-primary` bold
+- Center: Home, Catalog, Care Basics, About Us links
+- Right: Cart icon with item count badge, Login/SignUp or user name + dropdown
+- Sticky top, white background with subtle bottom border
+- Mobile hamburger menu
+
+#### [NEW] [Footer.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/components/Footer.jsx)
+- 3-column layout: Brand info, Quick links, Contact
+- Lavender gradient top border accent
+
+#### [NEW] [ProductCard.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/components/ProductCard.jsx)
+- White card with rounded corners, subtle border, hover lift animation
+- Fish image, name, price in accent purple, badge pills, "View Details" button
+- Links to `/products/:id`
+
+#### [NEW] [FilterBar.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/components/FilterBar.jsx)
+- Pill-style toggle buttons for Category (All/Freshwater/Saltwater) and Care Level
+- Search input with icon
+
+#### [NEW] [Modal.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/components/Modal.jsx)
+- Reusable overlay modal with backdrop blur, close button, animated entrance
+
+#### [NEW] [Toast.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/components/Toast.jsx)
+- Slide-in notification for order alerts, cart additions
+- Auto-dismiss after 4 seconds
+
+---
+
+### Customer Pages
+
+#### [NEW] [Home.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/pages/Home.jsx)
+- Radial gradient hero background (`#E4D5F9` → `#F9F6FE`)
+- Headline, subtitle, dual CTA buttons
+- Animated Betta fish tank preview card (CSS keyframe swimming animation)
+- Trust strip with partner logos (grayscale SVGs)
+
+#### [NEW] [Catalog.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/pages/Catalog.jsx)
+- Page header with title + search
+- FilterBar component
+- Responsive product grid (auto-fill, min 280px)
+- Empty state for no results
+
+#### [NEW] [ProductDetail.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/pages/ProductDetail.jsx)
+- Two-column layout (image gallery left, info right)
+- Title, price, stock badge, care specs box (lavender surface)
+- "Adopt / Order Now" CTA → adds to cart
+
+#### [NEW] [Checkout.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/pages/Checkout.jsx)
+- Step 1: Auth check — if not logged in, show sign-in / guest modal
+- Step 2: Customer details form + delivery address + special notes
+- Order summary sidebar with item list, subtotal, shipping estimate, total
+- "Confirm & Place Order" button → creates order → navigates to `/order-success`
+
+#### [NEW] [OrderSuccess.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/pages/OrderSuccess.jsx)
+- Centered white card with animated lavender checkmark (CSS animation)
+- Order reference number, item summary, contact details
+- Status banner with delivery message
+- "Continue Shopping" link
+
+#### [NEW] [Auth.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/pages/Auth.jsx)
+- Tabbed Login / Sign Up form
+- Email + password fields, name field for signup
+- "Continue as Guest" option
+- Redirects back to previous page on success
+
+---
+
+### Admin Portal
+
+#### [NEW] [AdminLayout.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/pages/admin/AdminLayout.jsx)
+- Route guard — redirects non-admin users
+- Top bar with "Admin Dashboard" title, notification bell with pending order count
+- Tab navigation: Product Management | Pending Orders | Order History
+- `<Outlet />` for nested admin routes
+
+#### [NEW] [AdminProducts.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/pages/admin/AdminProducts.jsx)
+- Product table with columns: Image, Name, Price, Stock, Care Level, Status, Actions
+- Actions: Edit (opens modal), Toggle Availability, Delete (with confirm)
+- "Add New Fish" button → opens modal with full form (name, price, image URL, care dropdowns, stock, description)
+- "Publish Product" saves via ProductContext
+
+#### [NEW] [AdminOrders.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/pages/admin/AdminOrders.jsx)
+- Tab sub-filter: Pending | History (Confirmed/Shipped/Delivered)
+- Table columns: Order ID, Customer Name, Phone & Email, Fish Ordered, Delivery Address, Date, Status, Actions
+- Status workflow buttons: Mark as Confirmed → Shipped → Delivered
+- Toast notification on status change
+
+---
+
+### App Shell & Routing
+
+#### [NEW] [App.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/App.jsx)
+- Wraps all context providers
+- React Router with routes:
+  - `/` → Home
+  - `/products` → Catalog
+  - `/products/:id` → ProductDetail
+  - `/checkout` → Checkout
+  - `/order-success` → OrderSuccess
+  - `/auth` → Auth
+  - `/admin` → AdminLayout (guarded)
+    - `/admin/products` → AdminProducts
+    - `/admin/orders` → AdminOrders
+
+#### [NEW] [main.jsx](file:///d:/Project/Other%20projects/Ganesh/Fish_commerce/src/main.jsx)
+- Mounts `<App />` into `#root`
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **No payment gateway** — the checkout flow bypasses payment and directly places the order as specified.
+
+> [!IMPORTANT]
+> **Admin access** — hardcoded admin login: `admin@fishcommerce.com` / `admin123`. Any other credentials log in as a regular user.
+
+> [!IMPORTANT]
+> **No real backend** — all data is stored in localStorage. Product seed data is loaded on first visit. This means data is per-browser and resets if localStorage is cleared.
+
+> [!WARNING]
+> **Fish images** — I will generate a few key images (hero Betta fish, some product photos) using the image generation tool and use placeholder URLs for the remainder. You can replace them with real photos later.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- No unit test framework is being set up in this initial build (no existing tests in the empty workspace).
+- Verification will be done via browser-based flow testing.
+
+### Browser Flow Testing
+I will use the browser subagent tool to verify the following end-to-end flows:
+
+1. **Homepage renders** — Navigate to `http://localhost:5173/`, confirm hero text, CTAs, and animated tank card are visible.
+2. **Catalog browsing** — Click "Explore Catalog", verify product grid loads with all fish cards. Test filter pills (Freshwater, Beginner) and search.
+3. **Product detail** — Click a product card, verify detail page shows image, specs box, price, "Adopt / Order Now" button.
+4. **Cart flow** — Add item to cart, verify cart count updates in navbar. Navigate to checkout.
+5. **Auth gate** — On checkout, verify guest/login prompt appears. Test login with test credentials.
+6. **Order placement** — Fill checkout form, submit order, verify redirect to `/order-success` with order reference.
+7. **Admin login** — Log in as `admin@fishcommerce.com` / `admin123`, navigate to `/admin`.
+8. **Admin product CRUD** — Add a new fish product, verify it appears in the admin table and in the customer catalog.
+9. **Admin order management** — Verify the order placed earlier appears in Pending Orders. Click "Mark as Confirmed", verify status updates.
+
+### Manual Verification (User)
+- Review visual design against the color palette and typography spec
+- Test on mobile viewport (resize browser to ~375px width)
+- Verify all navigation links work correctly

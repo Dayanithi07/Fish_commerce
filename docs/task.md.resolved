@@ -1,0 +1,37 @@
+# Fishcommerce — Full E-Commerce Application
+
+## Phase 0: Project Setup
+- [ ] Initialize project (Vite + React)
+- [ ] Set up design tokens, CSS variables, Google Fonts
+- [ ] Set up routing (React Router)
+- [ ] Create global layout (Navbar, Footer)
+
+## Phase 1: Customer-Facing Pages
+- [ ] Hero / Landing Page (`/`)
+- [ ] Product Catalog Page (`/products`)
+- [ ] Product Detail Page (`/products/:id`)
+- [ ] Checkout Page (`/checkout`)
+- [ ] Order Confirmation Page (`/order-success`)
+
+## Phase 2: Authentication System
+- [ ] Login / Sign Up modal/page
+- [ ] Guest checkout flow
+- [ ] Auth context & state management
+
+## Phase 3: Admin Portal (`/admin/*`)
+- [ ] Admin Layout with top-bar notifications & tab navigation
+- [ ] Product Management (`/admin/products`) — CRUD table + Add form
+- [ ] Pending Orders (`/admin/orders`) — real-time order table with status workflow
+- [ ] Order History tab
+
+## Phase 4: Data Layer & State Management
+- [ ] Mock data / JSON seed for fish products
+- [ ] Cart state (Context or Zustand)
+- [ ] Order state & notification system
+- [ ] LocalStorage persistence
+
+## Phase 5: Polish & Verification
+- [ ] Responsive design (mobile, tablet, desktop)
+- [ ] Micro-interactions & animations (hover, transitions, Betta fish animation)
+- [ ] Accessibility audit (WCAG contrast)
+- [ ] Full flow walkthrough & browser testing

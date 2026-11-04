@@ -1,0 +1,51 @@
+.admin-bar {
+  background: var(--admin-bar);
+  color: #ffffff;
+  padding: 12px 0;
+}
+
+.admin-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.admin-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.admin-nav a {
+  color: #d1c4e9;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-nav a.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.counter-pill {
+  background: var(--warning);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.admin-content {
+  padding: 32px 0;
+}

@@ -1,0 +1,323 @@
+# Fishcommerce — UI Mockup Generation Prompts
+
+Copy-paste these prompts into any AI image generator (Midjourney, DALL-E 3, Ideogram, Gemini, etc.) to get pixel-accurate mockups of every page.
+
+> [!TIP]
+> For best results, add `--ar 16:9` (Midjourney) or specify **1440×900 desktop viewport** in your generator. For mobile versions, request **390×844**.
+
+---
+
+## 1. Homepage / Hero Section
+
+```
+A stunning modern e-commerce landing page for "Fishcommerce" — a premium pet fish store.
+
+Desktop viewport (1440x900).
+
+NAVBAR: Sticky white bar at top with subtle bottom border. Left: "Fishcommerce" logo text in deep violet (#3C1E5E, bold 700 weight). Center: navigation links "Home", "Catalog", "Care Basics", "About Us" in muted gray-purple (#6B6578). Right: shopping cart icon with a small purple badge showing "0", and a "Login" text button in vibrant purple (#6F3FF5).
+
+HERO SECTION: Full-width section with a beautiful radial gradient background fading from soft lavender (#E4D5F9) at the top center to light page white (#F9F6FE) at edges and bottom. 
+
+Left side content:
+- Large bold headline: "Bring Vibrant Aquatic Life to Your Home" in deep violet (#3C1E5E), 48px, weight 700, Plus Jakarta Sans font.
+- Subtitle below: "Explore healthy, hand-raised pet fish delivered directly to your doorstep with expert care support." in muted gray-purple (#6B6578), 18px, weight 400.
+- Two CTA buttons side by side:
+  - Primary: "Explore Catalog" — solid vibrant purple (#6F3FF5) background, white text, rounded 12px, subtle shadow.
+  - Secondary: "Learn Care Basics" — white background, subtle gray border (#EFEAEF), deep violet text, rounded 12px.
+
+Right side: A floating white card container (#FFFFFF, border-radius 16px, soft purple-tinted shadow) showing an interactive aquarium tank preview. Inside the card: a beautiful purple Betta fish swimming in a softly lit aquatic environment with gentle water effects and depth layers. The card should look like a premium product showcase with subtle glowing highlights.
+
+TRUST STRIP: At the bottom of the hero, a horizontal row of 5 minimalist grayscale partner logos (e.g., "Aquatic Standards Certified", "LiveAquaria Partner", "FishLore Recommended") on the light background, small and subtle.
+
+Clean, premium, modern SaaS-style design. crisp typography. No clutter. Luxurious whitespace. Polished and professional.
+```
+
+---
+
+## 2. Product Catalog Page
+
+```
+A modern e-commerce product catalog page for "Fishcommerce" pet fish store.
+
+Desktop viewport (1440x900). Background: light (#F9F6FE).
+
+NAVBAR: Same sticky white navbar as homepage — "Fishcommerce" logo left (deep violet #3C1E5E bold), nav links center, cart icon + login button right.
+
+PAGE HEADER: Clean section with page title "Available Pet Fish" in deep violet (#3C1E5E, bold, 32px) on the left, and a search bar on the right (white background, rounded, subtle border #EFEAEF, search icon, placeholder text "Search fish...").
+
+FILTER BAR: Horizontal row of pill-shaped toggle buttons below the header.
+- Category group: "All" (active — filled purple #6F3FF5, white text), "Freshwater" (inactive — white bg, gray border, dark text), "Saltwater" (inactive).
+- Care Level group: "All" (active), "Beginner Friendly", "Intermediate", "Expert" — same pill style.
+
+PRODUCT GRID: 4-column responsive grid of product cards, showing 8 fish cards total (2 rows of 4).
+
+Each PRODUCT CARD:
+- White background (#FFFFFF), border-radius 16px, subtle border (#EFEAEF), soft purple-tinted shadow on hover.
+- Top: High-quality square photo of a pet fish (different species per card — Betta, Clownfish, Guppy, Angelfish, Neon Tetra, Discus, Goldfish, Arowana).
+- Below image: Fish name in deep violet (#3C1E5E, bold, 16px). Example: "Crown Tail Betta".
+- Price in vibrant purple (#6F3FF5, bold): "$24.99"
+- A row of small pill badges: "Beginner" (light lavender bg, purple text), "Peaceful" (same style), "Freshwater".
+- "View Details" button at the bottom — purple text (#6F3FF5) with subtle underline or outline style.
+
+Cards should have generous padding, clean spacing. The entire page feels airy, organized, and premium. Plus Jakarta Sans typography throughout.
+```
+
+---
+
+## 3. Product Detail Page
+
+```
+A product detail page for "Fishcommerce" pet fish store showing a Crown Tail Betta fish.
+
+Desktop viewport (1440x900). Background: light (#F9F6FE).
+
+NAVBAR: Same as other pages.
+
+TWO-COLUMN LAYOUT:
+
+LEFT COLUMN (55% width):
+- A large high-resolution hero image of a stunning purple/red Crown Tail Betta fish on a dark aquatic background, displayed in a white card container (border-radius 16px).
+- Below: A row of 3 small thumbnail images showing different angles of the fish, with the first one highlighted with a purple border.
+
+RIGHT COLUMN (45% width):
+- Fish name: "Crown Tail Betta" in deep violet (#3C1E5E), 36px, bold.
+- Price: "$24.99" in vibrant purple (#6F3FF5), 28px, bold.
+- Stock badge: "In Stock" — small green pill badge.
+- A subtle divider line.
+
+CARE SPECS BOX: A rounded container (border-radius 12px) with a light lavender surface background (#E4D5F9, 30% opacity overlay). Contains a 2-column grid of care specifications:
+  - Water Type: Freshwater (with water drop icon)
+  - Temperament: Peaceful (with peace icon)
+  - Care Level: Beginner (with star icon)
+  - Min Tank Size: 5 Gallons (with tank icon)
+  - Diet: Flakes & Pellets (with food icon)
+Each spec has a small muted label and a bold value in deep violet.
+
+DESCRIPTION: A paragraph of text in muted gray-purple (#6B6578) describing the fish's behavior, origin, and co-habitation recommendations.
+
+CTA BUTTON: Full-width "Adopt / Order Now" button — solid vibrant purple (#6F3FF5), white text, large, rounded 12px, bold. Prominent and inviting.
+
+Clean, premium layout. Plenty of whitespace. Plus Jakarta Sans font.
+```
+
+---
+
+## 4. Checkout Page
+
+```
+A checkout page for "Fishcommerce" pet fish store.
+
+Desktop viewport (1440x900). Background: light (#F9F6FE).
+
+NAVBAR: Same as other pages, cart icon now shows "2" in the badge.
+
+TWO-COLUMN LAYOUT:
+
+LEFT COLUMN (60% width) — Order Information Form inside a white card (border-radius 16px, subtle border):
+- Section header: "Customer Details" in deep violet (#3C1E5E, bold, 20px).
+- Form fields with labels in muted gray-purple, inputs with white bg, rounded corners, subtle border:
+  - Full Name
+  - Phone Number
+  - Email Address
+- Section header: "Delivery Address"
+- Form fields:
+  - Street Address
+  - City
+  - Postal Code
+  - Tank Setup / Special Delivery Notes (textarea, taller)
+- All inputs are clean, well-spaced, with soft focus states (purple border on focus).
+
+RIGHT COLUMN (40% width) — Order Summary Card:
+- White card (border-radius 16px, subtle border).
+- Header: "Order Summary" in deep violet bold.
+- Item list:
+  - Row 1: Small fish thumbnail, "Crown Tail Betta × 1" — $24.99
+  - Row 2: Small fish thumbnail, "Neon Tetra × 3" — $11.97
+- Divider line.
+- Subtotal: $36.96
+- Shipping: $5.99
+- Divider line.
+- Total: "$42.95" in vibrant purple, bold, 24px.
+- Large CTA button: "Confirm & Place Order" — full-width, solid purple (#6F3FF5), white text, rounded 12px.
+
+Clean, organized, trustworthy checkout experience. Plus Jakarta Sans font. Premium feel.
+```
+
+---
+
+## 5. Order Success / Confirmation Page
+
+```
+An order confirmation page for "Fishcommerce" pet fish store.
+
+Desktop viewport (1440x900). Background: soft radial gradient from lavender (#E4D5F9) at center to light (#F9F6FE) at edges — celebratory feel.
+
+NAVBAR: Same as other pages.
+
+CENTERED CONTENT: A single white card (#FFFFFF, border-radius 20px, generous padding, soft purple shadow) in the center of the page, max-width 600px.
+
+Inside the card:
+- Top: A large animated-looking lavender/purple checkmark icon inside a soft lavender circle — feels celebratory and premium.
+- Heading: "Order Confirmed!" in deep violet (#3C1E5E), 32px, bold.
+- Order reference: "Order #FC-20261102-A7K3" in muted gray-purple, 16px, with a small copy icon.
+
+- A subtle divider.
+
+- Items ordered summary:
+  - "Crown Tail Betta × 1"
+  - "Neon Tetra × 3"
+  - "Total: $42.95" in purple bold.
+
+- Contact details: "john@example.com | +91 9876543210"
+
+- A lavender-tinted status banner (light #E4D5F9 background, purple left border, rounded):
+  "Your order request has been received! Our team will contact you shortly to confirm delivery schedules and water acclimation instructions."
+
+- Bottom: A "Continue Shopping" link button in purple (#6F3FF5).
+
+Warm, reassuring, premium feel. Plus Jakarta Sans font. Clean whitespace.
+```
+
+---
+
+## 6. Login / Sign Up Page
+
+```
+A login and signup page for "Fishcommerce" pet fish store.
+
+Desktop viewport (1440x900). Background: soft radial gradient from lavender (#E4D5F9) at top to light (#F9F6FE).
+
+CENTERED CARD: White card (#FFFFFF, border-radius 20px, max-width 440px, soft shadow) in the center.
+
+TOP OF CARD: "Fishcommerce" logo text in deep violet, centered. Below it: a tab toggle with two options — "Sign In" (active, purple underline) and "Create Account" (inactive, gray text).
+
+SIGN IN FORM (active state shown):
+- "Email Address" input field — white bg, rounded, subtle border, placeholder text.
+- "Password" input field — same style, with eye icon to toggle visibility.
+- "Sign In" button — full-width, solid purple (#6F3FF5), white text, rounded 12px, bold.
+- Divider with "or" text in the center.
+- "Continue as Guest" button — full-width, white bg, subtle gray border (#EFEAEF), deep violet text.
+- Small text at bottom: "Don't have an account? Create one" as a link.
+
+Clean, minimal, trustworthy. Plus Jakarta Sans font. Purple accent colors throughout.
+```
+
+---
+
+## 7. Admin — Product Management
+
+```
+A premium admin dashboard for "Fishcommerce" pet fish store — Product Management view.
+
+Desktop viewport (1440x900). Background: light (#F9F6FE).
+
+TOP BAR: Deep violet or dark purple-tinted header bar (#3C1E5E) with:
+- Left: "Fishcommerce Admin" in white, bold.
+- Right: Notification bell icon with red "2" badge, admin avatar circle with "A".
+
+TAB NAVIGATION: Below the top bar, a white tab strip with three tabs:
+- "Product Management" (active — purple underline #6F3FF5, bold text)
+- "Pending Orders"
+- "Order History"
+
+MAIN CONTENT — white card (rounded 16px, subtle border):
+- Header row: "All Products" title on left, "+ Add New Fish" button on right (solid purple #6F3FF5, white text, rounded).
+
+PRODUCT TABLE with columns: Image | Fish Name | Price | Stock | Care Level | Status | Actions
+- 6 rows of fish products with:
+  - Small square thumbnail images (rounded corners)
+  - Fish names in deep violet bold
+  - Prices in purple
+  - Stock numbers
+  - Care level pill badges ("Beginner" green-ish, "Intermediate" amber, "Expert" red-ish)
+  - Status toggle switches (green = Available, gray = Unavailable)
+  - Action buttons: Edit (blue/purple outline), Delete (red outline, trash icon)
+
+FLOATING MODAL (partially visible/overlay): "Add New Fish" form modal with:
+- White card, border-radius 16px, backdrop blur behind
+- Fields: Fish Name, Price, Image URL, Water Type dropdown, Temperament dropdown, Care Level dropdown, Min Tank Size, Diet dropdown, Stock Quantity, Description textarea
+- "Publish Product" button — solid purple, white text.
+- Close X button in top right.
+
+Professional, clean admin UI. Table is well-organized with alternating subtle row backgrounds. Plus Jakarta Sans font.
+```
+
+---
+
+## 8. Admin — Pending Orders
+
+```
+A premium admin dashboard for "Fishcommerce" pet fish store — Pending Orders view.
+
+Desktop viewport (1440x900). Background: light (#F9F6FE).
+
+TOP BAR: Same deep violet bar — "Fishcommerce Admin", bell with "3" badge, admin avatar.
+
+TAB NAVIGATION: "Product Management", "Pending Orders" (active, purple underline), "Order History".
+
+MAIN CONTENT — white card (rounded 16px):
+- Header: "Pending Orders" title, with a refresh icon and a small text "3 orders pending".
+
+ORDER TABLE with columns: Order ID | Customer Name | Phone & Email | Fish Ordered | Delivery Address | Order Date | Status | Actions
+
+5 rows with realistic data:
+- Order IDs like "FC-2026-A7K3"
+- Customer names, phone numbers, email addresses
+- Fish ordered: "Crown Tail Betta × 1, Neon Tetra × 3"
+- Delivery addresses
+- Dates
+- Status badges: "Pending" (amber/yellow pill), "Confirmed" (blue pill), "Shipped" (purple pill)
+- Action buttons showing contextual next step:
+  - For Pending: "Mark as Confirmed" (blue outline button)
+  - For Confirmed: "Mark as Shipped" (purple outline button)  
+  - For Shipped: "Mark as Delivered" (green outline button)
+
+A toast notification in the top-right: "🔔 New order received!" in a lavender card with purple left border accent, auto-dismiss style.
+
+Clean, professional, data-rich admin table. Readable, well-spaced rows. Plus Jakarta Sans font.
+```
+
+---
+
+## 9. Mobile Responsive — Homepage
+
+```
+A mobile-responsive version of the "Fishcommerce" pet fish store homepage.
+
+Mobile viewport (390x844, iPhone-style proportions). Background: radial gradient from soft lavender (#E4D5F9) at top to light (#F9F6FE).
+
+NAVBAR: White bar — "Fishcommerce" logo left in deep violet, hamburger menu icon on right (three lines), cart icon with badge.
+
+HERO SECTION (stacked vertically):
+- Headline: "Bring Vibrant Aquatic Life to Your Home" — deep violet, bold, 28px, centered.
+- Subtitle: muted gray-purple, 14px, centered.
+- Two CTA buttons stacked vertically:
+  - "Explore Catalog" — full-width, solid purple, white text.
+  - "Learn Care Basics" — full-width, white bg, subtle border.
+- Below: The floating aquarium tank preview card (full-width, rounded corners) showing the Betta fish.
+
+TRUST STRIP: Smaller grayscale logos in a scrollable horizontal row.
+
+Clean, touch-friendly, generous tap targets. Plus Jakarta Sans font. Premium mobile experience.
+```
+
+---
+
+## 10. Mobile Responsive — Catalog
+
+```
+A mobile-responsive product catalog for "Fishcommerce" pet fish store.
+
+Mobile viewport (390x844). Background: light (#F9F6FE).
+
+NAVBAR: Same mobile navbar with hamburger menu.
+
+HEADER: "Available Pet Fish" title, search bar below (full-width).
+
+FILTER BAR: Horizontally scrollable row of pill buttons — "All", "Freshwater", "Saltwater", "Beginner", "Intermediate" — scrollable with subtle fade at edges.
+
+PRODUCT GRID: 2-column grid of product cards (compact, stacked).
+Each card: Fish photo on top, name, price in purple, one badge pill, "View Details" link. Cards have rounded corners, white bg, subtle shadow.
+
+Showing 6 cards visible (3 rows of 2). Clean, touch-friendly spacing. Plus Jakarta Sans font.
+```

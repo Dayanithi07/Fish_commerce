@@ -1,0 +1,76 @@
+.auth-page {
+  padding: 60px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  max-width: 440px;
+  width: 100%;
+}
+
+.auth-card h2 {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.alert-error {
+  background: var(--danger-bg);
+  color: var(--danger);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.btn-auth-submit {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.auth-toggle {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.auth-toggle button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.demo-credentials {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--border);
+  text-align: center;
+  font-size: 13px;
+}
+
+.demo-credentials code {
+  display: block;
+  background: var(--bg-lavender);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  margin: 6px 0 10px;
+  color: var(--accent-dark);
+}
+
+.btn-fill-admin {
+  background: var(--bg-surface);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px;
+}

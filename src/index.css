@@ -1,0 +1,130 @@
+/*
+  Fishcommerce global styles.
+  Owner: A2 (Design System and Shared UI). Token names come from PROJECT_REQUIREMENTS.md section 7.1.
+*/
+:root {
+  --bg-page: #F9F6FE;
+  --bg-surface: #FFFFFF;
+  --bg-lavender: #E4D5F9;
+  --text-primary: #3C1E5E;
+  --text-muted: #6B6578;
+  --accent: #6F3FF5;
+  --accent-dark: #5B30D6;
+  --border: #EFEAEF;
+
+  --success: #1F9D6B;
+  --success-bg: #E3F6EE;
+  --warning: #B7791F;
+  --warning-bg: #FEF3D7;
+  --danger: #D14343;
+  --danger-bg: #FDE8E8;
+  --info: #2F6FDE;
+  --info-bg: #E3EDFD;
+
+  --admin-bar: #3C1E5E;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-card: 0 4px 20px rgba(111, 63, 245, 0.08);
+  --shadow-hover: 0 10px 30px rgba(111, 63, 245, 0.16);
+
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  background: var(--bg-page);
+}
+
+h1, h2, h3, h4 {
+  margin: 0 0 0.5em;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 32px);
+}
+
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  z-index: 1000;
+  padding: 8px 16px;
+  color: #FFFFFF;
+  background: var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.stub {
+  max-width: 720px;
+  margin: 3rem auto;
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius-lg);
+}
+
+.error-panel {
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.route-loading {
+  padding: 2rem;
+  text-align: center;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--accent-dark);
+}

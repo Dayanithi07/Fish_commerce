@@ -1,0 +1,11 @@
+.catalog-page {
+  padding: 32px 0;
+}
+
+.no-products {
+  padding: 40px;
+  text-align: center;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+}

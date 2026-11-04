@@ -1,0 +1,80 @@
+.admin-products-page {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 24px;
+}
+
+.admin-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-secondary {
+  background: var(--bg-lavender);
+  color: var(--accent-dark);
+  border: none;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th, .admin-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table th {
+  background: var(--bg-page);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.status-tag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.status-tag.available {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.status-tag.hidden {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.btn-action {
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-right: 6px;
+  font-size: 13px;
+}
+
+.btn-delete {
+  color: var(--danger);
+}
