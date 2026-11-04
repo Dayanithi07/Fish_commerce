@@ -26,6 +26,7 @@ import NotFound from './pages/NotFound.jsx'
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout.jsx'))
 const AdminProducts = lazy(() => import('./pages/admin/AdminProducts.jsx'))
 const AdminOrders = lazy(() => import('./pages/admin/AdminOrders.jsx'))
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings.jsx'))
 
 class ErrorBoundary extends Component {
   state = { hasError: false }
@@ -109,6 +110,7 @@ export default function App() {
                         <Route path="products" element={<AdminProducts />} />
                         <Route path="orders" element={<AdminOrders view="pending" />} />
                         <Route path="orders/history" element={<AdminOrders view="history" />} />
+                        <Route path="settings" element={<AdminSettings />} />
                       </Route>
                     </Routes>
                   </Suspense>

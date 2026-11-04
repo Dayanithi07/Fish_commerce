@@ -41,6 +41,9 @@ export default function AdminLayout() {
             <NavLink to="/admin/orders/history" className={({ isActive }) => (isActive ? 'active' : '')}>
               Delivered History
             </NavLink>
+            <NavLink to="/admin/settings" className={({ isActive }) => (isActive ? 'active' : '')}>
+              ⚙ Contact & Settings
+            </NavLink>
           </nav>
 
           <div className="admin-user-controls">

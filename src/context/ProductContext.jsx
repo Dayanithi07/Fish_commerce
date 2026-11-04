@@ -1,11 +1,52 @@
-// Product context and inventory management. Owner: A3 (Data and State).
-// Implements contract in SYSTEM_ARCHITECTURE.md section 6.3.
+// Product context and inventory management with Supabase Realtime synchronization.
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import { supabase, isSupabaseConfigured } from '../lib/supabase.js'
 import { readJSON, writeJSON, subscribe } from '../utils/storage.js'
 import { fishData } from '../data/fishData.js'
 import { validateProduct } from '../utils/validators.js'
 
 const ProductContext = createContext(null)
+
+// Helper: Map Supabase database row to frontend model
+function mapFromDb(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    price: Number((row.price_cents / 100).toFixed(2)),
+    image: row.image_url,
+    waterType: row.water_type,
+    careLevel: row.care_level,
+    temperament: row.temperament,
+    minTankSize: row.min_tank_gal,
+    diet: row.diet,
+    description: row.description,
+    stock: row.stock,
+    isAvailable: row.is_available,
+    badges: Array.isArray(row.badges) ? row.badges : [],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+// Helper: Map frontend model to Supabase row
+function mapToDb(item) {
+  return {
+    id: item.id,
+    name: item.name,
+    price_cents: Math.round(Number(item.price) * 100),
+    image_url: item.image,
+    water_type: item.waterType,
+    care_level: item.careLevel,
+    temperament: item.temperament,
+    min_tank_gal: Number(item.minTankSize),
+    diet: item.diet,
+    description: item.description,
+    stock: Number(item.stock),
+    is_available: item.isAvailable,
+    badges: item.badges || [],
+    updated_at: new Date().toISOString(),
+  }
+}
 
 export function ProductProvider({ children }) {
   const [products, setProducts] = useState(() => {
@@ -13,17 +54,60 @@ export function ProductProvider({ children }) {
     if (Array.isArray(stored) && stored.length > 0) {
       return stored
     }
-    // Seed on first launch
-    writeJSON('products', fishData)
     return fishData
   })
+  const [loading, setLoading] = useState(true)
 
-  // Sync to localStorage
+  // Fetch from Supabase
+  const fetchSupabaseProducts = useCallback(async () => {
+    if (!isSupabaseConfigured) return
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('name', { ascending: true })
+
+      if (error) throw error
+      if (data && data.length > 0) {
+        const mapped = data.map(mapFromDb)
+        setProducts(mapped)
+        writeJSON('products', mapped)
+      }
+    } catch (err) {
+      console.warn('[ProductContext] Error fetching products from Supabase:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Initial load & Realtime channel subscription
   useEffect(() => {
-    writeJSON('products', products)
-  }, [products])
+    let channel = null
 
-  // Sync when another tab modifies products
+    if (isSupabaseConfigured) {
+      fetchSupabaseProducts()
+
+      // Subscribe to Realtime updates on products table
+      channel = supabase
+        .channel('products-realtime')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'products' },
+          () => {
+            fetchSupabaseProducts()
+          }
+        )
+        .subscribe()
+    } else {
+      setLoading(false)
+    }
+
+    return () => {
+      if (channel) supabase.removeChannel(channel)
+    }
+  }, [fetchSupabaseProducts])
+
+  // Cross-tab sync for localStorage fallback
   useEffect(() => {
     const unsubscribe = subscribe('products', (newProducts) => {
       if (Array.isArray(newProducts)) {
@@ -38,14 +122,12 @@ export function ProductProvider({ children }) {
   }, [products])
 
   const getProductById = useCallback(
-    (id) => {
-      return products.find((p) => p.id === id)
-    },
+    (id) => products.find((p) => p.id === id),
     [products]
   )
 
   const addProduct = useCallback(
-    (input) => {
+    async (input) => {
       const validation = validateProduct(input, products)
       if (!validation.valid) {
         return {
@@ -59,8 +141,8 @@ export function ProductProvider({ children }) {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '')
       const id = slug || `prod_${Date.now()}`
-
       const now = new Date().toISOString()
+
       const newProduct = {
         id,
         name: input.name.trim(),
@@ -79,6 +161,13 @@ export function ProductProvider({ children }) {
         updatedAt: now,
       }
 
+      if (isSupabaseConfigured) {
+        const { error } = await supabase.from('products').insert([mapToDb(newProduct)])
+        if (error) {
+          return { ok: false, error: { message: error.message } }
+        }
+      }
+
       setProducts((prev) => {
         const next = [newProduct, ...prev]
         writeJSON('products', next)
@@ -91,7 +180,7 @@ export function ProductProvider({ children }) {
   )
 
   const updateProduct = useCallback(
-    (id, patch) => {
+    async (id, patch) => {
       const existing = products.find((p) => p.id === id)
       if (!existing) {
         return { ok: false, error: { code: 'NOT_FOUND', message: 'Product not found' } }
@@ -114,6 +203,16 @@ export function ProductProvider({ children }) {
         updatedAt: new Date().toISOString(),
       }
 
+      if (isSupabaseConfigured) {
+        const { error } = await supabase
+          .from('products')
+          .update(mapToDb(updated))
+          .eq('id', id)
+        if (error) {
+          return { ok: false, error: { message: error.message } }
+        }
+      }
+
       setProducts((prev) => {
         const next = prev.map((p) => (p.id === id ? updated : p))
         writeJSON('products', next)
@@ -125,50 +224,76 @@ export function ProductProvider({ children }) {
     [products]
   )
 
-  const deleteProduct = useCallback((id) => {
-    setProducts((prev) => {
-      const next = prev.filter((p) => p.id !== id)
-      writeJSON('products', next)
-      return next
-    })
-    return { ok: true }
-  }, [])
-
-  const toggleAvailability = useCallback((id) => {
-    let target = null
-    setProducts((prev) => {
-      const next = prev.map((p) => {
-        if (p.id === id) {
-          target = { ...p, isAvailable: !p.isAvailable, updatedAt: new Date().toISOString() }
-          return target
+  const deleteProduct = useCallback(
+    async (id) => {
+      if (isSupabaseConfigured) {
+        const { error } = await supabase.from('products').delete().eq('id', id)
+        if (error) {
+          return { ok: false, error: { message: error.message } }
         }
-        return p
+      }
+
+      setProducts((prev) => {
+        const next = prev.filter((p) => p.id !== id)
+        writeJSON('products', next)
+        return next
       })
-      writeJSON('products', next)
-      return next
-    })
+      return { ok: true }
+    },
+    []
+  )
 
-    if (!target) {
-      return { ok: false, error: { code: 'NOT_FOUND', message: 'Product not found' } }
+  const toggleAvailability = useCallback(
+    async (id) => {
+      const target = products.find((p) => p.id === id)
+      if (!target) {
+        return { ok: false, error: { code: 'NOT_FOUND', message: 'Product not found' } }
+      }
+
+      const newStatus = !target.isAvailable
+
+      if (isSupabaseConfigured) {
+        const { error } = await supabase
+          .from('products')
+          .update({ is_available: newStatus, updated_at: new Date().toISOString() })
+          .eq('id', id)
+        if (error) {
+          return { ok: false, error: { message: error.message } }
+        }
+      }
+
+      let updated = null
+      setProducts((prev) => {
+        const next = prev.map((p) => {
+          if (p.id === id) {
+            updated = { ...p, isAvailable: newStatus, updatedAt: new Date().toISOString() }
+            return updated
+          }
+          return p
+        })
+        writeJSON('products', next)
+        return next
+      })
+
+      return { ok: true, product: updated }
+    },
+    [products]
+  )
+
+  const resetToSeed = useCallback(async () => {
+    if (isSupabaseConfigured) {
+      for (const item of fishData) {
+        await supabase.from('products').upsert(mapToDb(item))
+      }
     }
-    return { ok: true, product: target }
-  }, [])
-
-  const resetToSeed = useCallback(() => {
     setProducts(fishData)
     writeJSON('products', fishData)
   }, [])
 
-  /**
-   * Internal helper for OrderContext to atomically verify and decrement stock.
-   * deltas: array of { productId, quantity }
-   */
   const applyStockDeltas = useCallback(
     (deltas) => {
-      // Re-read current storage to ensure atomic verification
       const currentProducts = readJSON('products', products)
 
-      // 1. Verify all stock is sufficient
       for (const item of deltas) {
         const prod = currentProducts.find((p) => p.id === item.productId)
         if (!prod) {
@@ -188,7 +313,6 @@ export function ProductProvider({ children }) {
         }
       }
 
-      // 2. Decrement stock
       const updatedProducts = currentProducts.map((p) => {
         const delta = deltas.find((d) => d.productId === p.id)
         if (!delta) return p
@@ -209,6 +333,7 @@ export function ProductProvider({ children }) {
   const value = useMemo(
     () => ({
       products,
+      loading,
       availableProducts,
       getProductById,
       addProduct,
@@ -217,9 +342,11 @@ export function ProductProvider({ children }) {
       toggleAvailability,
       resetToSeed,
       applyStockDeltas,
+      refreshProducts: fetchSupabaseProducts,
     }),
     [
       products,
+      loading,
       availableProducts,
       getProductById,
       addProduct,
@@ -228,6 +355,7 @@ export function ProductProvider({ children }) {
       toggleAvailability,
       resetToSeed,
       applyStockDeltas,
+      fetchSupabaseProducts,
     ]
   )
 

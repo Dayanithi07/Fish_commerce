@@ -11,11 +11,14 @@
   padding: 32px;
   max-width: 440px;
   width: 100%;
+  box-shadow: 0 10px 30px rgba(60, 30, 94, 0.05);
 }
 
 .auth-card h2 {
   margin-bottom: 24px;
   text-align: center;
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .alert-error {
@@ -25,12 +28,81 @@
   border-radius: var(--radius-sm);
   margin-bottom: 16px;
   font-size: 14px;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.alert-info {
+  background: var(--info-bg);
+  color: var(--info);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  font-size: 14px;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.btn-google-oauth {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1.5px solid #e2d9f3;
+  color: #3C1E5E;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(60, 30, 94, 0.04);
+}
+
+.btn-google-oauth:hover {
+  background: #fbf9ff;
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(111, 63, 245, 0.12);
+}
+
+.btn-google-oauth:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border);
+}
+
+.auth-divider span {
+  padding: 0 12px;
 }
 
 .btn-auth-submit {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .auth-toggle {
@@ -63,6 +135,8 @@
   border-radius: var(--radius-sm);
   margin: 6px 0 10px;
   color: var(--accent-dark);
+  font-size: 12px;
+  word-break: break-all;
 }
 
 .btn-fill-admin {
@@ -73,4 +147,11 @@
   padding: 6px 12px;
   cursor: pointer;
   font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-fill-admin:hover {
+  background: var(--accent);
+  color: #ffffff;
 }

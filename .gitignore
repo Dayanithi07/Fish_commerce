@@ -1,13 +1,45 @@
-node_modules
-dist
-dist-ssr
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production build artifacts
+dist/
+dist-ssr/
+build/
 *.local
+
+# Environment variables (Never commit secret keys)
 .env
 .env.*
+!.env.example
+
+# Logs
 npm-debug.log*
-.DS_Store
-Thumbs.db
-.idea
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories & files
 .vscode/*
 !.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS metadata & temporary files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+*.Zone.Identifier
+
+# Local database & temp files
+*.sqlite
 *.db
+*.db-shm
+*.db-wal
+server/db/dev_store.json
+*Zone.Identifier*
