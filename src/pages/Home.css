@@ -1,51 +1,341 @@
-.home-page {
-  padding-bottom: 40px;
+/*
+  Cinematic Underwater Hero Section
+  Matches sample mockup design with animated swimming fish and atmospheric depth.
+*/
+
+.home-container {
+  width: 100%;
+  overflow-x: hidden;
 }
 
-.hero {
-  padding: 60px 0;
-  text-align: center;
-}
-
-.hero-content {
-  max-width: 640px;
-  margin: 0 auto;
-}
-
-.hero h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.hero p {
-  font-size: 1.1rem;
-  margin: 16px 0 24px;
-}
-
-.hero-actions {
+.hero-cinematic {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
   display: flex;
-  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: #ffffff;
+  padding: 120px 0 80px;
+}
+
+/* Background Video & Photorealistic Layer */
+.hero-media-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(0.92) contrast(1.05);
+  transform: scale(1.02);
+}
+
+.hero-overlay-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(20, 35, 75, 0.25) 0%, rgba(10, 20, 45, 0.65) 75%, rgba(6, 12, 30, 0.85) 100%),
+              linear-gradient(180deg, rgba(8, 16, 36, 0.45) 0%, transparent 40%, rgba(12, 20, 42, 0.7) 100%);
+  pointer-events: none;
+}
+
+/* Ambient Rising Bubbles */
+.bubbles-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Graceful Swimming Fish Layer */
+.swimming-fish-track {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.swimming-fish-actor {
+  position: absolute;
+  top: 38%;
+  left: -200px;
+  animation: swim-path 26s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+  filter: drop-shadow(0 0 16px rgba(111, 63, 245, 0.7)) drop-shadow(0 0 32px rgba(255, 69, 136, 0.45));
+}
+
+.fish-vector {
+  animation: fish-undulate 3.2s ease-in-out infinite;
+}
+
+/* Tail flutter */
+.fish-tail-group {
+  transform-origin: 50px 45px;
+  animation: tail-flutter 0.75s ease-in-out infinite alternate;
+}
+
+/* Fin wave */
+.fish-dorsal-fin, .fish-ventral-fin {
+  transform-origin: 90px 45px;
+  animation: fin-ripple 1.4s ease-in-out infinite alternate;
+}
+
+.fish-pectoral-fin {
+  transform-origin: 95px 48px;
+  animation: pectoral-paddle 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes tail-flutter {
+  0% {
+    transform: rotate(-10deg) skewY(-8deg) scaleX(0.96);
+  }
+  100% {
+    transform: rotate(12deg) skewY(10deg) scaleX(1.04);
+  }
+}
+
+@keyframes fin-ripple {
+  0% {
+    transform: scaleY(0.92) skewX(-4deg);
+  }
+  100% {
+    transform: scaleY(1.08) skewX(4deg);
+  }
+}
+
+@keyframes pectoral-paddle {
+  0% {
+    transform: rotate(-15deg) scale(0.9);
+  }
+  100% {
+    transform: rotate(18deg) scale(1.1);
+  }
+}
+
+@keyframes fish-undulate {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-16px) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(12px) rotate(2deg);
+  }
+  75% {
+    transform: translateY(-8px) rotate(-1.5deg);
+  }
+}
+
+/* Full organic trajectory across screen */
+@keyframes swim-path {
+  0% {
+    transform: translate(-100px, 60px) scale(0.85) scaleX(1);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.95;
+  }
+  22% {
+    transform: translate(25vw, -40px) scale(0.95) scaleX(1);
+  }
+  45% {
+    transform: translate(52vw, 30px) scale(1.05) scaleX(1);
+  }
+  68% {
+    transform: translate(80vw, -30px) scale(0.92) scaleX(1);
+  }
+  85% {
+    transform: translate(105vw, 40px) scale(0.85) scaleX(1);
+    opacity: 0.95;
+  }
+  86% {
+    transform: translate(110vw, 40px) scale(0.85) scaleX(1);
+    opacity: 0;
+  }
+  87% {
+    /* Flip around to swim in the opposite depth */
+    transform: translate(110vw, -60px) scale(0.65) scaleX(-1);
+    opacity: 0;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  98% {
+    transform: translate(-100px, -40px) scale(0.65) scaleX(-1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-150px, -40px) scale(0.65) scaleX(-1);
+    opacity: 0;
+  }
+}
+
+/* Hero Content Typography & Layout */
+.hero-content-container {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  display: flex;
   justify-content: center;
 }
 
-.btn-care {
+.hero-text-card {
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Tagline Badge */
+.hero-badge {
   display: inline-flex;
   align-items: center;
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  color: var(--accent);
-  background: var(--bg-lavender);
+  gap: 8px;
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0f2fe;
+  margin-bottom: 24px;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.badge-icon {
+  font-size: 15px;
+}
+
+/* Main Title */
+.hero-title {
+  font-size: clamp(2.6rem, 5.8vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  margin-bottom: 20px;
+  letter-spacing: -0.8px;
+  text-shadow: 0 2px 20px rgba(10, 15, 35, 0.8), 0 0 40px rgba(111, 63, 245, 0.35);
+}
+
+.title-highlight {
+  background: linear-gradient(135deg, #a78bfa 0%, #c084fc 40%, #e879f9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* Subtitle */
+.hero-subtitle {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.65;
+  color: rgba(240, 246, 255, 0.9);
+  max-width: 640px;
+  margin: 0 auto 36px;
+  font-weight: 400;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
+}
+
+/* CTA Buttons */
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-explore-fish {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #7928CA 0%, #6F3FF5 100%);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 9999px;
+  box-shadow: 0 0 30px rgba(111, 63, 245, 0.65), 0 4px 12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.25s ease;
+}
+
+.btn-explore-fish:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 45px rgba(121, 40, 202, 0.85), 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.cta-arrow {
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.btn-explore-fish:hover .cta-arrow {
+  transform: translateX(4px);
+}
+
+.btn-explore-care {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 30px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #ffffff;
+  font-size: 16px;
   font-weight: 600;
   text-decoration: none;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s ease;
 }
 
-.featured h2 {
-  margin-bottom: 24px;
+.btn-explore-care:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
 }
 
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 24px;
+/* Bottom mist fade */
+.hero-bottom-mist {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(to top, var(--bg-page) 0%, rgba(249, 246, 254, 0.4) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+@media (max-width: 640px) {
+  .hero-cinematic {
+    padding-top: 100px;
+  }
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-explore-fish, .btn-explore-care {
+    width: 100%;
+    justify-content: center;
+  }
 }
