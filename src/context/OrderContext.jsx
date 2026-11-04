@@ -235,6 +235,19 @@ export function OrderProvider({ children }) {
     [orders]
   )
 
+  const getUserOrders = useCallback(
+    (targetUserId, targetEmail) => {
+      const uid = targetUserId || user?.id
+      const mail = (targetEmail || user?.email || '').toLowerCase().trim()
+      return orders.filter(
+        (o) =>
+          (uid && o.userId === uid) ||
+          (mail && o.customerEmail?.toLowerCase() === mail)
+      )
+    },
+    [orders, user]
+  )
+
   const value = useMemo(
     () => ({
       orders,
@@ -246,6 +259,7 @@ export function OrderProvider({ children }) {
       updateOrderStatus,
       getOrderById,
       getOrderByReference,
+      getUserOrders,
     }),
     [
       orders,
@@ -257,6 +271,7 @@ export function OrderProvider({ children }) {
       updateOrderStatus,
       getOrderById,
       getOrderByReference,
+      getUserOrders,
     ]
   )
 

@@ -19,6 +19,7 @@ import OrderSuccess from './pages/OrderSuccess.jsx'
 import Auth from './pages/Auth.jsx'
 import Care from './pages/Care.jsx'
 import About from './pages/About.jsx'
+import MyOrders from './pages/customer/MyOrders.jsx'
 import NotFound from './pages/NotFound.jsx'
 
 // Admin pages lazy-loaded
@@ -96,6 +97,7 @@ export default function App() {
                         <Route path="checkout" element={<Checkout />} />
                         <Route path="order-success" element={<OrderSuccess />} />
                         <Route path="auth" element={<Auth />} />
+                        <Route path="orders" element={<MyOrders />} />
                         <Route path="care" element={<Care />} />
                         <Route path="about" element={<About />} />
                         <Route path="*" element={<NotFound />} />

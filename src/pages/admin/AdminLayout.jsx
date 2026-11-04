@@ -6,7 +6,7 @@ import { useToast } from '../../components/Toast.jsx'
 import './AdminLayout.css'
 
 export default function AdminLayout() {
-  const { isAuthenticated, isAdmin } = useAuth()
+  const { isAuthenticated, isAdmin, logout } = useAuth()
   const { latestIncoming, pendingCount } = useOrders()
   const { showToast } = useToast()
 
@@ -26,7 +26,11 @@ export default function AdminLayout() {
     <div className="admin-layout">
       <header className="admin-bar">
         <div className="container admin-bar-inner">
-          <span className="admin-title">Admin Management Portal</span>
+          <div className="admin-title-wrap">
+            <span className="admin-icon">⚙️</span>
+            <span className="admin-title">Admin Management Portal</span>
+          </div>
+
           <nav className="admin-nav">
             <NavLink to="/admin/products" className={({ isActive }) => (isActive ? 'active' : '')}>
               Inventory Products
@@ -38,6 +42,15 @@ export default function AdminLayout() {
               Delivered History
             </NavLink>
           </nav>
+
+          <div className="admin-user-controls">
+            <NavLink to="/" className="admin-store-link">
+              ← Storefront
+            </NavLink>
+            <button type="button" onClick={logout} className="btn-admin-logout">
+              Logout
+            </button>
+          </div>
         </div>
       </header>
 

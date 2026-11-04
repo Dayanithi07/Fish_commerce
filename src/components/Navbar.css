@@ -7,13 +7,19 @@
   pointer-events: none;
 }
 
+.navbar-wrapper.navbar--standard {
+  position: sticky;
+  top: 12px;
+  margin-bottom: 24px;
+}
+
 .navbar-glass-pill {
   pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 24px;
-  background: rgba(255, 255, 255, 0.72);
+  padding: 8px 22px;
+  background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -23,7 +29,7 @@
 }
 
 .navbar-glass-pill:hover {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
 }
 
@@ -32,14 +38,15 @@
   align-items: center;
   gap: 8px;
   font-weight: 800;
-  font-size: 19px;
+  font-size: 18px;
   color: #3C1E5E;
   text-decoration: none;
   letter-spacing: -0.3px;
+  white-space: nowrap;
 }
 
 .brand-icon {
-  font-size: 22px;
+  font-size: 20px;
   display: inline-block;
   transform: scaleX(-1);
 }
@@ -47,7 +54,7 @@
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
 }
 
 .navbar-links a {
@@ -56,6 +63,7 @@
   font-weight: 600;
   font-size: 14px;
   transition: color 0.2s;
+  white-space: nowrap;
 }
 
 .navbar-links a:hover {
@@ -72,7 +80,8 @@
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  white-space: nowrap;
 }
 
 .user-profile {
@@ -84,11 +93,19 @@
   color: #3C1E5E;
 }
 
+.user-name {
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .btn-login {
   color: var(--accent);
   text-decoration: none;
   font-weight: 600;
   font-size: 14px;
+  padding: 4px 8px;
 }
 
 .btn-logout {
@@ -113,10 +130,10 @@
   background: rgba(111, 63, 245, 0.15);
   color: #5B30D6;
   border: 1px solid rgba(111, 63, 245, 0.25);
-  padding: 7px 16px;
+  padding: 7px 15px;
   border-radius: 9999px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -128,10 +145,108 @@
 }
 
 .cart-icon {
-  font-size: 15px;
+  font-size: 14px;
 }
 
-/* Adjust main content top spacing for non-hero pages */
-main:not(:has(.hero-cinematic)) {
-  padding-top: 90px;
+/* Mobile Hamburger Toggle */
+.navbar-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 28px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+
+.navbar-hamburger .bar {
+  width: 24px;
+  height: 2.5px;
+  background-color: #3C1E5E;
+  border-radius: 4px;
+  transition: all 0.25s ease;
+}
+
+.navbar-hamburger .bar.open:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.navbar-hamburger .bar.open:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar-hamburger .bar.open:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Mobile Dropdown Drawer */
+.mobile-menu-drawer {
+  pointer-events: auto;
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 16px 36px rgba(60, 30, 94, 0.15);
+  padding: 16px 20px;
+  animation: slideDown 0.25s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mobile-links a {
+  text-decoration: none;
+  color: #3C1E5E;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(239, 234, 239, 0.6);
+}
+
+.mobile-links .admin-link {
+  color: #6F3FF5;
+}
+
+.mobile-cart-btn {
+  margin-top: 8px;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Responsive Breakpoint for Mobile Navbar */
+@media (max-width: 820px) {
+  .navbar-links {
+    display: none;
+  }
+
+  .navbar-hamburger {
+    display: flex;
+  }
+
+  .navbar-glass-pill {
+    padding: 8px 16px;
+  }
+
+  .btn-cart-pill {
+    display: none; /* In hero or mobile navbar, shown inside drawer */
+  }
 }

@@ -33,7 +33,7 @@ export default function Auth() {
         return
       }
       if (res.user.role === 'admin') navigate('/admin/products')
-      else navigate('/')
+      else navigate('/products')
     } else {
       const res = signup(formData.name, formData.email, formData.password)
       if (!res.ok) {
@@ -41,7 +41,7 @@ export default function Auth() {
         else setGeneralError(res.error?.message || 'Signup failed')
         return
       }
-      navigate('/')
+      navigate('/products')
     }
   }
 

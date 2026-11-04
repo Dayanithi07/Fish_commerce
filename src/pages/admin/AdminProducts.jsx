@@ -5,8 +5,10 @@ import Modal from '../../components/Modal.jsx'
 import './AdminProducts.css'
 
 export default function AdminProducts() {
-  const { products, toggleAvailability, deleteProduct, addProduct, resetToSeed } = useProducts()
+  const { products, toggleAvailability, updateProduct, deleteProduct, addProduct, resetToSeed } = useProducts()
   const [modalOpen, setModalOpen] = useState(false)
+  const [selectedIds, setSelectedIds] = useState([])
+
   const [newFish, setNewFish] = useState({
     name: '',
     price: '',
@@ -21,6 +23,47 @@ export default function AdminProducts() {
     isAvailable: true,
   })
   const [errors, setErrors] = useState({})
+
+  // Multi-select helpers
+  const allSelected = products.length > 0 && selectedIds.length === products.length
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(products.map((p) => p.id))
+    }
+  }
+
+  const toggleSelectOne = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    )
+  }
+
+  // Bulk actions
+  const handleBulkHide = () => {
+    selectedIds.forEach((id) => {
+      updateProduct(id, { isAvailable: false })
+    })
+    setSelectedIds([])
+  }
+
+  const handleBulkShow = () => {
+    selectedIds.forEach((id) => {
+      updateProduct(id, { isAvailable: true })
+    })
+    setSelectedIds([])
+  }
+
+  const handleBulkDelete = () => {
+    if (confirm(`Are you sure you want to delete ${selectedIds.length} selected products?`)) {
+      selectedIds.forEach((id) => {
+        deleteProduct(id)
+      })
+      setSelectedIds([])
+    }
+  }
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -58,7 +101,10 @@ export default function AdminProducts() {
   return (
     <div className="admin-products-page">
       <div className="admin-header-row">
-        <h2>Product Inventory ({products.length})</h2>
+        <div>
+          <h2>Product Inventory ({products.length})</h2>
+          <p className="admin-subtitle">Manage species listings, live stock, and availability visibility.</p>
+        </div>
         <div className="admin-actions">
           <button type="button" onClick={resetToSeed} className="btn-secondary">
             Reset to Seed Data
@@ -69,10 +115,41 @@ export default function AdminProducts() {
         </div>
       </div>
 
+      {/* Bulk action bar when items are selected */}
+      {selectedIds.length > 0 && (
+        <div className="bulk-actions-toolbar">
+          <span className="bulk-count">
+            <strong>{selectedIds.length}</strong> product{selectedIds.length > 1 ? 's' : ''} selected
+          </span>
+          <div className="bulk-buttons">
+            <button type="button" onClick={handleBulkShow} className="btn-bulk btn-bulk-show">
+              👁️ Show Selected
+            </button>
+            <button type="button" onClick={handleBulkHide} className="btn-bulk btn-bulk-hide">
+              🚫 Hide Selected
+            </button>
+            <button type="button" onClick={handleBulkDelete} className="btn-bulk btn-bulk-delete">
+              🗑️ Delete Selected
+            </button>
+            <button type="button" onClick={() => setSelectedIds([])} className="btn-bulk-cancel">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="table-responsive">
         <table className="admin-table">
           <thead>
             <tr>
+              <th style={{ width: '40px', textAlign: 'center' }}>
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={toggleSelectAll}
+                  aria-label="Select all products"
+                />
+              </th>
               <th>Name</th>
               <th>Water</th>
               <th>Price</th>
@@ -82,39 +159,50 @@ export default function AdminProducts() {
             </tr>
           </thead>
           <tbody>
-            {products.map((p) => (
-              <tr key={p.id}>
-                <td>
-                  <strong>{p.name}</strong>
-                </td>
-                <td>{p.waterType}</td>
-                <td>{formatPrice(p.price)}</td>
-                <td>{p.stock}</td>
-                <td>
-                  <span className={`status-tag ${p.isAvailable ? 'available' : 'hidden'}`}>
-                    {p.isAvailable ? 'Available' : 'Hidden'}
-                  </span>
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => toggleAvailability(p.id)}
-                    className="btn-action"
-                  >
-                    {p.isAvailable ? 'Hide' : 'Show'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (confirm(`Delete ${p.name}?`)) deleteProduct(p.id)
-                    }}
-                    className="btn-action btn-delete"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {products.map((p) => {
+              const isSelected = selectedIds.includes(p.id)
+              return (
+                <tr key={p.id} className={isSelected ? 'row-selected' : ''}>
+                  <td style={{ textAlign: 'center' }}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelectOne(p.id)}
+                      aria-label={`Select ${p.name}`}
+                    />
+                  </td>
+                  <td>
+                    <strong>{p.name}</strong>
+                  </td>
+                  <td>{p.waterType}</td>
+                  <td>{formatPrice(p.price)}</td>
+                  <td>{p.stock}</td>
+                  <td>
+                    <span className={`status-tag ${p.isAvailable ? 'available' : 'hidden'}`}>
+                      {p.isAvailable ? 'Available' : 'Hidden'}
+                    </span>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      onClick={() => toggleAvailability(p.id)}
+                      className="btn-action"
+                    >
+                      {p.isAvailable ? 'Hide' : 'Show'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm(`Delete ${p.name}?`)) deleteProduct(p.id)
+                      }}
+                      className="btn-action btn-delete"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>

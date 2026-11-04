@@ -1,11 +1,27 @@
 .catalog-page {
-  padding: 32px 0;
+  padding: 32px 0 60px;
+}
+
+.catalog-page h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 24px;
+  width: 100%;
 }
 
 .no-products {
-  padding: 40px;
+  padding: 48px 24px;
   text-align: center;
   background: var(--bg-surface);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   border: 1px dashed var(--border);
+  color: var(--text-muted);
+  font-size: 15px;
 }
