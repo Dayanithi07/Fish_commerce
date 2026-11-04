@@ -84,6 +84,80 @@
   font-size: 14px;
 }
 
+.admin-roster-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-roster-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-roster-table th {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 2px solid #ede7f8;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-roster-table td {
+  padding: 14px;
+  border-bottom: 1px solid #f2edf8;
+  vertical-align: middle;
+}
+
+.admin-roster-table code {
+  background: var(--bg-lavender);
+  padding: 3px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--accent-dark);
+  font-size: 12px;
+}
+
+.badge-role {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge-role--super {
+  background: linear-gradient(135deg, rgba(111, 63, 245, 0.18), rgba(67, 97, 238, 0.18));
+  color: #5527db;
+  border: 1px solid rgba(111, 63, 245, 0.3);
+}
+
+.badge-role--staff {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+}
+
+.badge-role--custom {
+  background: rgba(168, 85, 247, 0.12);
+  color: #9333ea;
+}
+
+.btn-revoke-admin {
+  background: transparent;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-revoke-admin:hover {
+  background: #fef2f2;
+}
+
 .integration-status-list {
   display: flex;
   flex-direction: column;

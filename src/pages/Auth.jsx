@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth, ADMIN_EMAILS } from '../context/AuthContext.jsx'
-import { DEMO_ADMIN } from '../config.js'
+import { useAuth } from '../context/AuthContext.jsx'
 import './Auth.css'
 
 export default function Auth() {
@@ -64,29 +63,16 @@ export default function Auth() {
     try {
       const res = await signInWithGoogle()
       if (!res.ok) {
-        setGeneralError(res.error?.message || 'Google sign-in could not be initiated.')
+        setGeneralError(
+          res.error?.message ||
+            'Google Sign-In is not enabled yet in your Supabase Dashboard. Go to Authentication -> Providers -> Google to enable it.'
+        )
       }
+    } catch (err) {
+      setGeneralError(err.message || 'Failed to sign in with Google.')
     } finally {
       setSubmitting(false)
     }
-  }
-
-  const fillAdmin = () => {
-    setFormData({
-      name: '',
-      email: DEMO_ADMIN.email,
-      password: DEMO_ADMIN.password,
-    })
-    setIsLogin(true)
-  }
-
-  const fillSuperAdmin = () => {
-    setFormData({
-      name: '',
-      email: 'starboy1s2s3s3@gmail.com',
-      password: 'Password123!',
-    })
-    setIsLogin(true)
   }
 
   return (
@@ -141,6 +127,7 @@ export default function Auth() {
                 onChange={handleChange}
                 className={errors.name ? 'input-error' : ''}
                 placeholder="Dr. Aquarist"
+                required
               />
               {errors.name && <span className="field-error">{errors.name}</span>}
             </div>
@@ -156,6 +143,7 @@ export default function Auth() {
               onChange={handleChange}
               className={errors.email ? 'input-error' : ''}
               placeholder="you@example.com"
+              required
             />
             {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
@@ -170,6 +158,7 @@ export default function Auth() {
               onChange={handleChange}
               className={errors.password ? 'input-error' : ''}
               placeholder="••••••••"
+              required
             />
             {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
@@ -199,23 +188,6 @@ export default function Auth() {
               </button>
             </p>
           )}
-        </div>
-
-        <div className="demo-credentials">
-          <p>Super Admin Account:</p>
-          <code>starboy1s2s3s3@gmail.com (Real Admin)</code>
-          <p style={{ marginTop: '8px', fontSize: '12px', color: '#8876a3' }}>
-            Demo Store Account:
-          </p>
-          <code>{DEMO_ADMIN.email} / {DEMO_ADMIN.password}</code>
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-            <button type="button" onClick={fillAdmin} className="btn-fill-admin">
-              Fill Demo Admin
-            </button>
-            <button type="button" onClick={fillSuperAdmin} className="btn-fill-admin">
-              Fill Super Admin
-            </button>
-          </div>
         </div>
       </div>
     </div>

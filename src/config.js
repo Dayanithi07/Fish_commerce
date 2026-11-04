@@ -6,11 +6,18 @@ export const CURRENCY = 'USD'
 export const LOCALE = 'en-US'
 export const SHIPPING_FLAT = 5.99
 
-// DEMO ONLY. Client-side credentials are for demo/prototype use.
+// Super Admin Credentials
+export const SUPER_ADMIN = {
+  email: 'starboy1s2s3s3@gmail.com',
+  password: 'Dayanithi@28',
+  name: 'Dayanithi (Super Admin)',
+}
+
+// Demo Admin Credentials (for staff testing)
 export const DEMO_ADMIN = {
   email: 'admin@fishcommerce.com',
   password: 'admin123',
-  name: 'Admin',
+  name: 'Admin Staff',
 }
 
 export const API_BASE_URL = '/api'

@@ -9,11 +9,13 @@ dist-ssr/
 build/
 *.local
 
-# Environment variables (Never commit secret keys)
+# Environment variables & Credentials (Never commit secret keys)
 .env
 .env.*
 !.env.example
 file-snapshots/
+credentials.txt
+*credentials*
 
 # Logs
 npm-debug.log*

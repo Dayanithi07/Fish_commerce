@@ -141,7 +141,6 @@ Fish_commerce/
 
 ## 👤 Author & Support
 
-- **Store Administrator**: `starboy1s2s3s3@gmail.com`
 - **GitHub**: [@Dayanithi07](https://github.com/Dayanithi07)
 
 ---

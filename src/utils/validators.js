@@ -119,8 +119,8 @@ export function validateProduct(product, existingProducts = []) {
   }
 
   const img = (product.image || '').trim()
-  if (!img || (!img.startsWith('/') && !img.startsWith('http://') && !img.startsWith('https://'))) {
-    errors.image = 'Enter a valid image URL starting with / or http(s)://.'
+  if (!img || (!img.startsWith('/') && !img.startsWith('http://') && !img.startsWith('https://') && !img.startsWith('data:image/'))) {
+    errors.image = 'Provide a valid image file or URL.'
   }
 
   const desc = (product.description || '').trim()
