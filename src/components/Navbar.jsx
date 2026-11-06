@@ -28,6 +28,8 @@ export default function Navbar() {
           {/* Desktop Navigation Links */}
           <nav className="navbar-links">
             <Link to="/products">Catalog</Link>
+            <Link to="/products?category=food">Fish Food</Link>
+            <Link to="/videos">Video</Link>
             <Link to="/care">Care Guide</Link>
             <Link to="/about">About</Link>
             {isAuthenticated && !isAdmin && (
@@ -89,6 +91,8 @@ export default function Navbar() {
             <nav className="mobile-links">
               <Link to="/" onClick={closeMenu}>Home</Link>
               <Link to="/products" onClick={closeMenu}>Catalog</Link>
+              <Link to="/products?category=food" onClick={closeMenu}>Fish Food</Link>
+              <Link to="/videos" onClick={closeMenu}>Video</Link>
               <Link to="/care" onClick={closeMenu}>Care Guide</Link>
               <Link to="/about" onClick={closeMenu}>About</Link>
               {isAuthenticated && !isAdmin && (

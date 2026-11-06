@@ -14,6 +14,7 @@ class Database {
       users: [],
       products: [],
       orders: [],
+      paymentIntents: [],
     }
     this.init()
   }
@@ -22,7 +23,13 @@ class Database {
     try {
       if (fs.existsSync(DATA_FILE)) {
         const raw = fs.readFileSync(DATA_FILE, 'utf8')
-        this.data = JSON.parse(raw)
+        this.data = {
+          users: [],
+          products: [],
+          orders: [],
+          paymentIntents: [],
+          ...JSON.parse(raw),
+        }
       } else {
         this.seed()
       }
@@ -48,10 +55,20 @@ class Database {
   }
 
   save() {
+    const tempFile = `${DATA_FILE}.${process.pid}.tmp`
     try {
-      fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2), 'utf8')
+      fs.writeFileSync(tempFile, JSON.stringify(this.data, null, 2), 'utf8')
+      fs.renameSync(tempFile, DATA_FILE)
     } catch (err) {
+      if (fs.existsSync(tempFile)) {
+        try {
+          fs.unlinkSync(tempFile)
+        } catch (cleanupError) {
+          console.error('Failed to clean up temporary database file:', cleanupError)
+        }
+      }
       console.error('Failed to write database file:', err)
+      throw err
     }
   }
 
@@ -106,12 +123,18 @@ class Database {
   updateProduct(id, patch) {
     const index = this.data.products.findIndex((p) => p.id === id)
     if (index === -1) return null
+    const previous = this.data.products[index]
     this.data.products[index] = {
       ...this.data.products[index],
       ...patch,
       updatedAt: new Date().toISOString(),
     }
-    this.save()
+    try {
+      this.save()
+    } catch (error) {
+      this.data.products[index] = previous
+      throw error
+    }
     return this.data.products[index]
   }
 
@@ -138,8 +161,84 @@ class Database {
 
   createOrder(order) {
     this.data.orders.unshift(order)
-    this.save()
+    try {
+      this.save()
+    } catch (error) {
+      this.data.orders.shift()
+      throw error
+    }
     return order
+  }
+
+  createPaidOrder(order, paymentIntentId, paymentId) {
+    const intent = (this.data.paymentIntents || []).find((item) => item.id === paymentIntentId)
+    if (!intent || intent.status !== 'verifying') {
+      throw new Error('Payment intent is not ready to be completed.')
+    }
+
+    const productUpdates = []
+    for (const item of order.items) {
+      const product = this.getProductById(item.productId)
+      if (!product || !product.isAvailable || product.stock < item.quantity) {
+        return {
+          ok: false,
+          error: {
+            code: 'OUT_OF_STOCK',
+            message: 'Payment succeeded, but stock changed. Contact the store with your payment reference.',
+          },
+        }
+      }
+      productUpdates.push({ product, stock: product.stock, quantity: item.quantity })
+    }
+
+    const previousIntent = { ...intent }
+    for (const { product, quantity } of productUpdates) {
+      product.stock -= quantity
+      product.updatedAt = new Date().toISOString()
+    }
+    this.data.orders.unshift(order)
+    Object.assign(intent, { status: 'paid', paymentId, order })
+
+    try {
+      this.save()
+    } catch (error) {
+      this.data.orders.shift()
+      for (const { product, stock } of productUpdates) product.stock = stock
+      Object.assign(intent, previousIntent)
+      throw error
+    }
+
+    return { ok: true, order }
+  }
+
+  createPaymentIntent(intent) {
+    this.data.paymentIntents ||= []
+    this.data.paymentIntents.push(intent)
+    try {
+      this.save()
+    } catch (error) {
+      this.data.paymentIntents.pop()
+      throw error
+    }
+    return intent
+  }
+
+  getPaymentIntentByGatewayOrderId(gatewayOrderId) {
+    return (this.data.paymentIntents || []).find((intent) => intent.gatewayOrderId === gatewayOrderId)
+  }
+
+  updatePaymentIntent(id, patch) {
+    const intent = (this.data.paymentIntents || []).find((item) => item.id === id)
+    if (!intent) return null
+    const previousIntent = { ...intent }
+    Object.assign(intent, patch)
+    try {
+      this.save()
+    } catch (error) {
+      Object.assign(intent, previousIntent)
+      throw error
+    }
+    return intent
   }
 
   updateOrderStatus(id, newStatus) {

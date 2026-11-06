@@ -46,5 +46,7 @@ export const api = {
   getOrders: (status) => request(`/orders${status ? `?status=${status}` : ''}`),
   getOrderById: (id) => request(`/orders/${id}`),
   createOrder: (orderData) => request('/orders', { method: 'POST', body: JSON.stringify(orderData) }),
+  createRazorpayOrder: (checkoutData) => request('/payments/razorpay/order', { method: 'POST', body: JSON.stringify(checkoutData) }),
+  verifyRazorpayPayment: (paymentData) => request('/payments/razorpay/verify', { method: 'POST', body: JSON.stringify(paymentData) }),
   updateOrderStatus: (id, status) => request(`/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
 }

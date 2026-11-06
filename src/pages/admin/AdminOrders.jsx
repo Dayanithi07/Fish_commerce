@@ -61,6 +61,10 @@ export default function AdminOrders({ view = 'pending' }) {
                     <span>Total:</span>
                     <strong>{formatPrice(order.total)}</strong>
                   </div>
+                  <div className="order-admin-total">
+                    <span>Payment:</span>
+                    <strong>{order.paymentStatus ? `${order.paymentStatus} · Online` : 'Not recorded'}</strong>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 # Fishcommerce
 
-A modern, client-side pet fish store: a customer storefront and an admin portal, built with **React + Vite**. There is no backend. Everything is stored in the browser's `localStorage`, and checkout takes no payment.
+A modern pet fish store with a customer storefront and admin portal, built with **React + Vite** and an **Express** API. Checkout requires online payment via Razorpay; orders and products in the standalone API use the development JSON store.
 
 > **Demo project.** The admin login is hard-coded and customer passwords are stored in plaintext in the browser. Do not deploy it publicly as a real store. See [Known limitations](#known-limitations).
 
@@ -102,9 +102,10 @@ Each agent has a starter prompt, an owned-file list and acceptance criteria in [
 
 - **Per-browser data.** Orders and products live in one browser's `localStorage`. Clearing site data resets the store to the seed catalog. The admin sees only orders placed in the same browser profile.
 - **Not secure.** Admin credentials are in the source code and customer passwords are stored unhashed. A real store needs a backend with proper authentication.
-- **No payment, email or SMS.** The team is expected to contact the customer after an order is placed.
+- **Payments require Razorpay configuration.** Keep the key secret on the Express server; never expose it to Vite/client code.
+- **Development data store.** The standalone API uses a local JSON file and is not suitable for production persistence.
 - **Live animals.** Selling and shipping live fish may be subject to local regulations. The software does not check this.
 
 ## Roadmap
 
-Backend API and database, real authentication, order notifications, cancellations and refunds, payment gateway, image uploads, automated tests. See [PROJECT_REQUIREMENTS.md §9](PROJECT_REQUIREMENTS.md) and [DATABASE_SCHEMA.md §12](DATABASE_SCHEMA.md).
+Production database, real authentication, cancellations and refunds, image uploads, automated tests. See [PROJECT_REQUIREMENTS.md §9](PROJECT_REQUIREMENTS.md) and [DATABASE_SCHEMA.md §12](DATABASE_SCHEMA.md).

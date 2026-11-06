@@ -8,7 +8,7 @@ This single document combines the product requirements (PRD), functional require
 
 ## 1. Product Overview
 
-**Fishcommerce** is a client-side e-commerce web app for selling pet fish. It has a customer storefront (browse → detail → cart → checkout → confirmation) and an admin portal (product CRUD and order status management). There is no backend: all data lives in the browser's `localStorage`, and checkout does not take payment.
+**Fishcommerce** is an e-commerce web app for selling pet fish. It has a customer storefront (browse → detail → cart → checkout → confirmation), an Express API for online checkout, and an admin portal (product CRUD and order status management). Checkout requires a successful Razorpay online payment; cash on delivery is not offered.
 
 ### 1.1 Goals
 
@@ -21,7 +21,7 @@ This single document combines the product requirements (PRD), functional require
 
 ### 1.2 Non-goals (v1)
 
-Payment processing, real authentication/security, email/SMS delivery, a real backend or database, multi-vendor support, reviews/ratings, order cancellation or refunds, inventory restock workflows, internationalisation.
+Refund workflows, real authentication/security, email/SMS delivery, a production database, multi-vendor support, reviews/ratings, inventory restock workflows, internationalisation.
 
 ### 1.3 Personas
 
@@ -147,8 +147,8 @@ The three source documents (implementation plan, task list, mockup prompts) disa
 | FR-CHK-02 | Auth gate: if not logged in and not guest, show a modal with Sign in / Create account / Continue as guest | M | Dismissing without choosing keeps the form disabled |
 | FR-CHK-03 | Form: Full name, Phone, Email, Street, City, Postal code, Tank setup / delivery notes (optional). Prefill name and email for logged-in users | M | Rules in §6 enforced; first invalid field is focused on submit |
 | FR-CHK-04 | Order summary: lines with thumbnails, subtotal, flat shipping, total | M | Totals use `utils/money.js`; matches mockup 4 ($24.99 + 3 × $3.99 + $5.99 = $42.95) |
-| FR-CHK-05 | **Confirm & Place Order** re-validates stock, creates the order, decrements stock, clears the cart and navigates to `/order-success` | M | If stock changed, show an error and adjust the cart; no partial writes |
-| FR-CHK-06 | Helper text under the button: no payment is taken now, the team will contact the customer | S | Text visible |
+| FR-CHK-05 | **Pay Online** re-validates stock, opens Razorpay checkout, and only after server-side payment verification creates the order, decrements stock, clears the cart and navigates to `/order-success` | M | Failed or cancelled payments do not create an order |
+| FR-CHK-06 | Clearly state that online payment via Razorpay is required and cash on delivery is unavailable | S | Payment policy is visible before checkout |
 | FR-CHK-07 | Prevent double submit | M | Button disabled while submitting; one click creates exactly one order |
 
 ### 3.8 Order confirmation — `ORD`
@@ -361,7 +361,7 @@ Contrast notes: `--accent` on white ≈ 5.7:1 and `--text-muted` on `--bg-page` 
 
 | # | Question | Default if unanswered |
 |---|---|---|
-| Q1 | Currency and locale (USD vs INR)? | USD / `en-US` (D-09). Changing it is a one-line config edit. |
+| Q1 | Currency and locale (USD vs INR)? | INR / `en-IN` (current configuration). |
 | Q2 | Should out-of-stock products stay visible in the Catalog? | Yes, with a badge and a disabled CTA. |
 | Q3 | Should the real store name or logo replace the text logo? | Text logo "Fishcommerce". |
 | Q4 | Is order cancellation needed soon? | Deferred (roadmap). |
@@ -370,10 +370,9 @@ Contrast notes: `--accent` on white ≈ 5.7:1 and `--text-muted` on `--bg-page` 
 
 ## 9. Roadmap (post-v1)
 
-1. Backend API and database (schema mapping in `DATABASE_SCHEMA.md` §12) with real authentication.
+1. Production database and real authentication.
 2. Email and WhatsApp order notifications.
 3. Order cancellation, restock and refunds; customer order history page.
-4. Payment gateway integration.
 5. Reviews, wishlist, bundles ("starter tank kit").
 6. Image upload (object storage) in the admin portal.
 7. Automated tests (Vitest and Playwright).

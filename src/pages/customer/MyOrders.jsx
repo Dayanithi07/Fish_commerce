@@ -70,7 +70,7 @@ export default function MyOrders() {
               <h3>No Orders Found Yet</h3>
               <p>You haven't placed any fish orders with this account yet.</p>
               <Link to="/products" className="btn-primary" style={{ marginTop: '16px' }}>
-                Explore Fish Catalog
+                Explore Aquarium Store
               </Link>
             </div>
           ) : (
@@ -167,6 +167,10 @@ function OrderCard({ order }) {
             <div className="fin-row fin-total">
               <span>Total</span>
               <strong>{formatPrice(order.total)}</strong>
+            </div>
+            <div className="fin-row">
+              <span>Payment</span>
+              <span>{order.paymentStatus ? `${order.paymentStatus} · Online` : 'Not recorded'}</span>
             </div>
           </div>
         </div>

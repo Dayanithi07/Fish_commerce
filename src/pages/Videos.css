@@ -1,0 +1,494 @@
+.videos-page {
+  padding-top: 16px;
+  padding-bottom: 48px;
+}
+
+.videos-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.videos-eyebrow {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.videos-header h1 {
+  margin-bottom: 8px;
+}
+
+.videos-header > p:last-child,
+.tutorial-caption {
+  color: var(--text-muted);
+}
+
+.order-video-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.order-video-player {
+  display: flex;
+  min-width: 0;
+  min-height: 420px;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 12% 10%, rgba(120, 209, 234, 0.55), transparent 34%),
+    linear-gradient(145deg, #e6f9fc, #e9e4ff 55%, #f5f0ff);
+}
+
+.tutorial-scene {
+  display: grid;
+  flex: 1;
+  min-height: 350px;
+  padding: clamp(18px, 4vw, 48px);
+  place-items: center;
+  animation: tutorial-scene-in 0.55s ease both;
+}
+
+.tutorial-store {
+  width: min(100%, 620px);
+  overflow: hidden;
+  border: 1px solid rgba(81, 57, 123, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 22px 60px rgba(49, 39, 82, 0.18);
+}
+
+.tutorial-topbar {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #eee9f5;
+  color: #49326a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tutorial-brand {
+  white-space: nowrap;
+}
+
+.tutorial-brand-icon {
+  margin-right: 5px;
+  color: #7650ed;
+}
+
+.tutorial-nav {
+  color: #776d86;
+  font-weight: 500;
+}
+
+.tutorial-cart {
+  padding: 6px 9px;
+  border-radius: 20px;
+  background: #f0eaff;
+  color: #5b30d6;
+  white-space: nowrap;
+}
+
+.tutorial-cart b {
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  margin-left: 3px;
+  place-items: center;
+  border-radius: 50%;
+  background: #6f3ff5;
+  color: white;
+  font-size: 9px;
+}
+
+.tutorial-store-content {
+  min-height: 270px;
+  padding: clamp(20px, 4vw, 36px);
+  color: #35264d;
+}
+
+.tutorial-kicker {
+  margin: 0 0 8px;
+  color: #7858d6;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.tutorial-store-content h3 {
+  margin: 0 0 22px;
+  color: #392653;
+  font-size: clamp(19px, 3vw, 28px);
+}
+
+.tutorial-choice-row,
+.tutorial-product-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.tutorial-choice {
+  display: grid;
+  min-height: 130px;
+  padding: 15px;
+  align-content: center;
+  justify-items: center;
+  gap: 5px;
+  border: 1px solid #e8e0f6;
+  border-radius: 12px;
+  background: #fbf9ff;
+  text-align: center;
+  animation: tutorial-float 2.8s ease-in-out infinite;
+}
+
+.tutorial-choice:nth-child(2) {
+  animation-delay: 0.25s;
+}
+
+.tutorial-choice > span {
+  font-size: 31px;
+}
+
+.tutorial-choice strong,
+.tutorial-product strong {
+  font-size: 12px;
+}
+
+.tutorial-choice small,
+.tutorial-product small {
+  color: #817791;
+  font-size: 10px;
+}
+
+.tutorial-food-choice {
+  background: #f4fbff;
+}
+
+.tutorial-product {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid #eee8f5;
+  border-radius: 10px;
+  background: #fff;
+  animation: tutorial-float 2.8s ease-in-out infinite;
+}
+
+.tutorial-product:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.tutorial-product-art {
+  display: grid;
+  min-height: 66px;
+  margin-bottom: 3px;
+  place-items: center;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #e9f9ff, #f2eaff);
+  font-size: 35px;
+}
+
+.tutorial-add-button,
+.tutorial-place-order {
+  display: block;
+  margin-top: 5px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #7040ee;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 6px 14px rgba(112, 64, 238, 0.18);
+}
+
+.tutorial-cart-panel {
+  display: grid;
+  gap: 11px;
+  max-width: 410px;
+  padding: 16px;
+  border: 1px solid #eee8f5;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 11px;
+}
+
+.tutorial-cart-panel > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tutorial-cart-total {
+  padding-top: 10px;
+  border-top: 1px solid #eee8f5;
+}
+
+.tutorial-checkout-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 420px;
+}
+
+.tutorial-checkout-form > span {
+  padding: 11px;
+  border: 1px solid #e9e3f0;
+  border-radius: 7px;
+  background: #fff;
+  color: #958ba2;
+  font-size: 10px;
+}
+
+.tutorial-checkout-form .tutorial-place-order {
+  grid-column: 1 / -1;
+  padding: 11px;
+}
+
+.tutorial-success {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.tutorial-success-icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  margin: 0 0 16px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e3f8ec;
+  color: #13834b;
+  font-size: 30px;
+  font-weight: 800;
+  animation: tutorial-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tutorial-success > p:not(.tutorial-kicker) {
+  color: #817791;
+  font-size: 12px;
+}
+
+.tutorial-controls {
+  padding: 0 20px 14px;
+}
+
+.tutorial-progress {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(58, 42, 84, 0.16);
+}
+
+.tutorial-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #7040ee;
+  transition: width 0.35s ease;
+}
+
+.tutorial-control-row,
+.tutorial-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.tutorial-control-row {
+  justify-content: space-between;
+  padding-top: 10px;
+}
+
+.tutorial-buttons {
+  gap: 8px;
+}
+
+.tutorial-buttons button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(73, 50, 106, 0.2);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+  color: #49326a;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tutorial-buttons button:hover {
+  background: #7040ee;
+  color: #fff;
+}
+
+.tutorial-step-count {
+  color: #5f5472;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.order-video-content {
+  align-self: center;
+  padding: 28px;
+}
+
+.order-video-content h2 {
+  margin-bottom: 10px;
+}
+
+.tutorial-caption {
+  min-height: 48px;
+  line-height: 1.55;
+}
+
+.tutorial-step-list {
+  display: grid;
+  gap: 4px;
+  margin: 20px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tutorial-step-list button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+}
+
+.tutorial-step-list button span {
+  display: grid;
+  width: 23px;
+  height: 23px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.tutorial-step-list .is-current button {
+  background: #f2edff;
+  color: #5b30d6;
+  font-weight: 700;
+}
+
+.tutorial-step-list .is-current button span {
+  border-color: #7040ee;
+  background: #7040ee;
+  color: white;
+}
+
+@keyframes tutorial-scene-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tutorial-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes tutorial-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .order-video-card {
+    grid-template-columns: 1fr;
+  }
+
+  .order-video-player {
+    min-height: 350px;
+  }
+
+  .tutorial-scene {
+    min-height: 290px;
+    padding: 18px;
+  }
+
+  .tutorial-store-content {
+    min-height: 235px;
+    padding: 22px;
+  }
+
+  .order-video-content {
+    padding: 22px;
+  }
+}
+
+@media (max-width: 440px) {
+  .tutorial-topbar {
+    padding: 9px;
+    font-size: 9px;
+  }
+
+  .tutorial-nav {
+    font-size: 8px;
+  }
+
+  .tutorial-scene {
+    padding: 12px;
+  }
+
+  .tutorial-choice-row,
+  .tutorial-product-row {
+    gap: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

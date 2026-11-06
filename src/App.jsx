@@ -19,6 +19,7 @@ import OrderSuccess from './pages/OrderSuccess.jsx'
 import Auth from './pages/Auth.jsx'
 import Care from './pages/Care.jsx'
 import About from './pages/About.jsx'
+import Videos from './pages/Videos.jsx'
 import MyOrders from './pages/customer/MyOrders.jsx'
 import NotFound from './pages/NotFound.jsx'
 
@@ -101,6 +102,7 @@ export default function App() {
                         <Route path="orders" element={<MyOrders />} />
                         <Route path="care" element={<Care />} />
                         <Route path="about" element={<About />} />
+                        <Route path="videos" element={<Videos />} />
                         <Route path="*" element={<NotFound />} />
                       </Route>
 

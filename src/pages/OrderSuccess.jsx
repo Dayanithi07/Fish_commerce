@@ -1,13 +1,27 @@
+import { useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import { formatPrice } from '../utils/money.js'
+import Modal from '../components/Modal.jsx'
 import './OrderSuccess.css'
 
 export default function OrderSuccess() {
   const { state } = useLocation()
   const order = state?.order
+  const [showSuccessPopup, setShowSuccessPopup] = useState(Boolean(order))
 
   return (
     <div className="container order-success-page">
+      <Modal
+        isOpen={Boolean(order) && showSuccessPopup}
+        onClose={() => setShowSuccessPopup(false)}
+        title="Payment & Order Confirmation"
+      >
+        <p role="status">PAYMENT WAS SUCCESSFULLY</p>
+        <p role="status">YOUR ORDER WAS ORDERED SUCCESSFULLY</p>
+        <button type="button" className="btn-primary" onClick={() => setShowSuccessPopup(false)}>
+          Continue
+        </button>
+      </Modal>
       <div className="success-card">
         <div className="success-icon">✓</div>
         <h1>Order Confirmed!</h1>
@@ -32,6 +46,9 @@ export default function OrderSuccess() {
                 <span>Total Paid:</span>
                 <strong>{formatPrice(order.total)}</strong>
               </div>
+              <p className="payment-confirmation">
+                Paid online via {order.paymentProvider || 'Razorpay'} · {order.paymentStatus || 'Paid'}
+              </p>
             </div>
           </>
         ) : (

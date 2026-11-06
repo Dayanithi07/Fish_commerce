@@ -211,7 +211,7 @@ Mounts `<App />` into `#root`.
 ## User Review Required
 
 > [!IMPORTANT]
-> **No payment gateway.** Checkout bypasses payment and places the order directly, as specified.
+> **Online payment required.** Checkout uses Razorpay and creates an order only after server-side payment verification.
 
 > [!IMPORTANT]
 > **Admin access.** Hard-coded admin login: `admin@fishcommerce.com` / `admin123`. Any other credentials create or log in a regular customer. This is demo-only and must not be used as real security.

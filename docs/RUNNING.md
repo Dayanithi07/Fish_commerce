@@ -53,11 +53,23 @@ Then create `vite.config.js`, `index.html` and the `src/` structure from `SYSTEM
 
 ## 3. Everyday commands
 
+For checkout, run the Express API in one PowerShell terminal with Razorpay test credentials:
+
+```powershell
+$env:RAZORPAY_KEY_ID = "rzp_test_your_key_id"
+$env:RAZORPAY_KEY_SECRET = "your_razorpay_key_secret"
+npm run server
+```
+
+Set these from the Razorpay Dashboard's test keys. Keep `RAZORPAY_KEY_SECRET` only in the backend environment; do not add a `VITE_` prefix or commit real credentials. In a second terminal, start the storefront:
+
 ```powershell
 npm run dev        # http://localhost:5173 with hot reload
 npm run build      # production build into dist/
 npm run preview    # serve dist/ locally (http://localhost:4173)
 ```
+
+Checkout is unavailable until the API and Razorpay credentials are configured. The bundled JSON-file API is for development only; before taking live payments, replace it with a durable database and payment reconciliation/webhooks, and deploy over HTTPS.
 
 To test on a phone on the same Wi-Fi: `npm run dev -- --host`, then open the "Network" URL it prints. Some features that need a secure context (for example copy-to-clipboard) may fall back to a simpler behaviour on plain-HTTP network URLs.
 
@@ -85,7 +97,7 @@ After a reset the catalog returns to the 14 seed products, and carts, orders and
 1. `/` loads, with the hero and swimming Betta.
 2. `/products` shows 14 fish. Filter Freshwater + Beginner, then search "bet".
 3. Open Crown Tail Betta → **Add to Cart**, then add Neon Tetra × 3. The cart badge shows 4.
-4. Open the cart → **Checkout** → choose **Continue as guest** → fill the form → **Confirm & Place Order**. The total should be **$42.95**.
+4. Open the cart → **Checkout** → choose **Continue as guest** → fill the form → **Pay Online**. Complete a successful Razorpay test payment; the order should be created only after the server verifies payment. The total should be **₹42.95**.
 5. Log in as admin → `/admin/orders` → the order appears → **Mark as Confirmed → Shipped → Delivered**. It then moves to **Order History**.
 6. `/admin/products` → add a fish → it shows in `/products`.
 

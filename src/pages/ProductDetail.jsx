@@ -15,7 +15,7 @@ export default function ProductDetail() {
     return (
       <div className="container product-not-found">
         <h2>Product Not Found</h2>
-        <p>The fish you are looking for does not exist or has been removed.</p>
+        <p>The product you are looking for does not exist or has been removed.</p>
         <Link to="/products" className="btn-primary">Back to Catalog</Link>
       </div>
     )
@@ -29,24 +29,32 @@ export default function ProductDetail() {
         </div>
         <div className="detail-info">
           <div className="detail-badges">
-            <span className="badge badge--water">{product.waterType}</span>
-            <span className="badge badge--care">{product.careLevel}</span>
+            <span className="badge badge--water">
+              {product.productType === 'food' ? 'Fish Food' : product.waterType}
+            </span>
+            {product.productType !== 'food' && (
+              <span className="badge badge--care">{product.careLevel}</span>
+            )}
           </div>
           <h1>{product.name}</h1>
           <p className="detail-price">{formatPrice(product.price)}</p>
           <p className="detail-desc">{product.description}</p>
 
           <div className="spec-table">
+            {product.productType !== 'food' && (
+              <>
+                <div className="spec-row">
+                  <span>Temperament:</span>
+                  <strong>{product.temperament}</strong>
+                </div>
+                <div className="spec-row">
+                  <span>Minimum Tank:</span>
+                  <strong>{product.minTankSize} Gallons</strong>
+                </div>
+              </>
+            )}
             <div className="spec-row">
-              <span>Temperament:</span>
-              <strong>{product.temperament}</strong>
-            </div>
-            <div className="spec-row">
-              <span>Minimum Tank:</span>
-              <strong>{product.minTankSize} Gallons</strong>
-            </div>
-            <div className="spec-row">
-              <span>Diet:</span>
+              <span>{product.productType === 'food' ? 'Food Type:' : 'Diet:'}</span>
               <strong>{product.diet}</strong>
             </div>
             <div className="spec-row">

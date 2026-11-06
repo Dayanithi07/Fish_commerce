@@ -12,6 +12,7 @@ function mapFromDb(row) {
   return {
     id: row.id,
     name: row.name,
+    productType: row.product_type || 'fish',
     price: Number((row.price_cents / 100).toFixed(2)),
     image: row.image_url,
     waterType: row.water_type,
@@ -33,12 +34,13 @@ function mapToDb(item) {
   return {
     id: item.id,
     name: item.name,
+    product_type: item.productType || 'fish',
     price_cents: Math.round(Number(item.price) * 100),
     image_url: item.image,
-    water_type: item.waterType,
-    care_level: item.careLevel,
-    temperament: item.temperament,
-    min_tank_gal: Number(item.minTankSize),
+    water_type: item.waterType || null,
+    care_level: item.careLevel || null,
+    temperament: item.temperament || null,
+    min_tank_gal: item.minTankSize == null ? null : Number(item.minTankSize),
     diet: item.diet,
     description: item.description,
     stock: Number(item.stock),
@@ -146,12 +148,13 @@ export function ProductProvider({ children }) {
       const newProduct = {
         id,
         name: input.name.trim(),
+        productType: input.productType || 'fish',
         price: Number(input.price),
         image: input.image.trim(),
-        waterType: input.waterType || 'Freshwater',
-        careLevel: input.careLevel || 'Beginner',
-        temperament: input.temperament || 'Peaceful',
-        minTankSize: Number(input.minTankSize),
+        waterType: input.productType === 'food' ? null : input.waterType || 'Freshwater',
+        careLevel: input.productType === 'food' ? null : input.careLevel || 'Beginner',
+        temperament: input.productType === 'food' ? null : input.temperament || 'Peaceful',
+        minTankSize: input.productType === 'food' ? null : Number(input.minTankSize),
         diet: input.diet || 'Flakes',
         description: input.description.trim(),
         stock: Number(input.stock),
@@ -201,9 +204,10 @@ export function ProductProvider({ children }) {
 
       const updated = {
         ...merged,
+        productType: merged.productType || 'fish',
         price: Number(merged.price),
         stock: Number(merged.stock),
-        minTankSize: Number(merged.minTankSize),
+        minTankSize: merged.minTankSize == null ? null : Number(merged.minTankSize),
         updatedAt: new Date().toISOString(),
       }
 

@@ -47,6 +47,7 @@ erDiagram
   PRODUCT {
     string id PK
     string name
+    string productType
     number price
     string image
     string waterType
@@ -110,14 +111,15 @@ erDiagram
 |---|---|---|---|
 | `id` | string | ✔ | Unique. Seed: slug. New: `newId()` |
 | `name` | string | ✔ | 2–60 chars, unique (case-insensitive) |
+| `productType` | enum | ✔ | `fish` \| `food`; defaults to `fish` for existing products |
 | `price` | number | ✔ | > 0, ≤ 99,999, 2 dp |
 | `image` | string | ✔ | Stable path (`/images/fish/betta.png`) or `http(s)` URL |
 | `gallery` | string[] |  | Optional extra images (FR-PDP-07) |
-| `waterType` | enum | ✔ | `Freshwater` \| `Saltwater` (D-01) |
-| `careLevel` | enum | ✔ | `Beginner` \| `Intermediate` \| `Expert` |
-| `temperament` | enum | ✔ | `Peaceful` \| `Semi-Aggressive` \| `Aggressive` |
-| `minTankSize` | integer | ✔ | Gallons, 1–1,000 |
-| `diet` | string | ✔ | Free text or a dropdown value, ≤ 60 chars |
+| `waterType` | enum | Fish only | `Freshwater` \| `Saltwater` (D-01) |
+| `careLevel` | enum | Fish only | `Beginner` \| `Intermediate` \| `Expert` |
+| `temperament` | enum | Fish only | `Peaceful` \| `Semi-Aggressive` \| `Aggressive` |
+| `minTankSize` | integer | Fish only | Gallons, 1–1,000 |
+| `diet` | string | ✔ | Fish diet or food type, ≤ 60 chars |
 | `description` | string | ✔ | 10–600 chars |
 | `stock` | integer | ✔ | 0–9,999 |
 | `isAvailable` | boolean | ✔ | Admin switch. Hidden from the catalog when false |

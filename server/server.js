@@ -3,6 +3,7 @@ import cors from 'cors'
 import { productRouter } from './routes/products.js'
 import { orderRouter } from './routes/orders.js'
 import { authRouter } from './routes/auth.js'
+import { paymentRouter } from './routes/payments.js'
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -18,6 +19,7 @@ app.get('/api/health', (req, res) => {
 // Route groups matching DATABASE_SCHEMA.md Section 12 REST surface
 app.use('/api/products', productRouter)
 app.use('/api/orders', orderRouter)
+app.use('/api/payments', paymentRouter)
 app.use('/api/auth', authRouter)
 
 // Global error handler

@@ -65,6 +65,29 @@
   margin-top: 12px;
 }
 
+.payment-notice {
+  padding: 16px;
+  margin: 20px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-page);
+}
+
+.payment-notice h3 {
+  margin: 0 0 6px;
+}
+
+.payment-notice p,
+.payment-error {
+  margin: 0;
+  font-size: 14px;
+}
+
+.payment-error {
+  color: var(--danger);
+  margin-top: 12px;
+}
+
 .summary-items {
   border-bottom: 1px solid var(--border);
   padding-bottom: 16px;

@@ -11,6 +11,7 @@ export default function AdminProducts() {
   const [selectedIds, setSelectedIds] = useState([])
 
   const [newFish, setNewFish] = useState({
+    productType: 'fish',
     name: '',
     price: '',
     waterType: 'Freshwater',
@@ -153,6 +154,7 @@ export default function AdminProducts() {
 
       setModalOpen(false)
       setNewFish({
+        productType: 'fish',
         name: '',
         price: '',
         waterType: 'Freshwater',
@@ -178,12 +180,12 @@ export default function AdminProducts() {
         <div>
           <h1>Product Inventory</h1>
           <p className="admin-subtitle">
-            Manage aquatic species, stock levels, pricing, and visibility.
+            Manage fish and food products, stock levels, pricing, and visibility.
           </p>
         </div>
         <div className="admin-actions">
           <button type="button" onClick={() => setModalOpen(true)} className="btn-primary">
-            + Add New Species
+            + Add New Product
           </button>
           <button type="button" onClick={resetToSeed} className="btn-secondary">
             Reset to Seed Data
@@ -229,7 +231,7 @@ export default function AdminProducts() {
               </th>
               <th>Preview</th>
               <th>Name</th>
-              <th>Water</th>
+              <th>Type</th>
               <th>Price</th>
               <th>Stock</th>
               <th>Status</th>
@@ -259,7 +261,7 @@ export default function AdminProducts() {
                   <td>
                     <strong>{p.name}</strong>
                   </td>
-                  <td>{p.waterType}</td>
+                  <td>{p.productType === 'food' ? 'Fish Food' : p.waterType}</td>
                   <td>{formatPrice(p.price)}</td>
                   <td>{p.stock}</td>
                   <td>
@@ -292,10 +294,22 @@ export default function AdminProducts() {
         </table>
       </div>
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add New Species">
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add New Product">
         <form onSubmit={handleCreate} className="admin-form">
           <div className="form-group">
-            <label>Species Name</label>
+            <label>Product Type</label>
+            <select
+              name="productType"
+              value={newFish.productType}
+              onChange={handleInputChange}
+            >
+              <option value="fish">Fish</option>
+              <option value="food">Fish Food</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>{newFish.productType === 'food' ? 'Food Name' : 'Species Name'}</label>
             <input
               name="name"
               value={newFish.name}
@@ -308,7 +322,7 @@ export default function AdminProducts() {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Price ($)</label>
+              <label>Price (₹)</label>
               <input
                 name="price"
                 type="number"
@@ -333,27 +347,40 @@ export default function AdminProducts() {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Water Type</label>
-              <select name="waterType" value={newFish.waterType} onChange={handleInputChange}>
-                <option value="Freshwater">Freshwater</option>
-                <option value="Saltwater">Saltwater</option>
-              </select>
+          {newFish.productType === 'fish' && (
+            <div className="form-row">
+              <div className="form-group">
+                <label>Water Type</label>
+                <select name="waterType" value={newFish.waterType} onChange={handleInputChange}>
+                  <option value="Freshwater">Freshwater</option>
+                  <option value="Saltwater">Saltwater</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Care Level</label>
+                <select name="careLevel" value={newFish.careLevel} onChange={handleInputChange}>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Expert">Expert</option>
+                </select>
+              </div>
             </div>
-            <div className="form-group">
-              <label>Care Level</label>
-              <select name="careLevel" value={newFish.careLevel} onChange={handleInputChange}>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Expert">Expert</option>
-              </select>
-            </div>
+          )}
+
+          <div className="form-group">
+            <label>{newFish.productType === 'food' ? 'Food Type' : 'Diet'}</label>
+            <input
+              name="diet"
+              value={newFish.diet}
+              onChange={handleInputChange}
+              placeholder={newFish.productType === 'food' ? 'e.g. Tropical flakes' : 'e.g. Flakes & pellets'}
+              required
+            />
           </div>
 
           {/* Interactive Image Upload Section */}
           <div className="form-group">
-            <label>Species Photograph / Artwork</label>
+            <label>Product Image</label>
             <div className="image-upload-zone">
               {imagePreview ? (
                 <div className="image-preview-card">
@@ -397,13 +424,17 @@ export default function AdminProducts() {
           </div>
 
           <div className="form-group">
-            <label>Species Description & Care Guide</label>
+            <label>{newFish.productType === 'food' ? 'Food Description' : 'Species Description & Care Guide'}</label>
             <textarea
               name="description"
               rows={3}
               value={newFish.description}
               onChange={handleInputChange}
-              placeholder="Describe temperament, tank setup, feeding habits..."
+              placeholder={
+                newFish.productType === 'food'
+                  ? 'Describe ingredients, suitable fish, and feeding instructions...'
+                  : 'Describe temperament, tank setup, feeding habits...'
+              }
               required
             />
             {errors.description && <span className="field-error">{errors.description}</span>}
@@ -415,7 +446,9 @@ export default function AdminProducts() {
             style={{ width: '100%', marginTop: '12px' }}
             disabled={uploading}
           >
-            {uploading ? 'Uploading Image & Saving Species...' : 'Save Species'}
+            {uploading
+              ? 'Uploading Image & Saving Product...'
+              : `Save ${newFish.productType === 'food' ? 'Food' : 'Species'}`}
           </button>
         </form>
       </Modal>

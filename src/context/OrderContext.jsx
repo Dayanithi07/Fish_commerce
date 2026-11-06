@@ -2,15 +2,13 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js'
 import { readJSON, writeJSON, subscribe } from '../utils/storage.js'
-import { newId, newOrderReference } from '../utils/id.js'
-import { toCents, fromCents, sumMoney, lineTotal } from '../utils/money.js'
-import { SHIPPING_FLAT } from '../config.js'
 import { validateCheckout } from '../utils/validators.js'
 import { useProducts } from './ProductContext.jsx'
 import { useAuth } from './AuthContext.jsx'
 import { useCart } from './CartContext.jsx'
 import { mockOrders } from '../data/mockOrders.js'
 import { sendOrderNotifications } from '../services/notificationService.js'
+import { payWithRazorpay } from '../services/paymentService.js'
 
 const OrderContext = createContext(null)
 
@@ -81,8 +79,15 @@ export function OrderProvider({ children }) {
           updatedAt: o.updated_at,
         }))
 
-        setOrders(formatted)
-        writeJSON('orders', formatted)
+        const storedOrders = readJSON('orders', [])
+        const locallyPaidOrders = (Array.isArray(storedOrders) ? storedOrders : []).filter(
+          (order) =>
+            order.paymentProvider === 'Razorpay' &&
+            !formatted.some((storedOrder) => storedOrder.reference === order.reference)
+        )
+        const mergedOrders = [...locallyPaidOrders, ...formatted]
+        setOrders(mergedOrders)
+        writeJSON('orders', mergedOrders)
       }
     } catch (err) {
       console.warn('[OrderContext] Fetch orders error:', err)
@@ -199,141 +204,54 @@ export function OrderProvider({ children }) {
         }
       }
 
-      const orderItems = []
-      const stockDeltas = []
-
       for (const item of items) {
-        const prod = products.find((p) => p.id === item.productId)
-        if (!prod) {
+        const product = products.find((p) => p.id === item.productId)
+        if (!product) {
           return {
             ok: false,
-            error: { code: 'PRODUCT_NOT_FOUND', message: `Product ${item.productId} was not found.` },
+            error: { code: 'PRODUCT_NOT_FOUND', message: 'A product in your cart was not found.' },
           }
         }
-        orderItems.push({
-          productId: prod.id,
-          name: prod.name,
-          price: prod.price,
-          priceCents: Math.round(prod.price * 100),
-          quantity: item.quantity,
-          image: prod.image,
-        })
-        stockDeltas.push({
-          productId: prod.id,
-          quantity: item.quantity,
-        })
+        if (product.stock < item.quantity) {
+          return {
+            ok: false,
+            error: { code: 'OUT_OF_STOCK', message: `Only ${product.stock} items currently in stock.` },
+          }
+        }
       }
 
-      // Check stock
-      const stockResult = applyStockDeltas(stockDeltas)
+      let paymentResult
+      try {
+        paymentResult = await payWithRazorpay(data)
+      } catch (error) {
+        return {
+          ok: false,
+          error: {
+            code: 'PAYMENT_ERROR',
+            message: error.message || 'Unable to start online payment. Please try again.',
+          },
+        }
+      }
+      if (!paymentResult.ok) return paymentResult
+
+      const newOrderRecord = paymentResult.order
+      const stockResult = applyStockDeltas(
+        newOrderRecord.items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        }))
+      )
       if (!stockResult.ok) {
-        return stockResult
+        console.error('[OrderContext] Payment succeeded but local stock could not be synchronized:', stockResult.error)
+        if (refreshProducts) await refreshProducts()
       }
 
-      const subtotal = sumMoney(orderItems.map((i) => lineTotal(i.price, i.quantity)))
-      const shipping = SHIPPING_FLAT
-      const total = fromCents(toCents(subtotal) + toCents(shipping))
-      const now = new Date().toISOString()
-      const reference = newOrderReference()
-
-      const newOrderRecord = {
-        id: newId(),
-        reference,
-        userId: user?.id || null,
-        customerName: customer.name.trim(),
-        customerEmail: customer.email.trim().toLowerCase(),
-        customerPhone: customer.phone.trim(),
-        street: address.street.trim(),
-        city: address.city.trim(),
-        postalCode: address.postalCode.trim(),
-        notes: notes ? notes.trim() : '',
-        items: orderItems,
-        subtotal,
-        subtotalCents: toCents(subtotal),
-        shipping,
-        shippingCents: toCents(shipping),
-        total,
-        totalCents: toCents(total),
-        status: 'Pending',
-        timeline: [{ status: 'Pending', at: now }],
-        createdAt: now,
-        updatedAt: now,
-      }
-
-      // If Supabase is active, persist to PostgreSQL
-      if (isSupabaseConfigured) {
-        try {
-          // Attempt atomic RPC call
-          const { error: rpcErr } = await supabase.rpc('place_order', {
-            p_reference: reference,
-            p_user_id: user?.id || null,
-            p_customer_name: customer.name.trim(),
-            p_customer_phone: customer.phone.trim(),
-            p_customer_email: customer.email.trim().toLowerCase(),
-            p_street: address.street.trim(),
-            p_city: address.city.trim(),
-            p_postal_code: address.postalCode.trim(),
-            p_notes: notes ? notes.trim() : '',
-            p_subtotal_cents: toCents(subtotal),
-            p_shipping_cents: toCents(shipping),
-            p_total_cents: toCents(total),
-            p_items: orderItems,
-          })
-
-          if (rpcErr) {
-            console.warn('[OrderContext] RPC failed, falling back to direct inserts:', rpcErr)
-            // Direct insert fallback
-            const { data: insertedOrder, error: orderErr } = await supabase
-              .from('orders')
-              .insert([
-                {
-                  reference,
-                  user_id: user?.id || null,
-                  customer_name: customer.name.trim(),
-                  customer_phone: customer.phone.trim(),
-                  customer_email: customer.email.trim().toLowerCase(),
-                  street: address.street.trim(),
-                  city: address.city.trim(),
-                  postal_code: address.postalCode.trim(),
-                  notes: notes ? notes.trim() : '',
-                  subtotal_cents: toCents(subtotal),
-                  shipping_cents: toCents(shipping),
-                  total_cents: toCents(total),
-                  status: 'Pending',
-                },
-              ])
-              .select()
-              .single()
-
-            if (!orderErr && insertedOrder) {
-              newOrderRecord.id = insertedOrder.id
-              const itemRows = orderItems.map((it) => ({
-                order_id: insertedOrder.id,
-                product_id: it.productId,
-                name: it.name,
-                price_cents: it.priceCents,
-                image_url: it.image,
-                quantity: it.quantity,
-              }))
-              await supabase.from('order_items').insert(itemRows)
-              await supabase.from('order_status_events').insert([
-                { order_id: insertedOrder.id, status: 'Pending' },
-              ])
-            }
-          }
-        } catch (dbErr) {
-          console.warn('[OrderContext] Supabase order placement error:', dbErr)
-        }
-      }
-
-      // Update state
       setOrders((prev) => {
         const next = [newOrderRecord, ...prev]
         writeJSON('orders', next)
         return next
       })
 
-      // Send notifications (Customer Confirmation + Admin Alert via Resend)
       sendOrderNotifications(newOrderRecord).catch((err) =>
         console.warn('[Notification Error]:', err)
       )
@@ -341,7 +259,7 @@ export function OrderProvider({ children }) {
       clearCart()
       return { ok: true, order: newOrderRecord }
     },
-    [products, applyStockDeltas, user, clearCart]
+    [products, applyStockDeltas, refreshProducts, clearCart]
   )
 
   /**

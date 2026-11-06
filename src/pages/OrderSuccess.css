@@ -60,6 +60,13 @@
   font-size: 16px;
 }
 
+.payment-confirmation {
+  margin: 10px 0 0;
+  color: var(--success);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .success-actions {
   margin-top: 24px;
 }

@@ -212,7 +212,7 @@ src/
 ## User Review Required
 
 > [!IMPORTANT]
-> **No payment gateway** — the checkout flow bypasses payment and directly places the order as specified.
+> **Online payment required** — checkout uses Razorpay and creates an order only after server-side payment verification.
 
 > [!IMPORTANT]
 > **Admin access** — hardcoded admin login: `admin@fishcommerce.com` / `admin123`. Any other credentials log in as a regular user.

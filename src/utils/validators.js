@@ -65,7 +65,7 @@ export function validateCheckout({ customerName, customerEmail, customerPhone, s
 
   const st = (street || '').trim()
   if (!st || st.length < 5 || st.length > 120) {
-    errors.street = 'Enter your street address.'
+    errors.street = 'Enter your address.'
   }
 
   const c = (city || '').trim()
@@ -90,6 +90,11 @@ export function validateCheckout({ customerName, customerEmail, customerPhone, s
 
 export function validateProduct(product, existingProducts = []) {
   const errors = {}
+  const productType = product.productType || 'fish'
+
+  if (!['fish', 'food'].includes(productType)) {
+    errors.productType = 'Choose a valid product type.'
+  }
 
   const name = (product.name || '').trim()
   if (!name || name.length < 2 || name.length > 60) {
@@ -105,7 +110,7 @@ export function validateProduct(product, existingProducts = []) {
 
   const price = Number(product.price)
   if (isNaN(price) || price <= 0 || price > 99999) {
-    errors.price = 'Enter a valid price between $0.01 and $99,999.'
+    errors.price = 'Enter a valid price between ₹0.01 and ₹99,999.'
   }
 
   const stock = Number(product.stock)
@@ -113,9 +118,11 @@ export function validateProduct(product, existingProducts = []) {
     errors.stock = 'Stock must be a whole number between 0 and 9,999.'
   }
 
-  const tank = Number(product.minTankSize)
-  if (!Number.isInteger(tank) || tank < 1 || tank > 1000) {
-    errors.minTankSize = 'Enter tank size in gallons (1–1,000).'
+  if (productType === 'fish') {
+    const tank = Number(product.minTankSize)
+    if (!Number.isInteger(tank) || tank < 1 || tank > 1000) {
+      errors.minTankSize = 'Enter tank size in gallons (1–1,000).'
+    }
   }
 
   const img = (product.image || '').trim()

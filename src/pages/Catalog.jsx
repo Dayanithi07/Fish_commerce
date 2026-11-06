@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useProducts } from '../context/ProductContext.jsx'
 import ProductCard from '../components/ProductCard.jsx'
 import FilterBar from '../components/FilterBar.jsx'
@@ -6,12 +7,16 @@ import './Catalog.css'
 
 export default function Catalog() {
   const { availableProducts } = useProducts()
+  const [searchParams] = useSearchParams()
+  const category = searchParams.get('category')
+  const foodOnly = category === 'food'
   const [waterFilter, setWaterFilter] = useState('')
   const [careFilter, setCareFilter] = useState('')
   const [search, setSearch] = useState('')
 
   const filtered = useMemo(() => {
     return availableProducts.filter((p) => {
+      if (foodOnly && p.productType !== 'food') return false
       if (waterFilter && p.waterType !== waterFilter) return false
       if (careFilter && p.careLevel !== careFilter) return false
       if (search) {
@@ -23,11 +28,11 @@ export default function Catalog() {
       }
       return true
     })
-  }, [availableProducts, waterFilter, careFilter, search])
+  }, [availableProducts, waterFilter, careFilter, search, foodOnly])
 
   return (
     <div className="container catalog-page">
-      <h1>Fish Catalog</h1>
+      <h1>{foodOnly ? 'Fish Food' : 'Aquarium Store'}</h1>
       <FilterBar
         waterFilter={waterFilter}
         setWaterFilter={setWaterFilter}
@@ -35,9 +40,10 @@ export default function Catalog() {
         setCareFilter={setCareFilter}
         search={search}
         setSearch={setSearch}
+        showSpeciesFilters={!foodOnly}
       />
       {filtered.length === 0 ? (
-        <p className="no-products">No species match your criteria.</p>
+        <p className="no-products">No products match your criteria.</p>
       ) : (
         <div className="products-grid">
           {filtered.map((product) => (

@@ -20,7 +20,7 @@
 
 ### 🛒 Frictionless Cart & Checkout
 - **Slide-Over Glass Drawer**: Persistent drawer with inline quantity steppers, subtotal tallies, and climate-controlled shipping calculations.
-- **Atomic Order Placement**: Backed by a transactional stored procedure (`place_order` RPC) ensuring concurrency safety during checkouts.
+- **Online-Only Checkout**: Razorpay checkout with server-side signature and capture verification; cash on delivery is unavailable.
 - **Guest & Member Checkout**: Supports guest ordering via unique references (`FC-YYYYMMDD-XXXX`) alongside authenticated customer accounts.
 
 ### 🔐 Authentication & Role-Based Access Control
@@ -46,6 +46,7 @@
 | **Frontend** | React 18, Vite, React Router v6 |
 | **Styling** | Native CSS Modules, Custom Design Tokens, Glassmorphism, Plus Jakarta Sans |
 | **Backend & DB** | Supabase (PostgreSQL 17, RPC Stored Procedures, Realtime Channels) |
+| **Payments** | Razorpay Checkout (server-side Express API; key secret stays off the client) |
 | **Authentication** | Supabase Auth (Email + Google OAuth) |
 | **Transactional Email** | Resend API Relay |
 | **State Management** | Context API (`AuthContext`, `ProductContext`, `CartContext`, `OrderContext`) |
@@ -89,14 +90,24 @@ VITE_ADMIN_EMAIL=starboy1s2s3s3@gmail.com
 ### 5. Initialize the Database
 1. Open your Supabase project dashboard.
 2. Navigate to **SQL Editor** → **New Query**.
-3. Copy and execute the contents of [`supabase/migrations/20261104000000_init_fishcommerce.sql`](supabase/migrations/20261104000000_init_fishcommerce.sql).
-   *(This creates all tables, triggers, RLS policies, atomic RPC checkout procedure, and seeds 14 initial species).*
+3. Execute the SQL migrations in `supabase/migrations/` in filename order, including [`20261105000000_require_online_payment.sql`](supabase/migrations/20261105000000_require_online_payment.sql), which disables direct unpaid order creation.
 
 ### 6. Run the Development Server
+
+Start the backend in one terminal (PowerShell example):
+```powershell
+$env:RAZORPAY_KEY_ID = "rzp_test_your_key_id"
+$env:RAZORPAY_KEY_SECRET = "your_razorpay_key_secret"
+npm run server
+```
+
+Then start the storefront in another terminal:
 ```bash
 npm run dev
 ```
 Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+Use Razorpay test keys for development. The Express backend must have `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` set in its environment for checkout; never expose the secret as a `VITE_` variable or commit real credentials. The bundled JSON-file API is for development only; live payments require durable order storage, payment reconciliation/webhooks and HTTPS.
 
 ---
 

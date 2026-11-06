@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { useOrders } from '../context/OrderContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
-import { formatPrice } from '../utils/money.js'
+import { formatPrice, toCents } from '../utils/money.js'
 import { SHIPPING_FLAT } from '../config.js'
 import './Checkout.css'
 
@@ -24,6 +24,7 @@ export default function Checkout() {
   })
 
   const [errors, setErrors] = useState({})
+  const [paymentError, setPaymentError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   if (lines.length === 0) {
@@ -47,13 +48,16 @@ export default function Checkout() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    if (submitting) return
     setSubmitting(true)
     setErrors({})
+    setPaymentError('')
 
     const orderPayload = {
       items: lines.map((l) => ({ productId: l.product.id, quantity: l.quantity })),
+      expectedTotalCents: toCents(total),
       customer: {
         name: formData.name,
         email: formData.email,
@@ -67,19 +71,23 @@ export default function Checkout() {
       notes: formData.notes,
     }
 
-    const res = placeOrder(orderPayload)
-    setSubmitting(false)
-
-    if (!res.ok) {
-      if (res.error?.details) {
-        setErrors(res.error.details)
-      } else {
-        alert(res.error?.message || 'Failed to place order')
+    try {
+      const res = await placeOrder(orderPayload)
+      if (!res.ok) {
+        if (res.error?.details) {
+          setErrors(res.error.details)
+        } else {
+          setPaymentError(res.error?.message || 'Unable to complete online payment.')
+        }
+        return
       }
-      return
-    }
 
-    navigate('/order-success', { state: { order: res.order } })
+      navigate('/order-success', { state: { order: res.order } })
+    } catch (error) {
+      setPaymentError(error.message || 'Unable to complete online payment. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -130,7 +138,7 @@ export default function Checkout() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="street">Street Address</label>
+            <label htmlFor="street">Address</label>
             <input
               id="street"
               name="street"
@@ -180,8 +188,14 @@ export default function Checkout() {
             />
           </div>
 
+          <div className="payment-notice">
+            <h3>Payment</h3>
+            <p>Online payment only. Secure checkout is provided by Razorpay. Cash on delivery is not available.</p>
+          </div>
+          {paymentError && <p className="payment-error" role="alert">{paymentError}</p>}
+
           <button type="submit" disabled={submitting} className="btn-primary btn-submit-order">
-            {submitting ? 'Placing Order...' : 'Complete Order (Demo - No Payment)'}
+            {submitting ? 'Processing Payment...' : 'Pay Online'}
           </button>
         </form>
 
