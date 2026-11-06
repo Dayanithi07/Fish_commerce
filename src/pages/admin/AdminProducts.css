@@ -285,6 +285,44 @@
   text-decoration: underline;
 }
 
+/* Category Switcher in Add Modal */
+.product-category-switcher {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  background: var(--bg-page);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.category-pill {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.category-pill:hover {
+  color: var(--accent);
+}
+
+.category-pill.active {
+  background: #ffffff;
+  color: var(--accent);
+  box-shadow: 0 2px 8px rgba(111, 63, 245, 0.15);
+}
+
 @media (max-width: 640px) {
   .admin-products-page {
     padding: 16px;

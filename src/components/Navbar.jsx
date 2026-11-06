@@ -14,6 +14,10 @@ export default function Navbar() {
 
   const isHome = location.pathname === '/'
 
+  const searchParams = new URLSearchParams(location.search)
+  const isFoodActive = location.pathname === '/products' && searchParams.get('category') === 'food'
+  const isCatalogActive = location.pathname === '/products' && !isFoodActive
+
   const closeMenu = () => setMobileMenuOpen(false)
 
   // Close drawer when clicking outside
@@ -43,17 +47,15 @@ export default function Navbar() {
             <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               Home
             </NavLink>
-            <NavLink to="/products" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <NavLink
+              to="/products"
+              className={() => `nav-link ${isCatalogActive ? 'active' : ''}`}
+            >
               Catalog
             </NavLink>
             <NavLink
               to="/products?category=food"
-              className={({ isActive }) => {
-                const isFoodActive =
-                  location.pathname === '/products' &&
-                  new URLSearchParams(location.search).get('category') === 'food'
-                return `nav-link ${isFoodActive ? 'active' : ''}`
-              }}
+              className={() => `nav-link ${isFoodActive ? 'active' : ''}`}
             >
               Fish Food
             </NavLink>
@@ -77,12 +79,12 @@ export default function Navbar() {
 
           {/* Right Action Area */}
           <div className="navbar-actions">
-            {/* Cart Button — always visible on non-home pages (desktop) */}
+            {/* Cart Button: Desktop only (on mobile, cart is accessed via the bottom nav) */}
             {!isHome && (
               <button
                 type="button"
                 onClick={openCart}
-                className="btn-cart-pill"
+                className="btn-cart-pill desktop-only-cart"
                 aria-label="Open Cart"
               >
                 <span className="cart-icon">🛒</span>
@@ -90,7 +92,7 @@ export default function Navbar() {
               </button>
             )}
 
-            {/* Sign In / Profile — desktop only; on mobile shown inside drawer */}
+            {/* Desktop Auth: Sign In or Profile */}
             <div className="desktop-auth">
               {isAuthenticated ? (
                 <div className="user-profile">
@@ -105,6 +107,13 @@ export default function Navbar() {
                 </Link>
               )}
             </div>
+
+            {/* Mobile View: If user is NOT signed in, show a sleek Sign In pill */}
+            {!isAuthenticated && (
+              <Link to="/auth" className="mobile-sign-in-pill">
+                Sign In
+              </Link>
+            )}
 
             {/* Mobile Hamburger Toggle Button */}
             <button

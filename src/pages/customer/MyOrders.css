@@ -363,16 +363,30 @@
 
 @media (max-width: 640px) {
   .my-orders-page {
-    padding-block: 16px 40px;
+    padding-block: 20px 48px;
+    padding-inline: 4px;
+  }
+
+  .orders-header {
+    margin-bottom: 20px;
+    padding-inline: 2px;
   }
 
   .orders-header h1 {
-    font-size: 22px;
+    font-size: 23px;
+    line-height: 1.25;
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+  }
+
+  .orders-header p {
+    font-size: 14px;
+    line-height: 1.5;
   }
 
   .guest-lookup-card {
-    padding: 20px 16px;
-    border-radius: var(--radius-md);
+    padding: 22px 18px;
+    border-radius: var(--radius-lg);
   }
 
   .lookup-input {
@@ -386,11 +400,12 @@
   }
 
   .customer-order-card {
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
   }
 
   .empty-orders-state {
-    padding: 40px 16px;
-    border-radius: var(--radius-md);
+    padding: 38px 20px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 16px rgba(60, 30, 94, 0.04);
   }
 }

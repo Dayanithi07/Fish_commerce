@@ -15,7 +15,9 @@ export default function ProductCard({ product }) {
       </Link>
       <div className="product-card-body">
         <div className="product-badges">
-          <span className="badge badge--water">{product.waterType}</span>
+          <span className="badge badge--water">
+            {product.productType === 'food' ? 'Fish Food' : product.waterType}
+          </span>
           {product.badges?.map((b) => (
             <span key={b} className="badge badge--custom">{b}</span>
           ))}

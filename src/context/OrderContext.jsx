@@ -49,7 +49,10 @@ export function OrderProvider({ children }) {
         `)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.warn('[OrderContext] Supabase fetch note (using local orders):', error.message || error)
+        return
+      }
       if (data) {
         const formatted = data.map((o) => ({
           id: o.id,

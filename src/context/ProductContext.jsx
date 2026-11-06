@@ -54,6 +54,13 @@ export function ProductProvider({ children }) {
   const [products, setProducts] = useState(() => {
     const stored = readJSON('products', null)
     if (Array.isArray(stored) && stored.length > 0) {
+      const hasFood = stored.some((p) => p.productType === 'food')
+      if (!hasFood) {
+        const foodSeeds = fishData.filter((p) => p.productType === 'food')
+        const combined = [...stored, ...foodSeeds]
+        writeJSON('products', combined)
+        return combined
+      }
       return stored
     }
     return fishData
@@ -69,14 +76,17 @@ export function ProductProvider({ children }) {
         .select('*')
         .order('name', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.warn('[ProductContext] Supabase fetch note (using local catalog):', error.message || error)
+        return
+      }
       if (data && data.length > 0) {
         const mapped = data.map(mapFromDb)
         setProducts(mapped)
         writeJSON('products', mapped)
       }
     } catch (err) {
-      console.warn('[ProductContext] Error fetching products from Supabase:', err)
+      console.warn('[ProductContext] Error fetching products from Supabase:', err.message || err)
     } finally {
       setLoading(false)
     }
@@ -145,16 +155,18 @@ export function ProductProvider({ children }) {
       const id = slug || `prod_${Date.now()}`
       const now = new Date().toISOString()
 
+      const isFood = input.productType === 'food'
       const newProduct = {
         id,
         name: input.name.trim(),
+        productType: input.productType || 'fish',
         price: Number(input.price),
         image: input.image.trim(),
-        waterType: input.waterType || 'Freshwater',
-        careLevel: input.careLevel || 'Beginner',
-        temperament: input.temperament || 'Peaceful',
-        minTankSize: Number(input.minTankSize),
-        diet: input.diet || 'Flakes',
+        waterType: isFood ? null : (input.waterType || 'Freshwater'),
+        careLevel: isFood ? null : (input.careLevel || 'Beginner'),
+        temperament: isFood ? null : (input.temperament || 'Peaceful'),
+        minTankSize: isFood ? null : Number(input.minTankSize || 10),
+        diet: input.diet || (isFood ? 'Flakes' : 'Flakes'),
         description: input.description.trim(),
         stock: Number(input.stock),
         isAvailable: input.isAvailable !== undefined ? input.isAvailable : true,

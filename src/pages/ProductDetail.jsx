@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useProducts } from '../context/ProductContext.jsx'
 import { useCart } from '../context/CartContext.jsx'
 import { formatPrice } from '../utils/money.js'
@@ -6,6 +6,7 @@ import './ProductDetail.css'
 
 export default function ProductDetail() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const { getProductById } = useProducts()
   const { addToCart } = useCart()
 
@@ -15,10 +16,17 @@ export default function ProductDetail() {
     return (
       <div className="container product-not-found">
         <h2>Product Not Found</h2>
-        <p>The fish you are looking for does not exist or has been removed.</p>
+        <p>The item you are looking for does not exist or has been removed.</p>
         <Link to="/products" className="btn-primary">Back to Catalog</Link>
       </div>
     )
+  }
+
+  const isFood = product.productType === 'food'
+
+  const handlePlaceOrder = () => {
+    addToCart(product.id, 1)
+    navigate('/checkout')
   }
 
   return (
@@ -29,25 +37,37 @@ export default function ProductDetail() {
         </div>
         <div className="detail-info">
           <div className="detail-badges">
-            <span className="badge badge--water">{product.waterType}</span>
-            <span className="badge badge--care">{product.careLevel}</span>
+            <span className="badge badge--water">
+              {isFood ? 'Fish Food' : product.waterType}
+            </span>
+            {!isFood && product.careLevel && (
+              <span className="badge badge--care">{product.careLevel}</span>
+            )}
+            {product.badges?.map((b) => (
+              <span key={b} className="badge badge--custom">{b}</span>
+            ))}
           </div>
+
           <h1>{product.name}</h1>
           <p className="detail-price">{formatPrice(product.price)}</p>
           <p className="detail-desc">{product.description}</p>
 
           <div className="spec-table">
+            {!isFood && product.temperament && (
+              <div className="spec-row">
+                <span>Temperament:</span>
+                <strong>{product.temperament}</strong>
+              </div>
+            )}
+            {!isFood && product.minTankSize && (
+              <div className="spec-row">
+                <span>Minimum Tank:</span>
+                <strong>{product.minTankSize} Gallons</strong>
+              </div>
+            )}
             <div className="spec-row">
-              <span>Temperament:</span>
-              <strong>{product.temperament}</strong>
-            </div>
-            <div className="spec-row">
-              <span>Minimum Tank:</span>
-              <strong>{product.minTankSize} Gallons</strong>
-            </div>
-            <div className="spec-row">
-              <span>Diet:</span>
-              <strong>{product.diet}</strong>
+              <span>{isFood ? 'Food Type:' : 'Diet:'}</span>
+              <strong>{product.diet || 'Aquarium Feed'}</strong>
             </div>
             <div className="spec-row">
               <span>Stock Status:</span>
@@ -65,6 +85,14 @@ export default function ProductDetail() {
               className="btn-primary btn-add-large"
             >
               {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+            </button>
+            <button
+              type="button"
+              disabled={!product.isAvailable || product.stock <= 0}
+              onClick={handlePlaceOrder}
+              className="btn-place-order-large"
+            >
+              ⚡ Place Order
             </button>
           </div>
         </div>

@@ -2,9 +2,9 @@
 export const STORAGE_PREFIX = 'fc_'
 export const SCHEMA_VERSION = 1
 
-export const CURRENCY = 'USD'
-export const LOCALE = 'en-US'
-export const SHIPPING_FLAT = 5.99
+export const CURRENCY = 'INR'
+export const LOCALE = 'en-IN'
+export const SHIPPING_FLAT = 99
 
 // Super Admin Credentials
 export const SUPER_ADMIN = {

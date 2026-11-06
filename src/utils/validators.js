@@ -105,7 +105,7 @@ export function validateProduct(product, existingProducts = []) {
 
   const price = Number(product.price)
   if (isNaN(price) || price <= 0 || price > 99999) {
-    errors.price = 'Enter a valid price between $0.01 and $99,999.'
+    errors.price = 'Enter a valid price between ₹1 and ₹99,999.'
   }
 
   const stock = Number(product.stock)
@@ -113,9 +113,11 @@ export function validateProduct(product, existingProducts = []) {
     errors.stock = 'Stock must be a whole number between 0 and 9,999.'
   }
 
-  const tank = Number(product.minTankSize)
-  if (!Number.isInteger(tank) || tank < 1 || tank > 1000) {
-    errors.minTankSize = 'Enter tank size in gallons (1–1,000).'
+  if (product.productType !== 'food') {
+    const tank = Number(product.minTankSize)
+    if (!Number.isInteger(tank) || tank < 1 || tank > 1000) {
+      errors.minTankSize = 'Enter tank size in gallons (1–1,000).'
+    }
   }
 
   const img = (product.image || '').trim()

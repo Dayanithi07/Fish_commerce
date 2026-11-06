@@ -10,7 +10,7 @@ export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'starboy1s2s3s3@g
  * Format currency helper
  */
 function fmt(cents) {
-  return `$${(cents / 100).toFixed(2)}`
+  return `₹${(cents / 100).toFixed(2)}`
 }
 
 /**
