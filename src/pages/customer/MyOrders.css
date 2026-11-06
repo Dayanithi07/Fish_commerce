@@ -223,9 +223,44 @@
   padding: 24px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
+  .my-orders-page {
+    padding: 20px 0 40px;
+  }
+  .guest-lookup-card {
+    padding: 18px;
+  }
+  .lookup-form {
+    flex-direction: column;
+  }
+  .lookup-input {
+    width: 100%;
+    min-width: 0;
+  }
+  .lookup-form button {
+    width: 100%;
+  }
+  .order-top-bar {
+    padding: 14px 16px;
+  }
+  .order-progress-stepper {
+    padding: 16px 8px;
+  }
+  .step-name {
+    font-size: 10px;
+    text-align: center;
+  }
   .order-card-body {
-    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 20px;
+  }
+  .order-line-item {
+    gap: 10px;
+    padding: 8px;
+  }
+  .line-item-thumb {
+    width: 44px;
+    height: 44px;
   }
 }
 

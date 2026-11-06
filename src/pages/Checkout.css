@@ -58,6 +58,19 @@
   gap: 16px;
 }
 
+@media (max-width: 540px) {
+  .checkout-page {
+    padding: 24px 0;
+  }
+  .checkout-form, .checkout-summary {
+    padding: 16px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 .btn-submit-order {
   width: 100%;
   padding: 14px;

@@ -13,8 +13,19 @@
 }
 
 @media (max-width: 768px) {
+  .product-detail-page {
+    padding: 24px 0;
+  }
   .detail-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 20px;
+  }
+  .detail-img {
+    height: 280px;
+  }
+  .btn-add-large {
+    width: 100%;
   }
 }
 

@@ -103,10 +103,17 @@
   overflow-x: auto;
 }
 
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  min-width: 620px;
 }
 
 .admin-table th, .admin-table td {
@@ -276,4 +283,37 @@
 
 .btn-remove-image:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .admin-products-page {
+    padding: 16px;
+  }
+  .admin-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .admin-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  .admin-actions button {
+    width: 100%;
+  }
+  .bulk-actions-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .bulk-buttons {
+    width: 100%;
+  }
+  .bulk-buttons button {
+    flex: 1;
+    text-align: center;
+  }
+  .admin-form .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 }

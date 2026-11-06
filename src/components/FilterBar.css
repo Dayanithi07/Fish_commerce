@@ -26,3 +26,23 @@
   background: var(--bg-surface);
   font-family: inherit;
 }
+
+@media (max-width: 640px) {
+  .filter-bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .filter-search {
+    width: 100%;
+    min-width: 0;
+  }
+  .filter-selects {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .filter-selects select {
+    width: 100%;
+  }
+}

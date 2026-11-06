@@ -207,3 +207,18 @@
   background: rgba(234, 179, 8, 0.14);
   color: #b45309;
 }
+
+@media (max-width: 640px) {
+  .admin-settings-page {
+    padding: 16px 0 32px;
+  }
+  .settings-card {
+    padding: 16px;
+  }
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-roster-table {
+    min-width: 540px;
+  }
+}
