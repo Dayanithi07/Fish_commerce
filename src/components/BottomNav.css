@@ -2,6 +2,7 @@
   Mobile Bottom Navigation Bar
   Exclusively visible on screens <= 768px (Mobile devices & small tablets)
   Completely hidden on desktop / laptop screens
+  Sequence: Home | Catalog | Fish Food | Care | Cart
 */
 
 .mobile-bottom-nav {
@@ -56,7 +57,7 @@
   }
 
   .bottom-nav-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: -0.1px;
     line-height: 1;
@@ -82,11 +83,23 @@
   .bottom-nav-item.active::after {
     content: '';
     position: absolute;
-    bottom: 2px;
-    width: 16px;
+    top: 2px;
+    width: 20px;
     height: 3px;
     background: var(--accent, #6F3FF5);
     border-radius: 9999px;
+  }
+
+  /* Food tab special colour tint (green-ish) */
+  .bottom-nav-item.food-tab.active {
+    color: #1a9e6b;
+  }
+  .bottom-nav-item.food-tab.active .bottom-nav-label,
+  .bottom-nav-item.food-tab.active .bottom-nav-icon {
+    color: #1a9e6b;
+  }
+  .bottom-nav-item.food-tab.active::after {
+    background: #1a9e6b;
   }
 
   /* Cart Badge Overlay */

@@ -1,12 +1,24 @@
+import { useLocation } from 'react-router-dom'
 import { NavLink } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import './BottomNav.css'
 
 export default function BottomNav() {
   const { itemCount, openCart } = useCart()
+  const location = useLocation()
+
+  // Fish Food tab is "active" when on /products?category=food
+  const isFoodActive =
+    location.pathname === '/products' &&
+    new URLSearchParams(location.search).get('category') === 'food'
+
+  // Catalog tab is active when on /products but NOT food
+  const isCatalogActive =
+    location.pathname === '/products' && !isFoodActive
 
   return (
     <nav className="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
+      {/* 1. Home */}
       <NavLink
         to="/"
         end
@@ -21,9 +33,10 @@ export default function BottomNav() {
         <span className="bottom-nav-label">Home</span>
       </NavLink>
 
+      {/* 2. Catalog (fish only — no ?category=food) */}
       <NavLink
         to="/products"
-        className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
+        className={() => `bottom-nav-item ${isCatalogActive ? 'active' : ''}`}
       >
         <span className="bottom-nav-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -35,6 +48,24 @@ export default function BottomNav() {
         <span className="bottom-nav-label">Catalog</span>
       </NavLink>
 
+      {/* 3. Fish Food */}
+      <NavLink
+        to="/products?category=food"
+        className={() => `bottom-nav-item food-tab ${isFoodActive ? 'active' : ''}`}
+      >
+        <span className="bottom-nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+            <path d="M8 12s.5-3 4-3 4 3 4 3" />
+            <path d="M9 17c0 0 1-1 3-1s3 1 3 1" />
+            <line x1="9" y1="9" x2="9.01" y2="9" />
+            <line x1="15" y1="9" x2="15.01" y2="9" />
+          </svg>
+        </span>
+        <span className="bottom-nav-label">Food</span>
+      </NavLink>
+
+      {/* 4. Care Guide */}
       <NavLink
         to="/care"
         className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
@@ -48,21 +79,7 @@ export default function BottomNav() {
         <span className="bottom-nav-label">Care</span>
       </NavLink>
 
-      <NavLink
-        to="/orders"
-        className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
-      >
-        <span className="bottom-nav-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" />
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-            <line x1="12" y1="22.08" x2="12" y2="12" />
-          </svg>
-        </span>
-        <span className="bottom-nav-label">Orders</span>
-      </NavLink>
-
+      {/* 5. Cart (replaces About) */}
       <button
         type="button"
         onClick={openCart}

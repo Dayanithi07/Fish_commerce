@@ -187,14 +187,38 @@ export function AuthProvider({ children }) {
 
       // 4. If Supabase is active, try Supabase Auth
       if (isSupabaseConfigured) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: trimmedEmail,
-          password,
-        })
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: trimmedEmail,
+            password,
+          })
 
-        if (!error && data?.user) {
-          const profile = await syncProfile(data.user)
-          return { ok: true, user: profile }
+          if (!error && data?.user) {
+            const profile = await syncProfile(data.user)
+            return { ok: true, user: profile }
+          }
+
+          // Surface specific Supabase auth errors (wrong password, email not confirmed, etc.)
+          if (error) {
+            const msg = error.message || ''
+            if (
+              msg.includes('Invalid login credentials') ||
+              msg.includes('Email not confirmed')
+            ) {
+              return {
+                ok: false,
+                error: {
+                  code: 'SUPABASE_AUTH',
+                  message: msg.includes('Email not confirmed')
+                    ? 'Please check your email inbox and confirm your account before signing in.'
+                    : 'Incorrect email or password.',
+                },
+              }
+            }
+          }
+        } catch (fetchErr) {
+          // ERR_NAME_NOT_RESOLVED / network offline — fall through to local check
+          console.warn('[login] Supabase unreachable, trying local fallback:', fetchErr.message)
         }
       }
 
@@ -238,31 +262,46 @@ export function AuthProvider({ children }) {
       }
 
       if (isSupabaseConfigured) {
-        const { data, error } = await supabase.auth.signUp({
-          email: trimmedEmail,
-          password,
-          options: {
-            data: {
-              full_name: trimmedName,
+        try {
+          const { data, error } = await supabase.auth.signUp({
+            email: trimmedEmail,
+            password,
+            options: {
+              data: {
+                full_name: trimmedName,
+              },
             },
-          },
-        })
+          })
 
-        if (error) {
-          return {
-            ok: false,
-            error: { code: 'AUTH_ERROR', message: error.message },
+          if (error) {
+            // 429 Too Many Requests — rate limit
+            if (error.status === 429 || error.message?.toLowerCase().includes('rate limit')) {
+              return {
+                ok: false,
+                error: {
+                  code: 'RATE_LIMITED',
+                  message: 'Too many sign-up attempts. Please wait a few minutes and try again.',
+                },
+              }
+            }
+            return {
+              ok: false,
+              error: { code: 'AUTH_ERROR', message: error.message },
+            }
           }
-        }
 
-        if (data?.session && data?.user) {
-          const profile = await syncProfile(data.user)
-          return { ok: true, user: profile }
-        }
+          if (data?.session && data?.user) {
+            const profile = await syncProfile(data.user)
+            return { ok: true, user: profile }
+          }
 
-        return {
-          ok: true,
-          message: 'Registration successful! Please check your email inbox to confirm your account before logging in.',
+          return {
+            ok: true,
+            message: 'Registration successful! Please check your email inbox to confirm your account before logging in.',
+          }
+        } catch (fetchErr) {
+          // Network offline — fall through to local account creation
+          console.warn('[signup] Supabase unreachable, using local fallback:', fetchErr.message)
         }
       }
 

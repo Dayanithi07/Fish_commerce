@@ -36,6 +36,13 @@
   font-size: 15px;
 }
 
+.no-products-hint {
+  font-size: 13px;
+  margin-top: 8px;
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
 @media (max-width: 600px) {
   .catalog-page {
     padding-block: 16px 40px;
