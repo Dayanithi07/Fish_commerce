@@ -71,6 +71,17 @@ img {
   padding-inline: clamp(16px, 4vw, 32px);
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding-inline: 16px;
+  }
+
+  /* Leave clearance at bottom of pages for the fixed mobile bottom navigation bar */
+  #main-content {
+    padding-bottom: 74px;
+  }
+}
+
 .skip-link {
   position: absolute;
   left: 8px;

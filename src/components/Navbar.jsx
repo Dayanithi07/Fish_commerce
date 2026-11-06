@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import LogoSVG from './LogoSVG.jsx'
@@ -27,16 +27,27 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <nav className="navbar-links">
-            <Link to="/products">Catalog</Link>
-            <Link to="/care">Care Guide</Link>
-            <Link to="/about">About</Link>
+            <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              Home
+            </NavLink>
+            <NavLink to="/products" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              Catalog
+            </NavLink>
+            <NavLink to="/care" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              Care Guide
+            </NavLink>
+            <NavLink to="/about" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              About
+            </NavLink>
             {isAuthenticated && !isAdmin && (
-              <Link to="/orders">My Orders</Link>
+              <NavLink to="/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                My Orders
+              </NavLink>
             )}
             {isAdmin && (
-              <Link to="/admin/products" className="admin-link">
+              <NavLink to="/admin/products" className={({ isActive }) => `admin-link ${isActive ? 'active' : ''}`}>
                 Admin Portal
-              </Link>
+              </NavLink>
             )}
           </nav>
 
@@ -87,17 +98,27 @@ export default function Navbar() {
         {mobileMenuOpen && (
           <div className="mobile-menu-drawer">
             <nav className="mobile-links">
-              <Link to="/" onClick={closeMenu}>Home</Link>
-              <Link to="/products" onClick={closeMenu}>Catalog</Link>
-              <Link to="/care" onClick={closeMenu}>Care Guide</Link>
-              <Link to="/about" onClick={closeMenu}>About</Link>
+              <NavLink to="/" end onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
+                Home
+              </NavLink>
+              <NavLink to="/products" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
+                Catalog
+              </NavLink>
+              <NavLink to="/care" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
+                Care Guide
+              </NavLink>
+              <NavLink to="/about" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
+                About
+              </NavLink>
               {isAuthenticated && !isAdmin && (
-                <Link to="/orders" onClick={closeMenu}>My Orders</Link>
+                <NavLink to="/orders" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
+                  My Orders
+                </NavLink>
               )}
               {isAdmin && (
-                <Link to="/admin/products" onClick={closeMenu} className="admin-link">
+                <NavLink to="/admin/products" onClick={closeMenu} className={({ isActive }) => `admin-link mobile-link ${isActive ? 'active' : ''}`}>
                   Admin Portal
-                </Link>
+                </NavLink>
               )}
               {!isHome && (
                 <button

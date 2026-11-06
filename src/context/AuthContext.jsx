@@ -255,14 +255,14 @@ export function AuthProvider({ children }) {
           }
         }
 
-        if (data?.user) {
+        if (data?.session && data?.user) {
           const profile = await syncProfile(data.user)
           return { ok: true, user: profile }
         }
 
         return {
           ok: true,
-          message: 'Please check your email inbox to verify your account.',
+          message: 'Registration successful! Please check your email inbox to confirm your account before logging in.',
         }
       }
 

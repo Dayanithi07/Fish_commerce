@@ -1,5 +1,5 @@
 .auth-page {
-  padding: 60px 0;
+  padding-block: 36px 60px;
   display: flex;
   justify-content: center;
 }
@@ -12,6 +12,17 @@
   max-width: 440px;
   width: 100%;
   box-shadow: 0 10px 30px rgba(60, 30, 94, 0.05);
+}
+
+@media (max-width: 480px) {
+  .auth-page {
+    padding-block: 20px 40px;
+  }
+
+  .auth-card {
+    padding: 24px 18px;
+    border-radius: var(--radius-md);
+  }
 }
 
 .auth-card h2 {

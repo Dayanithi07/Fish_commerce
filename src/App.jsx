@@ -9,6 +9,7 @@ import { OrderProvider } from './context/OrderContext.jsx'
 
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
+import BottomNav from './components/BottomNav.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
 
 import Home from './pages/Home.jsx'
@@ -74,6 +75,7 @@ function SiteLayout() {
         <Outlet />
       </main>
       <Footer />
+      <BottomNav />
       <CartDrawer />
     </>
   )

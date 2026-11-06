@@ -1,5 +1,5 @@
 .product-detail-page {
-  padding: 40px 0;
+  padding-block: 28px 60px;
 }
 
 .detail-grid {
@@ -14,12 +14,13 @@
 
 @media (max-width: 768px) {
   .product-detail-page {
-    padding: 24px 0;
+    padding-block: 16px 40px;
   }
   .detail-grid {
     grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 20px;
+    gap: 20px;
+    padding: 18px 16px;
+    border-radius: var(--radius-md);
   }
   .detail-img {
     height: 280px;

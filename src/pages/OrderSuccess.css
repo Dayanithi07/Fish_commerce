@@ -1,5 +1,5 @@
 .order-success-page {
-  padding: 60px 0;
+  padding-block: 36px 60px;
   display: flex;
   justify-content: center;
 }
@@ -12,6 +12,17 @@
   max-width: 600px;
   width: 100%;
   text-align: center;
+}
+
+@media (max-width: 600px) {
+  .order-success-page {
+    padding-block: 20px 40px;
+  }
+
+  .success-card {
+    padding: 24px 18px;
+    border-radius: var(--radius-md);
+  }
 }
 
 .success-icon {

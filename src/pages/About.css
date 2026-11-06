@@ -1,5 +1,11 @@
 .about-page {
-  padding: 40px 0;
+  padding-block: 32px 60px;
   max-width: 720px;
   line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .about-page {
+    padding-block: 20px 40px;
+  }
 }

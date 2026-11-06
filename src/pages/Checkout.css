@@ -1,5 +1,5 @@
 .checkout-page {
-  padding: 40px 0;
+  padding-block: 28px 60px;
 }
 
 .checkout-layout {
@@ -10,8 +10,18 @@
 }
 
 @media (max-width: 768px) {
+  .checkout-page {
+    padding-block: 16px 40px;
+  }
+
   .checkout-layout {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .checkout-form, .checkout-summary {
+    padding: 18px 16px;
+    border-radius: var(--radius-md);
   }
 }
 

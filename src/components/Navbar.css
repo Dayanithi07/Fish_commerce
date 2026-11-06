@@ -60,7 +60,7 @@
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 8px;
 }
 
 .navbar-links a {
@@ -68,19 +68,33 @@
   color: #3C1E5E;
   font-weight: 600;
   font-size: 14px;
-  transition: color 0.2s;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .navbar-links a:hover {
   color: var(--accent);
+  background: rgba(111, 63, 245, 0.08);
+}
+
+.navbar-links a.active {
+  color: #ffffff;
+  background: var(--accent, #6F3FF5);
+  box-shadow: 0 4px 14px rgba(111, 63, 245, 0.35);
 }
 
 .navbar-links .admin-link {
   color: #6F3FF5;
   background: rgba(111, 63, 245, 0.1);
-  padding: 4px 10px;
+  padding: 6px 14px;
   border-radius: 9999px;
+}
+
+.navbar-links .admin-link.active {
+  color: #ffffff;
+  background: #6F3FF5;
 }
 
 .navbar-actions {
@@ -224,8 +238,18 @@
   color: #3C1E5E;
   font-size: 16px;
   font-weight: 600;
-  padding: 6px 0;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
   border-bottom: 1px solid rgba(239, 234, 239, 0.6);
+  transition: all 0.2s ease;
+}
+
+.mobile-links a.active {
+  color: #6F3FF5;
+  background: rgba(111, 63, 245, 0.08);
+  font-weight: 700;
+  border-left: 3px solid #6F3FF5;
+  padding-left: 12px;
 }
 
 .mobile-links .admin-link {
@@ -249,10 +273,38 @@
   }
 
   .navbar-glass-pill {
-    padding: 8px 16px;
+    padding: 7px 14px;
+    gap: 8px;
+  }
+
+  .navbar-actions {
+    gap: 8px;
+  }
+
+  .navbar-brand {
+    font-size: 16px;
+    gap: 6px;
+  }
+
+  .brand-logo-svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .user-name {
+    max-width: 75px;
+    font-size: 12px;
+  }
+
+  .btn-logout {
+    font-size: 12px;
+    padding: 2px 4px;
   }
 
   .btn-cart-pill {
-    display: none; /* In hero or mobile navbar, shown inside drawer */
+    display: inline-flex;
+    padding: 6px 10px;
+    font-size: 12px;
+    gap: 4px;
   }
 }

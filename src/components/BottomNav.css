@@ -1,0 +1,114 @@
+/*
+  Mobile Bottom Navigation Bar
+  Exclusively visible on screens <= 768px (Mobile devices & small tablets)
+  Completely hidden on desktop / laptop screens
+*/
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    z-index: 999;
+    align-items: center;
+    justify-content: space-around;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(111, 63, 245, 0.12);
+    box-shadow: 0 -4px 20px rgba(60, 30, 94, 0.08);
+    padding-bottom: max(4px, env(safe-area-inset-bottom));
+  }
+
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 0;
+    text-decoration: none;
+    color: #8C829E;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .bottom-nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  .bottom-nav-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: -0.1px;
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+
+  /* Active Link State */
+  .bottom-nav-item.active {
+    color: var(--accent, #6F3FF5);
+  }
+
+  .bottom-nav-item.active .bottom-nav-icon {
+    transform: translateY(-2px);
+    color: var(--accent, #6F3FF5);
+  }
+
+  .bottom-nav-item.active .bottom-nav-label {
+    font-weight: 700;
+    color: var(--accent, #6F3FF5);
+  }
+
+  /* Subtle active glow pill under the active icon */
+  .bottom-nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    width: 16px;
+    height: 3px;
+    background: var(--accent, #6F3FF5);
+    border-radius: 9999px;
+  }
+
+  /* Cart Badge Overlay */
+  .cart-icon-wrap {
+    position: relative;
+  }
+
+  .bottom-nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -8px;
+    background: #6F3FF5;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    min-width: 17px;
+    height: 17px;
+    line-height: 17px;
+    border-radius: 9999px;
+    text-align: center;
+    padding: 0 4px;
+    box-shadow: 0 2px 6px rgba(111, 63, 245, 0.4);
+    border: 1.5px solid #ffffff;
+  }
+}

@@ -1,5 +1,5 @@
 .my-orders-page {
-  padding: 32px 0 60px;
+  padding-block: 28px 60px;
 }
 
 .orders-header {
@@ -359,4 +359,38 @@
 
 .fin-total strong {
   color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .my-orders-page {
+    padding-block: 16px 40px;
+  }
+
+  .orders-header h1 {
+    font-size: 22px;
+  }
+
+  .guest-lookup-card {
+    padding: 20px 16px;
+    border-radius: var(--radius-md);
+  }
+
+  .lookup-input {
+    min-width: 100%;
+  }
+
+  .order-top-bar {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .customer-order-card {
+    border-radius: var(--radius-md);
+  }
+
+  .empty-orders-state {
+    padding: 40px 16px;
+    border-radius: var(--radius-md);
+  }
 }
