@@ -32,7 +32,8 @@ export function AuthProvider({ children }) {
     const email = sessionUser.email?.toLowerCase() || ''
     const customAdminList = readJSON('custom_admins', [])
     const isCustomAdmin = customAdminList.some((a) => a.email.toLowerCase() === email)
-    const isSpecialAdmin = ADMIN_EMAILS.includes(email) || isCustomAdmin
+    const isMetadataAdmin = sessionUser.user_metadata?.role === 'admin'
+    const isSpecialAdmin = ADMIN_EMAILS.includes(email) || isCustomAdmin || isMetadataAdmin
 
     let role = isSpecialAdmin ? 'admin' : 'customer'
     let name =
@@ -64,6 +65,17 @@ export function AuthProvider({ children }) {
         }
       } catch (err) {
         console.warn('[AuthContext] Profile fetch warning:', err)
+      }
+    }
+
+    // If verified as admin, cache in local custom_admins for offline fallback access
+    if (role === 'admin' && !isCustomAdmin) {
+      const currentAdmins = readJSON('custom_admins', [])
+      if (!currentAdmins.some((a) => a.email && a.email.toLowerCase() === email)) {
+        writeJSON('custom_admins', [
+          ...currentAdmins,
+          { id: sessionUser.id, name, email, role: 'admin' },
+        ])
       }
     }
 

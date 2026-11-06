@@ -179,7 +179,7 @@ export function OrderProvider({ children }) {
    */
   const placeOrder = useCallback(
     async (data) => {
-      const { items, customer, address, notes = '' } = data
+      const { items, customer, address, notes = '', paymentMethod = 'UPI QR', paymentRef = '' } = data
 
       if (!items || items.length === 0) {
         return { ok: false, error: { code: 'EMPTY_CART', message: 'Cannot place an empty order.' } }
@@ -239,6 +239,9 @@ export function OrderProvider({ children }) {
       const now = new Date().toISOString()
       const reference = newOrderReference()
 
+      const paymentNote = `[Payment: ${paymentMethod}${paymentRef ? ` | Ref: ${paymentRef}` : ''}]`
+      const combinedNotes = [notes ? notes.trim() : '', paymentNote].filter(Boolean).join('\n')
+
       const newOrderRecord = {
         id: newId(),
         reference,
@@ -249,7 +252,9 @@ export function OrderProvider({ children }) {
         street: address.street.trim(),
         city: address.city.trim(),
         postalCode: address.postalCode.trim(),
-        notes: notes ? notes.trim() : '',
+        notes: combinedNotes,
+        paymentMethod,
+        paymentRef,
         items: orderItems,
         subtotal,
         subtotalCents: toCents(subtotal),
@@ -276,7 +281,7 @@ export function OrderProvider({ children }) {
             p_street: address.street.trim(),
             p_city: address.city.trim(),
             p_postal_code: address.postalCode.trim(),
-            p_notes: notes ? notes.trim() : '',
+            p_notes: combinedNotes,
             p_subtotal_cents: toCents(subtotal),
             p_shipping_cents: toCents(shipping),
             p_total_cents: toCents(total),
@@ -298,7 +303,7 @@ export function OrderProvider({ children }) {
                   street: address.street.trim(),
                   city: address.city.trim(),
                   postal_code: address.postalCode.trim(),
-                  notes: notes ? notes.trim() : '',
+                  notes: combinedNotes,
                   subtotal_cents: toCents(subtotal),
                   shipping_cents: toCents(shipping),
                   total_cents: toCents(total),

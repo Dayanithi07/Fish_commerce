@@ -17,9 +17,15 @@ export default function OrderSuccess() {
             <p>Thank you for choosing Fishcommerce, <strong>{order.customerName}</strong>. Your order is pending fulfillment.</p>
 
             <div className="order-details-box">
-              <h3>Delivery Details</h3>
-              <p>{order.street}, {order.city} {order.postalCode}</p>
-              <p>Email: {order.customerEmail} | Phone: {order.customerPhone}</p>
+              <h3 style={{ marginTop: '16px' }}>Payment & Delivery Details</h3>
+              <p><strong>Shipping to:</strong> {order.street}, {order.city} {order.postalCode}</p>
+              <p><strong>Contact:</strong> {order.customerEmail} | {order.customerPhone}</p>
+              {order.paymentMethod && (
+                <p><strong>Payment Method:</strong> {order.paymentMethod}</p>
+              )}
+              {order.paymentRef && order.paymentRef !== 'COD' && (
+                <p><strong>Transaction UTR / Ref:</strong> <code>{order.paymentRef}</code></p>
+              )}
 
               <h3 style={{ marginTop: '16px' }}>Items</h3>
               {order.items.map((item) => (

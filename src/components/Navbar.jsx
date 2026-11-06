@@ -47,18 +47,18 @@ export default function Navbar() {
             <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               Home
             </NavLink>
-            <NavLink
+            <Link
               to="/products"
-              className={() => `nav-link ${isCatalogActive ? 'active' : ''}`}
+              className={`nav-link ${isCatalogActive ? 'active' : ''}`}
             >
               Catalog
-            </NavLink>
-            <NavLink
+            </Link>
+            <Link
               to="/products?category=food"
-              className={() => `nav-link ${isFoodActive ? 'active' : ''}`}
+              className={`nav-link ${isFoodActive ? 'active' : ''}`}
             >
               Fish Food
-            </NavLink>
+            </Link>
             <NavLink to="/care" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               Care Guide
             </NavLink>

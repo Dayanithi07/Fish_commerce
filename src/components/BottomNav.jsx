@@ -1,5 +1,4 @@
-import { useLocation } from 'react-router-dom'
-import { NavLink } from 'react-router-dom'
+import { useLocation, Link, NavLink } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import './BottomNav.css'
 
@@ -34,9 +33,9 @@ export default function BottomNav() {
       </NavLink>
 
       {/* 2. Catalog (fish only — no ?category=food) */}
-      <NavLink
+      <Link
         to="/products"
-        className={() => `bottom-nav-item ${isCatalogActive ? 'active' : ''}`}
+        className={`bottom-nav-item ${isCatalogActive ? 'active' : ''}`}
       >
         <span className="bottom-nav-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -46,12 +45,12 @@ export default function BottomNav() {
           </svg>
         </span>
         <span className="bottom-nav-label">Catalog</span>
-      </NavLink>
+      </Link>
 
       {/* 3. Fish Food */}
-      <NavLink
+      <Link
         to="/products?category=food"
-        className={() => `bottom-nav-item food-tab ${isFoodActive ? 'active' : ''}`}
+        className={`bottom-nav-item food-tab ${isFoodActive ? 'active' : ''}`}
       >
         <span className="bottom-nav-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -63,7 +62,7 @@ export default function BottomNav() {
           </svg>
         </span>
         <span className="bottom-nav-label">Food</span>
-      </NavLink>
+      </Link>
 
       {/* 4. Care Guide */}
       <NavLink

@@ -48,6 +48,14 @@ export default function AdminOrders({ view = 'pending' }) {
                 <div className="customer-info-col">
                   <strong>Customer:</strong> {order.customerName} ({order.customerEmail}, {order.customerPhone})<br />
                   <strong>Shipping to:</strong> {order.street}, {order.city} {order.postalCode}
+                  {order.paymentMethod && (
+                    <div style={{ marginTop: '4px', fontSize: '13px' }}>
+                      <strong>Payment:</strong> <span style={{ color: 'var(--accent)', fontWeight: '600' }}>{order.paymentMethod}</span>
+                      {order.paymentRef && order.paymentRef !== 'COD' && (
+                        <span> | UTR: <code>{order.paymentRef}</code></span>
+                      )}
+                    </div>
+                  )}
                   {order.notes && <p className="admin-order-notes"><em>Note: {order.notes}</em></p>}
                 </div>
                 <div className="items-info-col">

@@ -53,14 +53,7 @@ function mapToDb(item) {
 export function ProductProvider({ children }) {
   const [products, setProducts] = useState(() => {
     const stored = readJSON('products', null)
-    if (Array.isArray(stored) && stored.length > 0) {
-      const hasFood = stored.some((p) => p.productType === 'food')
-      if (!hasFood) {
-        const foodSeeds = fishData.filter((p) => p.productType === 'food')
-        const combined = [...stored, ...foodSeeds]
-        writeJSON('products', combined)
-        return combined
-      }
+    if (Array.isArray(stored)) {
       return stored
     }
     return fishData
@@ -80,7 +73,7 @@ export function ProductProvider({ children }) {
         console.warn('[ProductContext] Supabase fetch note (using local catalog):', error.message || error)
         return
       }
-      if (data && data.length > 0) {
+      if (Array.isArray(data)) {
         const mapped = data.map(mapFromDb)
         setProducts(mapped)
         writeJSON('products', mapped)
