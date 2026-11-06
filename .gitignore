@@ -44,5 +44,4 @@ ehthumbs.db
 *.db
 *.db-shm
 *.db-wal
-server/db/dev_store.json
 *Zone.Identifier*
