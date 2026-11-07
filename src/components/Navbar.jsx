@@ -163,17 +163,6 @@ export default function Navbar() {
 
             <div className="drawer-divider" />
 
-            <button
-              type="button"
-              className="drawer-tour-btn"
-              onClick={() => {
-                closeMenu()
-                window.dispatchEvent(new CustomEvent('start-vp-tour'))
-              }}
-            >
-              <span>💡</span> Store Tour Guide
-            </button>
-
             {/* Quick nav links for things not in bottom bar */}
             <nav className="mobile-links">
               <NavLink to="/about" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>

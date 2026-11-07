@@ -357,6 +357,72 @@ export function AuthProvider({ children }) {
     [syncProfile]
   )
 
+
+  /**
+   * Fetch all custom admins from Supabase DB (profiles + admin_invitations).
+   * Falls back to localStorage if Supabase is not configured or fetch fails.
+   */
+  const fetchAdminsFromDB = useCallback(async () => {
+    if (!isSupabaseConfigured) return
+
+    try {
+      const { data: profileAdmins, error: profileError } = await supabase
+        .from('profiles')
+        .select('id, name, email, status, created_at')
+        .eq('role', 'admin')
+
+      if (profileError) {
+        console.warn('[AuthContext] profiles fetch error:', profileError.message)
+      }
+
+      const { data: invitations, error: invError } = await supabase
+        .from('admin_invitations')
+        .select('id, name, email, status, created_at')
+        .neq('status', 'revoked')
+
+      if (invError) {
+        console.warn('[AuthContext] admin_invitations fetch error:', invError.message)
+      }
+
+      const profileEmails = new Set((profileAdmins || []).map((p) => p.email.toLowerCase()))
+
+      const profileRows = (profileAdmins || [])
+        .filter((p) => !ADMIN_EMAILS.includes(p.email.toLowerCase()))
+        .map((p) => ({
+          id: p.id,
+          name: p.name,
+          email: p.email.toLowerCase(),
+          role: 'admin',
+          status: p.status || 'active',
+          invitedAt: p.created_at,
+        }))
+
+      const inviteRows = (invitations || [])
+        .filter(
+          (inv) =>
+            !profileEmails.has(inv.email.toLowerCase()) &&
+            !ADMIN_EMAILS.includes(inv.email.toLowerCase())
+        )
+        .map((inv) => ({
+          id: inv.id,
+          name: inv.name,
+          email: inv.email.toLowerCase(),
+          role: 'admin',
+          status: inv.status === 'invited' ? 'invited' : inv.status,
+          invitedAt: inv.created_at,
+        }))
+
+      const merged = [...profileRows, ...inviteRows]
+
+      if (profileAdmins !== null || invitations !== null) {
+        writeJSON('custom_admins', merged)
+        setRegisteredAdmins(merged)
+      }
+    } catch (err) {
+      console.warn('[AuthContext] fetchAdminsFromDB error:', err)
+    }
+  }, [])
+
   /**
    * Feature: Invite a new administrator by email with secure setup link
    */
@@ -394,48 +460,36 @@ export function AuthProvider({ children }) {
       writeJSON('custom_admins', updated)
       setRegisteredAdmins(updated)
 
-      // Send invitation email via /api/send-email
-      const inviteHtml = `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
-          <div style="background: linear-gradient(135deg, #3C1E5E, #6f3ff5); padding: 22px; border-radius: 8px; text-align: center; color: #ffffff; margin-bottom: 24px;">
-            <h1 style="margin: 0; font-size: 24px; font-weight: 800;">VP Aquarium</h1>
-            <p style="margin: 6px 0 0 0; opacity: 0.9; font-size: 14px;">Store Management Team Invitation</p>
-          </div>
-          <p style="font-size: 16px; color: #1e293b;">Hello <strong>${trimmedName}</strong>,</p>
-          <p style="font-size: 15px; color: #475569; line-height: 1.6;">
-            You have been invited by the VP Aquarium Store Administrator to join the store management team. As an administrator, you will have access to manage species, food catalog, and process customer orders.
-          </p>
-          <div style="text-align: center; margin: 32px 0;">
-            <a href="${inviteLink}" style="background: #10B981; color: #ffffff; padding: 14px 28px; font-size: 15px; font-weight: 700; text-decoration: none; border-radius: 8px; display: inline-block; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
-              Set Up Password & Access Portal →
-            </a>
-          </div>
-          <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
-            Or copy and paste this link into your browser:<br/>
-            <a href="${inviteLink}" style="color: #6f3ff5; word-break: break-all;">${inviteLink}</a>
-          </p>
-          <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;" />
-          <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
-            VP Aquarium • Premium Pet Fish & Aquatics
-          </p>
-        </div>
-      `
+      // 2. Record in admin_invitations table if Supabase is configured
+      if (isSupabaseConfigured) {
+        try {
+          await supabase.from('admin_invitations').upsert(
+            { name: trimmedName, email: trimmedEmail, status: 'invited' },
+            { onConflict: 'email' }
+          )
+        } catch (err) {
+          console.warn('[inviteAdmin] DB upsert warning:', err)
+        }
 
-      try {
-        await fetch('/api/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: trimmedEmail,
-            subject: 'Admin Invitation: Join VP Aquarium Management Team',
-            html: inviteHtml,
-          }),
-        })
-      } catch (err) {
-        console.warn('[inviteAdmin] Resend email warning:', err)
+        // 3. Send invitation email via Supabase Auth OTP — works for ANY email address
+        try {
+          const { error: otpError } = await supabase.auth.signInWithOtp({
+            email: trimmedEmail,
+            options: {
+              emailRedirectTo: inviteLink,
+              shouldCreateUser: true,
+              data: { full_name: trimmedName, role: 'admin', is_admin_invite: true },
+            },
+          })
+          if (otpError) {
+            console.warn('[inviteAdmin] Supabase OTP warning:', otpError.message)
+          }
+        } catch (err) {
+          console.warn('[inviteAdmin] Supabase OTP exception:', err)
+        }
       }
 
-      return { ok: true, admin: newAdminRecord, inviteLink }
+            return { ok: true, admin: newAdminRecord, inviteLink }
     },
     []
   )
@@ -533,7 +587,7 @@ export function AuthProvider({ children }) {
   /**
    * Remove a custom admin
    */
-  const removeAdmin = useCallback((email) => {
+  const removeAdmin = useCallback(async (email) => {
     const trimmed = (email || '').toLowerCase().trim()
     if (ADMIN_EMAILS.includes(trimmed)) {
       return { ok: false, error: { message: 'Root system admins cannot be removed.' } }
@@ -542,6 +596,16 @@ export function AuthProvider({ children }) {
     const next = current.filter((a) => a.email.toLowerCase() !== trimmed)
     writeJSON('custom_admins', next)
     setRegisteredAdmins(next)
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('profiles').update({ role: 'customer' }).eq('email', trimmed)
+        await supabase.from('admin_invitations').update({ status: 'revoked' }).eq('email', trimmed)
+      } catch (err) {
+        console.warn('[removeAdmin] DB update warning:', err)
+      }
+    }
+
     return { ok: true }
   }, [])
 
@@ -620,6 +684,7 @@ export function AuthProvider({ children }) {
       addAdmin,
       removeAdmin,
       registeredAdmins,
+      fetchAdminsFromDB,
     }),
     [
       user,
@@ -635,6 +700,7 @@ export function AuthProvider({ children }) {
       addAdmin,
       removeAdmin,
       registeredAdmins,
+      fetchAdminsFromDB,
     ]
   )
 

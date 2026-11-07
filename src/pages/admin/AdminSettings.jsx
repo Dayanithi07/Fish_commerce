@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { SUPER_ADMIN, DEMO_ADMIN } from '../../config.js'
 import { ADMIN_EMAIL } from '../../services/notificationService.js'
@@ -7,7 +7,7 @@ import { useToast } from '../../components/Toast.jsx'
 import './AdminSettings.css'
 
 export default function AdminSettings() {
-  const { user, inviteAdmin, removeAdmin, registeredAdmins } = useAuth()
+  const { user, inviteAdmin, removeAdmin, registeredAdmins, fetchAdminsFromDB } = useAuth()
   const { showToast } = useToast()
 
   // Contact info state
@@ -15,6 +15,18 @@ export default function AdminSettings() {
   const [adminPhone, setAdminPhone] = useState('+1 (555) 382-7474')
   const [supportHours, setSupportHours] = useState('Mon - Sat: 9:00 AM - 6:00 PM EST')
   const [savedContact, setSavedContact] = useState(false)
+
+  // DB sync state
+  const [fetchingAdmins, setFetchingAdmins] = useState(false)
+
+  // Load admins from DB on mount
+  useEffect(() => {
+    const load = async () => {
+      setFetchingAdmins(true)
+      try { await fetchAdminsFromDB() } finally { setFetchingAdmins(false) }
+    }
+    load()
+  }, [fetchAdminsFromDB])
 
   // New admin invitation form state
   const [newAdmin, setNewAdmin] = useState({ name: '', email: '' })
@@ -205,8 +217,21 @@ export default function AdminSettings() {
 
       {/* Full-Width Section: Active Administrators Roster */}
       <div className="settings-card" style={{ marginTop: '24px' }}>
-        <h2>Active Store Administrators</h2>
-        <p className="card-desc">Staff accounts authorized to manage products, pricing, and order dispatch.</p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '4px' }}>
+          <h2 style={{ margin: 0 }}>Active Store Administrators</h2>
+          <button
+            type="button"
+            onClick={async () => {
+              setFetchingAdmins(true)
+              try { await fetchAdminsFromDB() } finally { setFetchingAdmins(false) }
+            }}
+            disabled={fetchingAdmins}
+            style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: '700', cursor: fetchingAdmins ? 'default' : 'pointer', opacity: fetchingAdmins ? 0.6 : 1 }}
+          >
+            {fetchingAdmins ? '↻ Syncing…' : '↻ Refresh from DB'}
+          </button>
+        </div>
+        <p className="card-desc">Staff accounts authorized to manage products, pricing, and order dispatch. Status is fetched live from the database.</p>
 
         <div className="admin-roster-table-wrap">
           <table className="admin-roster-table">
@@ -247,7 +272,7 @@ export default function AdminSettings() {
                     adm.email.toLowerCase() !== DEMO_ADMIN.email.toLowerCase()
                 )
                 ?.map((adm) => {
-                  const isPending = adm.status === 'invited' && !adm.password
+                  const isPending = adm.status === 'invited'
                   const inviteUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/auth?setup=admin&email=${encodeURIComponent(adm.email)}&name=${encodeURIComponent(adm.name || '')}`
 
                   return (
