@@ -1,9 +1,36 @@
 .footer {
   background: var(--bg-surface);
   border-top: 1px solid var(--border);
-  padding: 32px 0;
+  padding: 32px 0 36px;
   margin-top: 60px;
   text-align: center;
   font-size: 14px;
   color: var(--text-muted);
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-tour-footer {
+  background: rgba(111, 63, 245, 0.08);
+  border: 1px solid rgba(111, 63, 245, 0.2);
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-tour-footer:hover {
+  background: rgba(111, 63, 245, 0.16);
+  transform: translateY(-1px);
 }

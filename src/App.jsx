@@ -12,6 +12,7 @@ import Footer from './components/Footer.jsx'
 import BottomNav from './components/BottomNav.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
 import PageLoader from './components/PageLoader.jsx'
+import TutorialTour from './components/TutorialTour.jsx'
 
 import Home from './pages/Home.jsx'
 import Catalog from './pages/Catalog.jsx'
@@ -78,6 +79,7 @@ function SiteLayout() {
       <Footer />
       <BottomNav />
       <CartDrawer />
+      <TutorialTour />
     </>
   )
 }

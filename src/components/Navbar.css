@@ -131,6 +131,47 @@
   white-space: nowrap;
 }
 
+.btn-tour-navbar {
+  background: rgba(111, 63, 245, 0.08);
+  border: 1px solid rgba(111, 63, 245, 0.2);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.btn-tour-navbar:hover {
+  background: rgba(111, 63, 245, 0.16);
+  transform: translateY(-1px);
+}
+
+.drawer-tour-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(111, 63, 245, 0.08);
+  border: 1px solid rgba(111, 63, 245, 0.18);
+  color: var(--accent);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.drawer-tour-btn:hover {
+  background: rgba(111, 63, 245, 0.15);
+}
+
 .btn-login {
   color: var(--accent);
   text-decoration: none;
@@ -411,6 +452,11 @@
   .brand-logo-svg {
     width: 26px;
     height: 26px;
+  }
+
+  /* Hide the desktop tour pill on mobile — accessible in drawer & footer */
+  .btn-tour-navbar {
+    display: none;
   }
 
   /* Hide the desktop sign-in/profile on mobile — it appears in the drawer */

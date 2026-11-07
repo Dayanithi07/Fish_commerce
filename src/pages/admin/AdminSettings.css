@@ -1,35 +1,49 @@
 .admin-settings-page {
-  padding: 24px 0 40px;
+  padding: 16px 0 40px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .settings-header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 .settings-header h1 {
-  font-size: 26px;
+  font-size: clamp(20px, 5.5vw, 26px);
   font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 6px;
+  line-height: 1.25;
+  word-break: break-word;
 }
 
 .settings-header p {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  margin: 0;
 }
 
 .settings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .settings-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 22px;
   box-shadow: 0 2px 10px rgba(60, 30, 94, 0.03);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .settings-card h2 {
@@ -42,33 +56,50 @@
 .card-desc {
   font-size: 13px;
   color: var(--text-muted);
-  margin-bottom: 20px;
-  line-height: 1.4;
+  margin-bottom: 18px;
+  line-height: 1.45;
 }
 
 .verified-email-field {
-  position: relative;
   display: flex;
   align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input-disabled {
   background: #f4effc !important;
   color: #4a3b63 !important;
   cursor: not-allowed;
-  padding-right: 110px !important;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding-right: 12px !important;
+  font-size: 13.5px;
 }
 
 .badge-verified {
-  position: absolute;
-  right: 10px;
   background: rgba(111, 63, 245, 0.12);
   color: var(--accent);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 4px 8px;
   border-radius: 999px;
   text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 520px) {
+  .verified-email-field {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .input-disabled {
+    width: 100%;
+  }
 }
 
 .field-hint {
@@ -210,15 +241,28 @@
 
 @media (max-width: 640px) {
   .admin-settings-page {
-    padding: 16px 0 32px;
+    padding: 12px 0 28px;
   }
   .settings-card {
-    padding: 16px;
+    padding: 16px 12px;
+    border-radius: 12px;
   }
   .settings-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .admin-roster-table-wrap {
+    margin-inline: -4px;
   }
   .admin-roster-table {
-    min-width: 540px;
+    min-width: 500px;
+  }
+  .integration-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .integration-item .badge-status {
+    align-self: flex-start;
   }
 }

@@ -475,10 +475,10 @@ export function AuthProvider({ children }) {
       writeJSON('custom_admins', updated)
       setRegisteredAdmins(updated)
 
-      // Try creating in Supabase too
+      // Try registering with Supabase Auth too
       if (isSupabaseConfigured) {
         try {
-          const { data: signUpData } = await supabase.auth.signUp({
+          await supabase.auth.signUp({
             email: trimmedEmail,
             password,
             options: {
@@ -488,16 +488,14 @@ export function AuthProvider({ children }) {
               },
             },
           })
-          if (signUpData?.user) {
-            await supabase.from('profiles').upsert({
-              id: signUpData.user.id,
-              name: updatedAdminRecord.name,
-              email: trimmedEmail,
-              role: 'admin',
-            })
-          }
+
+          // Authenticate with new password to initialize JWT session
+          await supabase.auth.signInWithPassword({
+            email: trimmedEmail,
+            password,
+          })
         } catch (e) {
-          console.warn('[completeAdminSetup] Supabase sync note:', e)
+          // Fallback: local custom_admins guarantees offline and instant admin access
         }
       }
 

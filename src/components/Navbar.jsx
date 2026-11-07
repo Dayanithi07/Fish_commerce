@@ -92,6 +92,17 @@ export default function Navbar() {
               </button>
             )}
 
+            {/* Quick Tour Button */}
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('start-vp-tour'))}
+              className="btn-tour-navbar"
+              aria-label="Start Tour"
+              title="Take a quick tour of VP Aquarium"
+            >
+              💡 Tour
+            </button>
+
             {/* Desktop Auth: Sign In or Profile */}
             <div className="desktop-auth">
               {isAuthenticated ? (
@@ -151,6 +162,17 @@ export default function Navbar() {
             )}
 
             <div className="drawer-divider" />
+
+            <button
+              type="button"
+              className="drawer-tour-btn"
+              onClick={() => {
+                closeMenu()
+                window.dispatchEvent(new CustomEvent('start-vp-tour'))
+              }}
+            >
+              <span>💡</span> Store Tour Guide
+            </button>
 
             {/* Quick nav links for things not in bottom bar */}
             <nav className="mobile-links">

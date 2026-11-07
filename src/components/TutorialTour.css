@@ -1,0 +1,257 @@
+.vp-tour-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: vpTourFadeIn 0.25s ease-out;
+}
+
+.vp-tour-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 9, 30, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.vp-tour-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border: 1.5px solid rgba(111, 63, 245, 0.25);
+  border-radius: 20px;
+  padding: 24px 22px;
+  box-shadow: 0 20px 48px rgba(13, 9, 30, 0.35), 0 0 0 1px rgba(111, 63, 245, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: vpTourScaleUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.vp-tour-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.vp-tour-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(111, 63, 245, 0.1);
+  color: var(--accent);
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.vp-tour-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: vpTourPulse 1.5s infinite;
+}
+
+.vp-tour-btn-close {
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.vp-tour-btn-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+.vp-tour-visual {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.vp-tour-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(111, 63, 245, 0.14), rgba(6, 182, 212, 0.18));
+  border: 1px solid rgba(111, 63, 245, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  box-shadow: 0 8px 20px rgba(111, 63, 245, 0.12);
+}
+
+.vp-tour-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.vp-tour-desc {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #4b5563;
+  text-align: center;
+  margin: 0 0 14px 0;
+}
+
+.vp-tour-tip {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.vp-tour-tip-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.vp-tour-tip-text {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.vp-tour-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-bottom: 20px;
+}
+
+.vp-tour-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: none;
+  background: #e2e8f0;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vp-tour-dot.active {
+  width: 22px;
+  background: var(--accent);
+}
+
+.vp-tour-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.vp-tour-btn-skip {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+
+.vp-tour-btn-skip:hover {
+  color: var(--text-primary);
+}
+
+.vp-tour-nav-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vp-tour-btn-back {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.vp-tour-btn-back:hover {
+  background: #e2e8f0;
+}
+
+.vp-tour-btn-next {
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@keyframes vpTourFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes vpTourScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes vpTourPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+/* Compact phones like iPhone SE (375px) */
+@media (max-width: 420px) {
+  .vp-tour-card {
+    padding: 18px 16px;
+    border-radius: 16px;
+  }
+  .vp-tour-title {
+    font-size: 17px;
+  }
+  .vp-tour-desc {
+    font-size: 12.5px;
+  }
+  .vp-tour-icon-wrap {
+    width: 54px;
+    height: 54px;
+    font-size: 26px;
+  }
+}

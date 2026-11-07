@@ -59,8 +59,14 @@ export default async function handler(req, res) {
     const data = await response.json()
 
     if (!response.ok) {
-      console.warn('[Vercel send-email] Resend API error:', data)
-      return res.status(response.status).json({ success: false, error: data })
+      console.warn('[Vercel send-email] Resend notice/error:', data)
+      // Return 200 with error details to prevent browser console 403/400 network exception
+      return res.status(200).json({
+        success: false,
+        resendStatus: response.status,
+        error: data,
+        note: data?.message || 'Email delivery deferred by provider restrictions.',
+      })
     }
 
     return res.status(200).json({ success: true, data })

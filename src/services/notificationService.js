@@ -129,39 +129,12 @@ export async function sendOrderNotifications(order) {
 
       if (response.ok) {
         const data = await response.json()
-        return { success: true, data }
+        return data
       }
+      return { success: false, note: 'Serverless email dispatcher unavailable.' }
     } catch (e) {
-      // In local dev without vercel dev server, fallback below
-    }
-
-    // 2. Direct client-side attempt (or log info note if CORS is enforced by browser)
-    if (RESEND_API_KEY) {
-      try {
-        const response = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${RESEND_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'VP Aquarium <onboarding@resend.dev>',
-            to: [to],
-            subject: subject,
-            html: html,
-          }),
-        })
-
-        const data = await response.json()
-        if (!response.ok) {
-          console.info(`[NotificationService Note]: Email to ${to} deferred:`, data.message || data)
-          return { success: false, error: data }
-        }
-        return { success: true, data }
-      } catch (err) {
-        console.info(`[NotificationService Note]: Client-side direct email to ${to} deferred. Order placed successfully.`)
-        return { success: false, error: 'Client-side CORS' }
-      }
+      // In local dev without vercel dev server, gracefully defer without noisy console errors
+      return { success: false, note: 'Email dispatch deferred in local environment.' }
     }
 
     return { success: false, note: 'Email dispatch queued.' }
