@@ -2,11 +2,12 @@ import { useState, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useProducts } from '../context/ProductContext.jsx'
 import ProductCard from '../components/ProductCard.jsx'
+import ProductSkeleton from '../components/ProductSkeleton.jsx'
 import FilterBar from '../components/FilterBar.jsx'
 import './Catalog.css'
 
 export default function Catalog() {
-  const { availableProducts } = useProducts()
+  const { availableProducts, loading } = useProducts()
   const [searchParams] = useSearchParams()
   const category = searchParams.get('category')
   const foodOnly = category === 'food'
@@ -48,7 +49,9 @@ export default function Catalog() {
         showSpeciesFilters={!foodOnly}
         foodOnly={foodOnly}
       />
-      {filtered.length === 0 ? (
+      {loading ? (
+        <ProductSkeleton count={6} />
+      ) : filtered.length === 0 ? (
         <div className="no-products">
           <p>{foodOnly ? 'No fish food products added yet.' : 'No species match your criteria.'}</p>
           {foodOnly && (

@@ -16,10 +16,24 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => readJSON('session', null))
   const [loading, setLoading] = useState(true)
 
-  // Secondary admins created via admin portal
+  // Secondary custom admins created via admin portal (excluding root SUPER_ADMIN / DEMO_ADMIN)
   const [registeredAdmins, setRegisteredAdmins] = useState(() => {
-    return readJSON('custom_admins', [])
+    return readJSON('custom_admins', []).filter(
+      (a) => a?.email && !ADMIN_EMAILS.includes(a.email.toLowerCase())
+    )
   })
+
+  // Purge any accidental super-admin records from custom_admins on mount
+  useEffect(() => {
+    const rawCustom = readJSON('custom_admins', [])
+    const cleaned = rawCustom.filter(
+      (a) => a?.email && !ADMIN_EMAILS.includes(a.email.toLowerCase())
+    )
+    if (cleaned.length !== rawCustom.length) {
+      writeJSON('custom_admins', cleaned)
+      setRegisteredAdmins(cleaned)
+    }
+  }, [])
 
   // Sync profile details from Supabase public.profiles or session
   const syncProfile = useCallback(async (sessionUser) => {
@@ -68,13 +82,13 @@ export function AuthProvider({ children }) {
       }
     }
 
-    // If verified as admin, cache in local custom_admins for offline fallback access
-    if (role === 'admin' && !isCustomAdmin) {
+    // If verified as custom admin, cache in local custom_admins (strictly excluding SUPER_ADMIN / DEMO_ADMIN)
+    if (role === 'admin' && !isCustomAdmin && !ADMIN_EMAILS.includes(email)) {
       const currentAdmins = readJSON('custom_admins', [])
       if (!currentAdmins.some((a) => a.email && a.email.toLowerCase() === email)) {
         writeJSON('custom_admins', [
           ...currentAdmins,
-          { id: sessionUser.id, name, email, role: 'admin' },
+          { id: sessionUser.id, name, email, role: 'admin', status: 'active' },
         ])
       }
     }
@@ -344,19 +358,15 @@ export function AuthProvider({ children }) {
   )
 
   /**
-   * Feature: Add a new admin from the admin page
+   * Feature: Invite a new administrator by email with secure setup link
    */
-  const addAdmin = useCallback(
-    async ({ name, email, password }) => {
+  const inviteAdmin = useCallback(
+    async ({ name, email }) => {
       const trimmedEmail = (email || '').trim().toLowerCase()
       const trimmedName = (name || '').trim()
 
-      if (!trimmedName || !trimmedEmail || !password) {
-        return { ok: false, error: { message: 'All fields are required.' } }
-      }
-
-      if (password.length < 6) {
-        return { ok: false, error: { message: 'Admin password must be at least 6 characters.' } }
+      if (!trimmedName || !trimmedEmail) {
+        return { ok: false, error: { message: 'Admin name and email address are required.' } }
       }
 
       // Check duplicate
@@ -365,43 +375,161 @@ export function AuthProvider({ children }) {
         current.some((a) => a.email.toLowerCase() === trimmedEmail) ||
         ADMIN_EMAILS.includes(trimmedEmail)
       ) {
-        return { ok: false, error: { message: 'An admin with this email already exists.' } }
+        return { ok: false, error: { message: 'An administrator with this email already exists.' } }
       }
+
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://fish-commerce-omega.vercel.app'
+      const inviteLink = `${origin}/auth?setup=admin&email=${encodeURIComponent(trimmedEmail)}&name=${encodeURIComponent(trimmedName)}`
 
       const newAdminRecord = {
         id: 'admin_' + Date.now(),
         name: trimmedName,
         email: trimmedEmail,
-        password,
         role: 'admin',
-        createdAt: new Date().toISOString(),
+        status: 'invited',
+        invitedAt: new Date().toISOString(),
       }
 
-      const updated = [newAdminRecord, ...current]
+      const updated = [newAdminRecord, ...current.filter((a) => !ADMIN_EMAILS.includes(a.email.toLowerCase()))]
+      writeJSON('custom_admins', updated)
+      setRegisteredAdmins(updated)
+
+      // Send invitation email via /api/send-email
+      const inviteHtml = `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+          <div style="background: linear-gradient(135deg, #3C1E5E, #6f3ff5); padding: 22px; border-radius: 8px; text-align: center; color: #ffffff; margin-bottom: 24px;">
+            <h1 style="margin: 0; font-size: 24px; font-weight: 800;">VP Aquarium</h1>
+            <p style="margin: 6px 0 0 0; opacity: 0.9; font-size: 14px;">Store Management Team Invitation</p>
+          </div>
+          <p style="font-size: 16px; color: #1e293b;">Hello <strong>${trimmedName}</strong>,</p>
+          <p style="font-size: 15px; color: #475569; line-height: 1.6;">
+            You have been invited by the VP Aquarium Store Administrator to join the store management team. As an administrator, you will have access to manage species, food catalog, and process customer orders.
+          </p>
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${inviteLink}" style="background: #10B981; color: #ffffff; padding: 14px 28px; font-size: 15px; font-weight: 700; text-decoration: none; border-radius: 8px; display: inline-block; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+              Set Up Password & Access Portal →
+            </a>
+          </div>
+          <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
+            Or copy and paste this link into your browser:<br/>
+            <a href="${inviteLink}" style="color: #6f3ff5; word-break: break-all;">${inviteLink}</a>
+          </p>
+          <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;" />
+          <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
+            VP Aquarium • Premium Pet Fish & Aquatics
+          </p>
+        </div>
+      `
+
+      try {
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: trimmedEmail,
+            subject: 'Admin Invitation: Join VP Aquarium Management Team',
+            html: inviteHtml,
+          }),
+        })
+      } catch (err) {
+        console.warn('[inviteAdmin] Resend email warning:', err)
+      }
+
+      return { ok: true, admin: newAdminRecord, inviteLink }
+    },
+    []
+  )
+
+  /**
+   * Feature: Complete admin invitation and configure password
+   */
+  const completeAdminSetup = useCallback(
+    async ({ name, email, password }) => {
+      const trimmedEmail = (email || '').trim().toLowerCase()
+      const trimmedName = (name || '').trim()
+
+      if (!password || password.length < 6) {
+        return { ok: false, error: { message: 'Password must be at least 6 characters long.' } }
+      }
+
+      // Update in custom_admins
+      const current = readJSON('custom_admins', [])
+      const existing = current.find((a) => a.email.toLowerCase() === trimmedEmail)
+      const updatedAdminRecord = {
+        ...(existing || {}),
+        id: existing?.id || 'admin_' + Date.now(),
+        name: trimmedName || existing?.name || trimmedEmail.split('@')[0],
+        email: trimmedEmail,
+        password,
+        role: 'admin',
+        status: 'active',
+        activatedAt: new Date().toISOString(),
+      }
+
+      const updated = [
+        updatedAdminRecord,
+        ...current.filter(
+          (a) => a.email.toLowerCase() !== trimmedEmail && !ADMIN_EMAILS.includes(a.email.toLowerCase())
+        ),
+      ]
       writeJSON('custom_admins', updated)
       setRegisteredAdmins(updated)
 
       // Try creating in Supabase too
       if (isSupabaseConfigured) {
         try {
-          await supabase.auth.signUp({
+          const { data: signUpData } = await supabase.auth.signUp({
             email: trimmedEmail,
             password,
             options: {
               data: {
-                full_name: trimmedName,
+                full_name: updatedAdminRecord.name,
                 role: 'admin',
               },
             },
           })
+          if (signUpData?.user) {
+            await supabase.from('profiles').upsert({
+              id: signUpData.user.id,
+              name: updatedAdminRecord.name,
+              email: trimmedEmail,
+              role: 'admin',
+            })
+          }
         } catch (e) {
-          console.warn('[addAdmin] Supabase signup note:', e)
+          console.warn('[completeAdminSetup] Supabase sync note:', e)
         }
       }
 
-      return { ok: true, admin: newAdminRecord }
+      // Automatically authenticate as admin
+      const adminSession = {
+        id: updatedAdminRecord.id,
+        name: updatedAdminRecord.name,
+        email: updatedAdminRecord.email,
+        role: 'admin',
+        isCustomAdmin: true,
+      }
+      setUser(adminSession)
+      writeJSON('session', adminSession)
+
+      return { ok: true, user: adminSession }
     },
     []
+  )
+
+  /**
+   * Backwards compatible addAdmin alias
+   */
+  const addAdmin = useCallback(
+    async ({ name, email, password }) => {
+      if (!password) {
+        return inviteAdmin({ name, email })
+      }
+      const inv = await inviteAdmin({ name, email })
+      if (!inv.ok) return inv
+      return completeAdminSetup({ name, email, password })
+    },
+    [inviteAdmin, completeAdminSetup]
   )
 
   /**
@@ -489,6 +617,8 @@ export function AuthProvider({ children }) {
       signup,
       signInWithGoogle,
       logout,
+      inviteAdmin,
+      completeAdminSetup,
       addAdmin,
       removeAdmin,
       registeredAdmins,
@@ -502,6 +632,8 @@ export function AuthProvider({ children }) {
       signup,
       signInWithGoogle,
       logout,
+      inviteAdmin,
+      completeAdminSetup,
       addAdmin,
       removeAdmin,
       registeredAdmins,

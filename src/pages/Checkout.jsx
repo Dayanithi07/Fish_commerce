@@ -27,14 +27,32 @@ export default function Checkout() {
       ]
     : lines
 
-  const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    phone: '',
-    street: '',
-    city: '',
-    postalCode: '',
-    notes: '',
+  // Load auto-filled saved details from previous checkout (fully editable)
+  const [formData, setFormData] = useState(() => {
+    let saved = {}
+    try {
+      saved = JSON.parse(localStorage.getItem('vp_saved_checkout_details') || '{}')
+    } catch {
+      saved = {}
+    }
+    return {
+      name: saved.name || user?.name || '',
+      email: saved.email || user?.email || '',
+      phone: saved.phone || '',
+      street: saved.street || '',
+      city: saved.city || '',
+      postalCode: saved.postalCode || '',
+      notes: saved.notes || '',
+    }
+  })
+
+  const [hasSavedDetails] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('vp_saved_checkout_details') || '{}')
+      return !!(saved.street || saved.phone)
+    } catch {
+      return false
+    }
   })
 
   const [upiRef, setUpiRef] = useState('')
@@ -84,12 +102,13 @@ export default function Checkout() {
     setSubmitting(true)
     setErrors({})
 
-    // Validate UPI Transaction Reference / UTR
-    if (!upiRef.trim() || upiRef.trim().length < 6) {
+    // Validate UPI Transaction Reference / UTR (Standard Indian 12-digit numeric reference)
+    const cleanUtr = upiRef.trim().replace(/\s+/g, '')
+    if (!cleanUtr || !/^\d{12}$/.test(cleanUtr)) {
       setSubmitting(false)
       setErrors((prev) => ({
         ...prev,
-        upiRef: 'Please enter your 12-digit UPI UTR / Reference number from your payment receipt.',
+        upiRef: 'Please enter the valid 12-digit numeric UPI UTR / Transaction Reference number from your payment app.',
       }))
       return
     }
@@ -108,7 +127,7 @@ export default function Checkout() {
       },
       notes: formData.notes,
       paymentMethod: 'UPI (QR Code / Apps)',
-      paymentRef: upiRef.trim(),
+      paymentRef: cleanUtr,
     }
 
     try {
@@ -122,6 +141,24 @@ export default function Checkout() {
           alert(res.error?.message || 'Failed to place order')
         }
         return
+      }
+
+      // Persist user's contact & delivery details so next checkout is auto-filled and editable
+      try {
+        localStorage.setItem(
+          'vp_saved_checkout_details',
+          JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            street: formData.street,
+            city: formData.city,
+            postalCode: formData.postalCode,
+            notes: formData.notes,
+          })
+        )
+      } catch (storageErr) {
+        console.warn('Could not save checkout details to localStorage', storageErr)
       }
 
       navigate('/order-success', { state: { order: res.order } })
@@ -141,7 +178,14 @@ export default function Checkout() {
       )}
       <div className="checkout-layout">
         <form className="checkout-form" onSubmit={handleSubmit}>
-          <h3>1. Contact & Shipping Details</h3>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+            <h3 style={{ margin: 0 }}>1. Contact & Shipping Details</h3>
+            {hasSavedDetails && (
+              <span style={{ fontSize: '11px', background: 'rgba(16, 185, 129, 0.1)', color: '#059669', padding: '3px 8px', borderRadius: '6px', fontWeight: '600' }}>
+                ✓ Autofilled from previous order (Editable)
+              </span>
+            )}
+          </div>
 
           <div className="form-group">
             <label htmlFor="name">Full Name</label>

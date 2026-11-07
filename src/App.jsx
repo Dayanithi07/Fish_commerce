@@ -11,6 +11,7 @@ import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 import BottomNav from './components/BottomNav.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
+import PageLoader from './components/PageLoader.jsx'
 
 import Home from './pages/Home.jsx'
 import Catalog from './pages/Catalog.jsx'
@@ -91,7 +92,7 @@ export default function App() {
               <OrderProvider>
                 <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                   <ScrollToTop />
-                  <Suspense fallback={<p className="route-loading">Loading...</p>}>
+                  <Suspense fallback={<PageLoader text="Loading page..." />}>
                     <Routes>
                       <Route element={<SiteLayout />}>
                         <Route index element={<Home />} />

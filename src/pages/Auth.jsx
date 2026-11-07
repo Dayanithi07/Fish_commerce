@@ -1,18 +1,38 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import './Auth.css'
 
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(true)
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' })
+  const [searchParams] = useSearchParams()
+  const isInviteSetup = searchParams.get('setup') === 'admin'
+  const invitedEmail = searchParams.get('email') || ''
+  const invitedName = searchParams.get('name') || ''
+
+  const [isLogin, setIsLogin] = useState(!isInviteSetup)
+  const [formData, setFormData] = useState({
+    name: invitedName,
+    email: invitedEmail,
+    password: '',
+    confirmPassword: '',
+  })
   const [errors, setErrors] = useState({})
   const [generalError, setGeneralError] = useState('')
   const [infoMessage, setInfoMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  const { login, signup, signInWithGoogle } = useAuth()
+  const { login, signup, signInWithGoogle, completeAdminSetup } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (invitedEmail) {
+      setFormData((prev) => ({
+        ...prev,
+        email: invitedEmail,
+        name: invitedName || prev.name,
+      }))
+    }
+  }, [invitedEmail, invitedName])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -30,6 +50,33 @@ export default function Auth() {
     setSubmitting(true)
 
     try {
+      // 1. Admin Invitation Setup Flow
+      if (isInviteSetup) {
+        if (!formData.password || formData.password.length < 6) {
+          setErrors({ password: 'Admin password must be at least 6 characters.' })
+          return
+        }
+        if (formData.password !== formData.confirmPassword) {
+          setErrors({ confirmPassword: 'Passwords do not match.' })
+          return
+        }
+
+        const res = await completeAdminSetup({
+          name: formData.name || invitedName,
+          email: formData.email || invitedEmail,
+          password: formData.password,
+        })
+
+        if (!res.ok) {
+          setGeneralError(res.error?.message || 'Failed to complete admin activation.')
+          return
+        }
+
+        navigate('/admin/products')
+        return
+      }
+
+      // 2. Regular Login or Signup Flow
       if (isLogin) {
         const res = await login(formData.email, formData.password)
         if (!res.ok) {
@@ -78,117 +125,203 @@ export default function Auth() {
   return (
     <div className="container auth-page">
       <div className="auth-card">
-        <h2>{isLogin ? 'Sign In to VP Aquarium' : 'Create an Account'}</h2>
-
-        {generalError && <div className="alert-error">{generalError}</div>}
-        {infoMessage && <div className="alert-info">{infoMessage}</div>}
-
-        {/* Google OAuth Button */}
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className="btn-google-oauth"
-          disabled={submitting}
-        >
-          <svg className="google-icon" viewBox="0 0 24 24">
-            <path
-              fill="#4285F4"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            />
-            <path
-              fill="#34A853"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-            />
-            <path
-              fill="#EA4335"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-            />
-          </svg>
-          <span>Continue with Google</span>
-        </button>
-
-        <div className="auth-divider">
-          <span>or sign in with email</span>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <div className="form-group">
-              <label htmlFor="name">Full Name</label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleChange}
-                className={errors.name ? 'input-error' : ''}
-                placeholder="Dr. Aquarist"
-                required
-              />
-              {errors.name && <span className="field-error">{errors.name}</span>}
+        {isInviteSetup ? (
+          <>
+            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+              <span style={{ fontSize: '36px' }}>🛡️</span>
+              <h2 style={{ margin: '8px 0 4px 0' }}>VP Aquarium Admin Setup</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '14px', margin: 0 }}>
+                Welcome to the Store Management Team. Configure your password to activate your admin privileges.
+              </p>
             </div>
-          )}
 
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={errors.email ? 'input-error' : ''}
-              placeholder="you@example.com"
-              required
-            />
-            {errors.email && <span className="field-error">{errors.email}</span>}
-          </div>
+            {generalError && <div className="alert-error">{generalError}</div>}
+            {infoMessage && <div className="alert-info">{infoMessage}</div>}
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={errors.password ? 'input-error' : ''}
-              placeholder="••••••••"
-              required
-            />
-            {errors.password && <span className="field-error">{errors.password}</span>}
-          </div>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="name">Admin Full Name</label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="e.g. Alex Henderson"
+                  required
+                />
+              </div>
 
-          <button
-            type="submit"
-            className="btn-primary btn-auth-submit"
-            disabled={submitting}
-          >
-            {submitting ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up'}
-          </button>
-        </form>
+              <div className="form-group">
+                <label htmlFor="email">Invited Administrator Email</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  readOnly
+                  style={{ background: '#f8fafc', color: '#64748b', cursor: 'not-allowed' }}
+                  required
+                />
+                <span style={{ fontSize: '11px', color: '#059669', fontWeight: '600', marginTop: '4px', display: 'block' }}>
+                  ✓ Verified administrator invite
+                </span>
+              </div>
 
-        <div className="auth-toggle">
-          {isLogin ? (
-            <p>
-              Don't have an account?{' '}
-              <button type="button" onClick={() => setIsLogin(false)}>
-                Register
+              <div className="form-group">
+                <label htmlFor="password">Create Admin Password</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={errors.password ? 'input-error' : ''}
+                  placeholder="At least 6 characters"
+                  required
+                />
+                {errors.password && <span className="field-error">{errors.password}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={errors.confirmPassword ? 'input-error' : ''}
+                  placeholder="Repeat password"
+                  required
+                />
+                {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
+              </div>
+
+              <button
+                type="submit"
+                className="btn-primary btn-auth-submit"
+                disabled={submitting}
+              >
+                {submitting ? 'Activating Admin Access...' : 'Activate Admin Account & Go to Dashboard →'}
               </button>
-            </p>
-          ) : (
-            <p>
-              Already have an account?{' '}
-              <button type="button" onClick={() => setIsLogin(true)}>
-                Sign In
+            </form>
+          </>
+        ) : (
+          <>
+            <h2>{isLogin ? 'Sign In to VP Aquarium' : 'Create an Account'}</h2>
+
+            {generalError && <div className="alert-error">{generalError}</div>}
+            {infoMessage && <div className="alert-info">{infoMessage}</div>}
+
+            {/* Google OAuth Button */}
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              className="btn-google-oauth"
+              disabled={submitting}
+            >
+              <svg className="google-icon" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              <span>Continue with Google</span>
+            </button>
+
+            <div className="auth-divider">
+              <span>or sign in with email</span>
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              {!isLogin && (
+                <div className="form-group">
+                  <label htmlFor="name">Full Name</label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={errors.name ? 'input-error' : ''}
+                    placeholder="Dr. Aquarist"
+                    required
+                  />
+                  {errors.name && <span className="field-error">{errors.name}</span>}
+                </div>
+              )}
+
+              <div className="form-group">
+                <label htmlFor="email">Email Address</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={errors.email ? 'input-error' : ''}
+                  placeholder="you@example.com"
+                  required
+                />
+                {errors.email && <span className="field-error">{errors.email}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={errors.password ? 'input-error' : ''}
+                  placeholder="••••••••"
+                  required
+                />
+                {errors.password && <span className="field-error">{errors.password}</span>}
+              </div>
+
+              <button
+                type="submit"
+                className="btn-primary btn-auth-submit"
+                disabled={submitting}
+              >
+                {submitting ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up'}
               </button>
-            </p>
-          )}
-        </div>
+            </form>
+
+            <div className="auth-toggle">
+              {isLogin ? (
+                <p>
+                  Don't have an account?{' '}
+                  <button type="button" onClick={() => setIsLogin(false)}>
+                    Register
+                  </button>
+                </p>
+              ) : (
+                <p>
+                  Already have an account?{' '}
+                  <button type="button" onClick={() => setIsLogin(true)}>
+                    Sign In
+                  </button>
+                </p>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

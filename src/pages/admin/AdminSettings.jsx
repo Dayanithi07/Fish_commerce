@@ -7,7 +7,7 @@ import { useToast } from '../../components/Toast.jsx'
 import './AdminSettings.css'
 
 export default function AdminSettings() {
-  const { user, addAdmin, removeAdmin, registeredAdmins } = useAuth()
+  const { user, inviteAdmin, removeAdmin, registeredAdmins } = useAuth()
   const { showToast } = useToast()
 
   // Contact info state
@@ -16,10 +16,11 @@ export default function AdminSettings() {
   const [supportHours, setSupportHours] = useState('Mon - Sat: 9:00 AM - 6:00 PM EST')
   const [savedContact, setSavedContact] = useState(false)
 
-  // New admin form state
-  const [newAdmin, setNewAdmin] = useState({ name: '', email: '', password: '' })
-  const [creatingAdmin, setCreatingAdmin] = useState(false)
+  // New admin invitation form state
+  const [newAdmin, setNewAdmin] = useState({ name: '', email: '' })
+  const [invitingAdmin, setInvitingAdmin] = useState(false)
   const [adminError, setAdminError] = useState('')
+  const [lastInviteLink, setLastInviteLink] = useState('')
 
   const handleSaveContact = (e) => {
     e.preventDefault()
@@ -28,22 +29,30 @@ export default function AdminSettings() {
     setTimeout(() => setSavedContact(false), 3000)
   }
 
-  const handleCreateAdmin = async (e) => {
+  const handleInviteAdmin = async (e) => {
     e.preventDefault()
     setAdminError('')
-    setCreatingAdmin(true)
+    setInvitingAdmin(true)
 
     try {
-      const res = await addAdmin(newAdmin)
+      const res = await inviteAdmin(newAdmin)
       if (!res.ok) {
-        setAdminError(res.error?.message || 'Failed to create admin.')
+        setAdminError(res.error?.message || 'Failed to send admin invitation.')
         return
       }
 
-      showToast(`Admin account created for ${newAdmin.name}!`, { type: 'success' })
-      setNewAdmin({ name: '', email: '', password: '' })
+      setLastInviteLink(res.inviteLink)
+      showToast(`Invitation sent to ${newAdmin.email}!`, { type: 'success' })
+      setNewAdmin({ name: '', email: '' })
     } finally {
-      setCreatingAdmin(false)
+      setInvitingAdmin(false)
+    }
+  }
+
+  const handleCopyLink = (link) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(link)
+      showToast('Invite link copied to clipboard!', { type: 'success' })
     }
   }
 
@@ -127,16 +136,37 @@ export default function AdminSettings() {
           </form>
         </div>
 
-        {/* Right Column: Add New Admin Account */}
+        {/* Right Column: Invite New Admin Account */}
         <div className="settings-card">
-          <h2>Add New Store Administrator</h2>
+          <h2>Invite Store Administrator</h2>
           <p className="card-desc">
-            Authorize new store managers with custom login credentials. New admins gain access to inventory and order fulfillment.
+            Invite staff members to manage inventory, fish food catalog, and orders. An email invitation with a secure password setup link will be delivered to their inbox.
           </p>
 
           {adminError && <div className="alert-error" style={{ marginBottom: '14px' }}>{adminError}</div>}
 
-          <form onSubmit={handleCreateAdmin}>
+          {lastInviteLink && (
+            <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px', padding: '12px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
+                <strong style={{ color: '#059669', fontSize: '13px' }}>✓ Invitation Link Generated</strong>
+                <button
+                  type="button"
+                  onClick={() => handleCopyLink(lastInviteLink)}
+                  style={{ background: '#059669', color: '#fff', border: 'none', borderRadius: '4px', padding: '3px 8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                >
+                  Copy Link
+                </button>
+              </div>
+              <input
+                type="text"
+                readOnly
+                value={lastInviteLink}
+                style={{ fontSize: '11px', background: '#fff', border: '1px solid #d1d5db', borderRadius: '4px', padding: '4px 6px', width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
+          )}
+
+          <form onSubmit={handleInviteAdmin}>
             <div className="form-group">
               <label>Admin Full Name</label>
               <input
@@ -154,28 +184,20 @@ export default function AdminSettings() {
                 type="email"
                 value={newAdmin.email}
                 onChange={(e) => setNewAdmin((prev) => ({ ...prev, email: e.target.value }))}
-                placeholder="e.g. alex@fishcommerce.com"
+                placeholder="e.g. alex@vp-aquarium.com"
                 required
               />
-            </div>
-
-            <div className="form-group">
-              <label>Set Secure Password (min 6 characters)</label>
-              <input
-                type="password"
-                value={newAdmin.password}
-                onChange={(e) => setNewAdmin((prev) => ({ ...prev, password: e.target.value }))}
-                placeholder="••••••••"
-                required
-              />
+              <span className="field-hint" style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
+                A secure setup link will be emailed to this address so the admin can configure their own password.
+              </span>
             </div>
 
             <button
               type="submit"
               className="btn-primary btn-save-settings"
-              disabled={creatingAdmin}
+              disabled={invitingAdmin}
             >
-              {creatingAdmin ? 'Creating...' : '+ Create Admin Account'}
+              {invitingAdmin ? 'Sending Invitation...' : '✉️ Send Admin Invitation'}
             </button>
           </form>
         </div>
@@ -216,24 +238,55 @@ export default function AdminSettings() {
                 <td style={{ textAlign: 'right', color: 'var(--text-muted)', fontSize: '12px' }}>System Default</td>
               </tr>
 
-              {/* Custom Created Admins */}
-              {registeredAdmins?.map((adm) => (
-                <tr key={adm.id}>
-                  <td><strong>{adm.name}</strong></td>
-                  <td><code>{adm.email}</code></td>
-                  <td><span className="badge-role badge-role--custom">Custom Admin</span></td>
-                  <td><span className="badge-status badge-active">Active</span></td>
-                  <td style={{ textAlign: 'right' }}>
-                    <button
-                      type="button"
-                      onClick={() => handleRemove(adm.email, adm.name)}
-                      className="btn-revoke-admin"
-                    >
-                      Revoke Access
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {/* Custom Created / Invited Admins (Strictly excluding SUPER_ADMIN) */}
+              {registeredAdmins
+                ?.filter(
+                  (adm) =>
+                    adm.email &&
+                    adm.email.toLowerCase() !== SUPER_ADMIN.email.toLowerCase() &&
+                    adm.email.toLowerCase() !== DEMO_ADMIN.email.toLowerCase()
+                )
+                ?.map((adm) => {
+                  const isPending = adm.status === 'invited' && !adm.password
+                  const inviteUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/auth?setup=admin&email=${encodeURIComponent(adm.email)}&name=${encodeURIComponent(adm.name || '')}`
+
+                  return (
+                    <tr key={adm.id}>
+                      <td><strong>{adm.name}</strong></td>
+                      <td><code>{adm.email}</code></td>
+                      <td><span className="badge-role badge-role--custom">Custom Admin</span></td>
+                      <td>
+                        {isPending ? (
+                          <span className="badge-status" style={{ background: '#fef3c7', color: '#b45309' }}>
+                            Invited (Pending)
+                          </span>
+                        ) : (
+                          <span className="badge-status badge-active">Active</span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
+                          {isPending && (
+                            <button
+                              type="button"
+                              onClick={() => handleCopyLink(inviteUrl)}
+                              style={{ background: 'transparent', border: '1px solid var(--accent)', color: 'var(--accent)', borderRadius: '4px', padding: '3px 8px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}
+                            >
+                              Copy Link
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleRemove(adm.email, adm.name)}
+                            className="btn-revoke-admin"
+                          >
+                            Revoke
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </table>
         </div>
