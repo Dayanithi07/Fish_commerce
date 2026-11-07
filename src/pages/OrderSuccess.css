@@ -45,9 +45,39 @@
 .order-details-box {
   background: var(--bg-page);
   border-radius: var(--radius-md);
-  padding: 20px;
-  margin: 24px 0;
+  padding: 22px;
+  margin: 24px 0 16px;
   text-align: left;
+  border: 1px solid var(--border);
+}
+
+.invoice-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.invoice-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
+}
+
+.invoice-subhead {
+  margin: 0 0 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+}
+
+.utr-code {
+  background: rgba(111, 63, 245, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 .order-details-box h3 {
@@ -59,18 +89,94 @@
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  padding: 4px 0;
+  padding: 6px 0;
 }
 
 .order-total-row {
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid var(--border);
+  border-top: 2px dashed var(--border);
   margin-top: 12px;
-  padding-top: 8px;
-  font-size: 16px;
+  padding-top: 10px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.invoice-actions-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 16px 0 24px;
+  flex-wrap: wrap;
+}
+
+.btn-print-bill,
+.btn-download-bill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-print-bill {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(111, 63, 245, 0.25);
+}
+
+.btn-print-bill:hover {
+  background: var(--accent-dark);
+}
+
+.btn-download-bill {
+  background: rgba(111, 63, 245, 0.08);
+  color: var(--accent);
+  border: 1.5px solid rgba(111, 63, 245, 0.25);
+}
+
+.btn-download-bill:hover {
+  background: rgba(111, 63, 245, 0.15);
 }
 
 .success-actions {
-  margin-top: 24px;
+  margin-top: 16px;
+}
+
+/* Print Stylesheet for Browser PDF Export */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .navbar-wrapper,
+  .mobile-bottom-nav,
+  .success-icon,
+  .success-actions,
+  .invoice-actions-row,
+  .footer {
+    display: none !important;
+  }
+
+  .printable-invoice-section,
+  .printable-invoice-section * {
+    visibility: visible;
+  }
+
+  .printable-invoice-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    border: none;
+    background: #fff;
+  }
 }

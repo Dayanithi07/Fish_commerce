@@ -119,34 +119,52 @@ export async function sendOrderNotifications(order) {
   )
 
   const sendEmail = async (to, subject, html) => {
-    // In a pure client-side SPA in the browser, direct calls to api.resend.com are blocked
-    // by browser CORS policy. We catch and suppress the network error gracefully.
+    // 1. First attempt: call Vercel Serverless Function at /api/send-email (avoids CORS)
     try {
-      const response = await fetch('https://api.resend.com/emails', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'VP Aquarium <onboarding@resend.dev>',
-          to: [to],
-          subject: subject,
-          html: html,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, subject, html }),
       })
 
-      const data = await response.json()
-      if (!response.ok) {
-        console.info(`[NotificationService Note]: Email to ${to} deferred:`, data.message || data)
-        return { success: false, error: data }
+      if (response.ok) {
+        const data = await response.json()
+        return { success: true, data }
       }
-      return { success: true, data }
-    } catch (err) {
-      // Browser CORS restriction on direct api.resend.com calls — log informational note only
-      console.info(`[NotificationService Note]: Client-side direct email to ${to} deferred (requires serverless function proxy). Order placed successfully.`)
-      return { success: false, error: 'Client-side CORS' }
+    } catch (e) {
+      // In local dev without vercel dev server, fallback below
     }
+
+    // 2. Direct client-side attempt (or log info note if CORS is enforced by browser)
+    if (RESEND_API_KEY) {
+      try {
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${RESEND_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'VP Aquarium <onboarding@resend.dev>',
+            to: [to],
+            subject: subject,
+            html: html,
+          }),
+        })
+
+        const data = await response.json()
+        if (!response.ok) {
+          console.info(`[NotificationService Note]: Email to ${to} deferred:`, data.message || data)
+          return { success: false, error: data }
+        }
+        return { success: true, data }
+      } catch (err) {
+        console.info(`[NotificationService Note]: Client-side direct email to ${to} deferred. Order placed successfully.`)
+        return { success: false, error: 'Client-side CORS' }
+      }
+    }
+
+    return { success: false, note: 'Email dispatch queued.' }
   }
 
   // Trigger both emails concurrently

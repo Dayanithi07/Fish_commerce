@@ -23,7 +23,6 @@ export default function Checkout() {
     notes: '',
   })
 
-  const [paymentMethod, setPaymentMethod] = useState('upi') // 'upi' | 'cod'
   const [upiRef, setUpiRef] = useState('')
   const [copied, setCopied] = useState(false)
   const [errors, setErrors] = useState({})
@@ -42,8 +41,8 @@ export default function Checkout() {
   const shipping = SHIPPING_FLAT
   const total = subtotal + shipping
 
-  // UPI configuration
-  const upiId = STORE_UPI_ID || 'dayanithi2507@okaxis'
+  // Verified Store UPI Configuration
+  const upiId = STORE_UPI_ID || 'ganesh123madesh@okaxis'
   const storeName = STORE_NAME || 'VP Aquarium'
   const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(storeName)}&am=${total}&cu=INR&tn=${encodeURIComponent('VP Aquarium Live Livestock')}`
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`
@@ -67,6 +66,16 @@ export default function Checkout() {
     setSubmitting(true)
     setErrors({})
 
+    // Validate UPI Transaction Reference / UTR
+    if (!upiRef.trim() || upiRef.trim().length < 6) {
+      setSubmitting(false)
+      setErrors((prev) => ({
+        ...prev,
+        upiRef: 'Please enter your 12-digit UPI UTR / Reference number from your payment receipt.',
+      }))
+      return
+    }
+
     const orderPayload = {
       items: lines.map((l) => ({ productId: l.product.id, quantity: l.quantity })),
       customer: {
@@ -80,8 +89,8 @@ export default function Checkout() {
         postalCode: formData.postalCode,
       },
       notes: formData.notes,
-      paymentMethod: paymentMethod === 'upi' ? 'UPI QR Code / Apps' : 'Cash on Delivery (COD)',
-      paymentRef: paymentMethod === 'upi' ? upiRef.trim() : 'COD',
+      paymentMethod: 'UPI (QR Code / Apps)',
+      paymentRef: upiRef.trim(),
     }
 
     try {
@@ -121,13 +130,14 @@ export default function Checkout() {
               onChange={handleChange}
               placeholder="e.g. Dayanithi"
               className={errors.customerName ? 'input-error' : ''}
+              required
             />
             {errors.customerName && <span className="field-error">{errors.customerName}</span>}
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="email">Email Address (for tracking)</label>
+              <label htmlFor="email">Email Address (for order & bill)</label>
               <input
                 id="email"
                 name="email"
@@ -136,6 +146,7 @@ export default function Checkout() {
                 onChange={handleChange}
                 placeholder="you@gmail.com"
                 className={errors.customerEmail ? 'input-error' : ''}
+                required
               />
               {errors.customerEmail && <span className="field-error">{errors.customerEmail}</span>}
             </div>
@@ -149,6 +160,7 @@ export default function Checkout() {
                 onChange={handleChange}
                 placeholder="e.g. 9876543210"
                 className={errors.customerPhone ? 'input-error' : ''}
+                required
               />
               {errors.customerPhone && <span className="field-error">{errors.customerPhone}</span>}
             </div>
@@ -164,6 +176,7 @@ export default function Checkout() {
               onChange={handleChange}
               placeholder="Flat / House No., Colony / Street"
               className={errors.street ? 'input-error' : ''}
+              required
             />
             {errors.street && <span className="field-error">{errors.street}</span>}
           </div>
@@ -179,6 +192,7 @@ export default function Checkout() {
                 onChange={handleChange}
                 placeholder="e.g. Chennai"
                 className={errors.city ? 'input-error' : ''}
+                required
               />
               {errors.city && <span className="field-error">{errors.city}</span>}
             </div>
@@ -192,6 +206,7 @@ export default function Checkout() {
                 onChange={handleChange}
                 placeholder="6-digit PIN code"
                 className={errors.postalCode ? 'input-error' : ''}
+                required
               />
               {errors.postalCode && <span className="field-error">{errors.postalCode}</span>}
             </div>
@@ -205,124 +220,82 @@ export default function Checkout() {
               rows={2}
               value={formData.notes}
               onChange={handleChange}
-              placeholder="e.g. Please ring bell twice or leave with security."
+              placeholder="e.g. Please call before delivery or leave with security."
             />
           </div>
 
-          {/* Payment Method Selector */}
+          {/* Dedicated UPI Payment Section */}
           <div className="payment-section">
-            <h3>2. Select Payment Method</h3>
-            <div className="payment-options">
-              <label className={`payment-pill ${paymentMethod === 'upi' ? 'active' : ''}`}>
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="upi"
-                  checked={paymentMethod === 'upi'}
-                  onChange={() => setPaymentMethod('upi')}
-                />
-                <div className="payment-pill-content">
-                  <div className="payment-pill-title">
-                    <span className="payment-badge">Instant</span>
-                    📱 UPI (QR Code, GPay, PhonePe, Paytm)
-                  </div>
-                  <span className="payment-pill-desc">Scan dynamic QR code or open UPI app directly</span>
-                </div>
-              </label>
+            <h3>
+              2. Instant UPI Payment
+              <span className="payment-badge">0% Fees · Instant Settlement</span>
+            </h3>
 
-              <label className={`payment-pill ${paymentMethod === 'cod' ? 'active' : ''}`}>
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="cod"
-                  checked={paymentMethod === 'cod'}
-                  onChange={() => setPaymentMethod('cod')}
+            <div className="upi-payment-box">
+              <div className="upi-qr-wrap">
+                <img
+                  src={qrCodeUrl}
+                  alt="Scan to Pay via UPI"
+                  className="upi-qr-image"
+                  width={180}
+                  height={180}
                 />
-                <div className="payment-pill-content">
-                  <div className="payment-pill-title">
-                    💵 Cash on Delivery (COD)
-                  </div>
-                  <span className="payment-pill-desc">Pay upon live package arrival at your doorstep</span>
-                </div>
-              </label>
-            </div>
+                <span className="upi-scan-hint">Scan with GPay, PhonePe, Paytm, BHIM</span>
+              </div>
 
-            {/* UPI Details Box */}
-            {paymentMethod === 'upi' && (
-              <div className="upi-payment-box">
-                <div className="upi-qr-wrap">
-                  <img
-                    src={qrCodeUrl}
-                    alt="UPI Payment QR Code"
-                    className="upi-qr-image"
-                    width={180}
-                    height={180}
+              <div className="upi-details-pane">
+                <div className="upi-id-card">
+                  <span className="upi-label">Store UPI ID:</span>
+                  <div className="upi-copy-row">
+                    <code className="upi-address">{upiId}</code>
+                    <button
+                      type="button"
+                      onClick={handleCopyUpi}
+                      className="btn-copy-upi"
+                    >
+                      {copied ? '✓ Copied' : 'Copy'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="upi-amount-row">
+                  <span>Pay Exact Amount:</span>
+                  <strong className="upi-amount-value">{formatPrice(total)}</strong>
+                </div>
+
+                {/* One-tap UPI deep link button for Mobile */}
+                <a
+                  href={upiUrl}
+                  className="btn-open-upi-app"
+                >
+                  ⚡ Open in UPI App (GPay / PhonePe / Paytm)
+                </a>
+
+                <div className="form-group utr-group">
+                  <label htmlFor="upiRef">
+                    12-Digit UPI Transaction UTR / Ref No. <span className="required">*</span>
+                  </label>
+                  <input
+                    id="upiRef"
+                    name="upiRef"
+                    type="text"
+                    value={upiRef}
+                    onChange={(e) => {
+                      setUpiRef(e.target.value)
+                      if (errors.upiRef) setErrors((prev) => ({ ...prev, upiRef: null }))
+                    }}
+                    placeholder="e.g. 431289104812"
+                    maxLength={20}
+                    className={errors.upiRef ? 'input-error' : ''}
+                    required
                   />
-                  <span className="upi-scan-hint">Scan with GPay, PhonePe, Paytm, BHIM</span>
-                </div>
-
-                <div className="upi-details-pane">
-                  <div className="upi-id-card">
-                    <span className="upi-label">Store UPI ID:</span>
-                    <div className="upi-copy-row">
-                      <code className="upi-address">{upiId}</code>
-                      <button
-                        type="button"
-                        onClick={handleCopyUpi}
-                        className="btn-copy-upi"
-                      >
-                        {copied ? '✓ Copied' : 'Copy'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="upi-amount-row">
-                    <span>Pay Exact Amount:</span>
-                    <strong className="upi-amount-value">{formatPrice(total)}</strong>
-                  </div>
-
-                  {/* One-tap UPI deep link button for Mobile */}
-                  <a
-                    href={upiUrl}
-                    className="btn-open-upi-app"
-                  >
-                    ⚡ Open UPI App (GPay / PhonePe / Paytm)
-                  </a>
-
-                  <div className="form-group utr-group">
-                    <label htmlFor="upiRef">
-                      UPI Reference / UTR Number <em>(Optional / recommended after payment)</em>
-                    </label>
-                    <input
-                      id="upiRef"
-                      name="upiRef"
-                      type="text"
-                      value={upiRef}
-                      onChange={(e) => setUpiRef(e.target.value)}
-                      placeholder="e.g. 431289104812"
-                      maxLength={20}
-                    />
-                    <small className="field-hint">
-                      Found on your Google Pay / PhonePe transaction receipt for instant priority dispatch.
-                    </small>
-                  </div>
+                  {errors.upiRef && <span className="field-error">{errors.upiRef}</span>}
+                  <small className="field-hint">
+                    Enter the 12-digit UTR/Ref from your UPI app receipt to confirm your live livestock dispatch.
+                  </small>
                 </div>
               </div>
-            )}
-
-            {/* COD Details Box */}
-            {paymentMethod === 'cod' && (
-              <div className="cod-details-box">
-                <div className="cod-icon">🚚</div>
-                <div className="cod-text">
-                  <strong>Cash / UPI on Live Arrival</strong>
-                  <p>
-                    Your healthy fish are packaged in insulated, oxygenated bags with temperature control.
-                    Pay <strong>{formatPrice(total)}</strong> in cash or via UPI to the delivery executive when the package arrives.
-                  </p>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
 
           <button
@@ -330,11 +303,7 @@ export default function Checkout() {
             disabled={submitting}
             className="btn-primary btn-submit-order"
           >
-            {submitting
-              ? 'Processing Order...'
-              : paymentMethod === 'upi'
-              ? `Confirm & Place Order (${formatPrice(total)})`
-              : `Place COD Order (${formatPrice(total)})`}
+            {submitting ? 'Verifying & Placing Order...' : `Confirm & Place Order (${formatPrice(total)})`}
           </button>
         </form>
 
@@ -371,6 +340,10 @@ export default function Checkout() {
             <div className="perk-item">
               <span className="perk-icon">📦</span>
               <span>Insulated Oxygen-Packed Transport</span>
+            </div>
+            <div className="perk-item">
+              <span className="perk-icon">⚡</span>
+              <span>Instant WhatsApp & Email Order Updates</span>
             </div>
           </div>
         </div>

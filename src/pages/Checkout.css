@@ -1,5 +1,5 @@
 .checkout-page {
-  padding-block: 28px 60px;
+  padding-block: 28px 70px;
 }
 
 .checkout-layout {
@@ -11,7 +11,7 @@
 
 @media (max-width: 768px) {
   .checkout-page {
-    padding-block: 16px 40px;
+    padding-block: 18px 110px;
   }
 
   .checkout-layout {
@@ -20,7 +20,7 @@
   }
 
   .checkout-form, .checkout-summary {
-    padding: 18px 16px;
+    padding: 20px 18px;
     border-radius: var(--radius-md);
   }
 }
@@ -70,10 +70,11 @@
 
 @media (max-width: 540px) {
   .checkout-page {
-    padding: 24px 0;
+    padding-block: 14px 120px;
   }
   .checkout-form, .checkout-summary {
     padding: 16px;
+    border-radius: var(--radius-md);
   }
   .form-row {
     grid-template-columns: 1fr;
@@ -89,9 +90,10 @@
   margin-top: 18px;
   border-radius: var(--radius-md);
   box-shadow: 0 4px 14px rgba(111, 63, 245, 0.35);
+  cursor: pointer;
 }
 
-/* Payment Method Styles */
+/* Payment Section */
 .payment-section {
   margin-top: 24px;
   padding-top: 20px;
@@ -103,57 +105,9 @@
   font-weight: 700;
   margin-bottom: 14px;
   color: var(--text-primary);
-}
-
-.payment-options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.payment-pill {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px 16px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  background: var(--bg-surface);
-  transition: all 0.2s ease;
-}
-
-.payment-pill:hover {
-  border-color: rgba(111, 63, 245, 0.5);
-  background: rgba(111, 63, 245, 0.02);
-}
-
-.payment-pill.active {
-  border-color: var(--accent);
-  background: rgba(111, 63, 245, 0.05);
-}
-
-.payment-pill input[type="radio"] {
-  margin-top: 3px;
-  accent-color: var(--accent);
-  width: 18px;
-  height: 18px;
-}
-
-.payment-pill-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.payment-pill-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
 }
 
 .payment-badge {
@@ -163,14 +117,9 @@
   text-transform: uppercase;
   background: #10b981;
   color: #fff;
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: 4px;
   letter-spacing: 0.5px;
-}
-
-.payment-pill-desc {
-  font-size: 13px;
-  color: var(--text-secondary);
 }
 
 /* UPI Payment Box */
@@ -179,7 +128,7 @@
   grid-template-columns: auto 1fr;
   gap: 20px;
   background: linear-gradient(135deg, rgba(111, 63, 245, 0.04) 0%, rgba(139, 92, 246, 0.08) 100%);
-  border: 1px solid rgba(111, 63, 245, 0.2);
+  border: 1.5px solid rgba(111, 63, 245, 0.25);
   border-radius: var(--radius-md);
   padding: 20px;
   margin-bottom: 18px;
@@ -302,8 +251,29 @@
   margin-bottom: 0;
 }
 
+.utr-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2d1a4d;
+}
+
+.utr-group label .required {
+  color: var(--danger);
+  margin-left: 2px;
+}
+
 .utr-group input {
   background: #ffffff;
+  border: 1.5px solid rgba(111, 63, 245, 0.4);
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.utr-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(111, 63, 245, 0.15);
 }
 
 .field-hint {
@@ -313,35 +283,43 @@
   margin-top: 4px;
 }
 
-/* COD Box */
-.cod-details-box {
+/* Summary Perks */
+.checkout-perks {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  padding: 16px;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: var(--radius-md);
-  margin-bottom: 18px;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.cod-icon {
-  font-size: 32px;
-  line-height: 1;
-}
-
-.cod-text strong {
-  display: block;
-  font-size: 15px;
-  color: #065f46;
-  margin-bottom: 4px;
-}
-
-.cod-text p {
+.perk-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 13px;
-  color: #047857;
-  margin: 0;
-  line-height: 1.5;
+  font-weight: 600;
+  color: #4b3e65;
+}
+
+.grand-total-highlight {
+  font-size: 20px;
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .upi-payment-box {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .upi-details-pane {
+    align-items: center;
+    width: 100%;
+  }
+  .upi-copy-row {
+    justify-content: center;
+  }
 }
 
 /* Summary Perks */

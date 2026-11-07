@@ -6,7 +6,7 @@ export const CURRENCY = 'INR'
 export const LOCALE = 'en-IN'
 export const SHIPPING_FLAT = 99
 export const STORE_NAME = 'VP Aquarium'
-export const STORE_UPI_ID = 'dayanithi2507@okaxis'
+export const STORE_UPI_ID = 'ganesh123madesh@okaxis'
 
 // Super Admin Credentials
 export const SUPER_ADMIN = {
