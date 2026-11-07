@@ -78,8 +78,8 @@ export async function sendOrderNotifications(order) {
               <span style="font-weight: 600;">${fmt(order.subtotalCents)}</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #6a5a82;">
-              <span>Safe Climate-Controlled Shipping:</span>
-              <span style="font-weight: 600;">${fmt(order.shippingCents)}</span>
+              <span>Delivery & Safe Packaging:</span>
+              <span style="font-weight: 700; color: #10b981;">FREE</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #ede7f8; font-size: 17px; font-weight: 800; color: #2d1a4d;">
               <span>Total Paid:</span>

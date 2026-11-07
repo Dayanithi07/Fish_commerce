@@ -93,13 +93,67 @@
   margin-top: auto;
   width: 100%;
   font-size: 14px;
+  font-weight: 700;
   padding: 10px 14px;
+  letter-spacing: 0.3px;
 }
 
 .btn-add-card:disabled {
   background: #d8d3e0;
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+/* Card Quantity Stepper */
+.card-qty-stepper {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--accent);
+  color: #ffffff;
+  border-radius: var(--radius-sm);
+  padding: 3px 6px;
+  box-shadow: 0 2px 8px rgba(111, 63, 245, 0.25);
+}
+
+.btn-stepper-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s ease, transform 0.1s ease;
+  line-height: 1;
+}
+
+.btn-stepper-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.btn-stepper-btn:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.btn-stepper-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.stepper-qty-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  min-width: 24px;
+  text-align: center;
 }
 
 @media (max-width: 520px) {
@@ -131,5 +185,19 @@
     font-size: 12px;
     padding: 7px 8px;
     border-radius: var(--radius-sm);
+  }
+
+  .card-qty-stepper {
+    padding: 2px 4px;
+  }
+
+  .btn-stepper-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 16px;
+  }
+
+  .stepper-qty-val {
+    font-size: 12px;
   }
 }

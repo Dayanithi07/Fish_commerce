@@ -119,8 +119,8 @@ export default function OrderSuccess() {
               <td style="text-align: right; font-weight: 600;">${formatPrice(order.subtotal)}</td>
             </tr>
             <tr>
-              <td>Safe Climate Packaging:</td>
-              <td style="text-align: right; font-weight: 600;">${formatPrice(order.shipping)}</td>
+              <td>Delivery & Packaging:</td>
+              <td style="text-align: right; font-weight: 700; color: #10b981;">FREE</td>
             </tr>
             <tr class="grand-total">
               <td>Total Paid:</td>
@@ -204,8 +204,8 @@ export default function OrderSuccess() {
                 </div>
               ))}
               <div className="order-item-row" style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
-                <span>Safe Climate-Controlled Shipping:</span>
-                <span>{formatPrice(order.shipping)}</span>
+                <span>Delivery & Climate Packaging:</span>
+                <span style={{ color: '#10b981', fontWeight: '700' }}>FREE</span>
               </div>
               <div className="order-total-row">
                 <span>Total Paid:</span>

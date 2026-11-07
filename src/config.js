@@ -4,7 +4,7 @@ export const SCHEMA_VERSION = 1
 
 export const CURRENCY = 'INR'
 export const LOCALE = 'en-IN'
-export const SHIPPING_FLAT = 99
+export const SHIPPING_FLAT = 0
 export const STORE_NAME = 'VP Aquarium'
 export const STORE_UPI_ID = 'ganesh123madesh@okaxis'
 

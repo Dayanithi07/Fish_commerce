@@ -8,7 +8,7 @@ export default function ProductDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { getProductById } = useProducts()
-  const { addToCart } = useCart()
+  const { items, addToCart, updateQuantity } = useCart()
 
   const product = getProductById(id)
 
@@ -24,9 +24,21 @@ export default function ProductDetail() {
 
   const isFood = product.productType === 'food'
 
+  // Cart item quantity check
+  const cartItem = items.find((it) => it.productId === product.id)
+  const cartQty = cartItem?.quantity || 0
+
   const handlePlaceOrder = () => {
-    addToCart(product.id, 1)
-    navigate('/checkout')
+    // When purchasing directly from product page, check out this product ALONE!
+    const checkoutQuantity = cartQty > 0 ? cartQty : 1
+    navigate('/checkout', {
+      state: {
+        directItem: {
+          product,
+          quantity: checkoutQuantity,
+        },
+      },
+    })
   }
 
   return (
@@ -78,14 +90,38 @@ export default function ProductDetail() {
           </div>
 
           <div className="detail-actions">
-            <button
-              type="button"
-              disabled={!product.isAvailable || product.stock <= 0}
-              onClick={() => addToCart(product.id, 1)}
-              className="btn-primary btn-add-large"
-            >
-              {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
-            </button>
+            {cartQty === 0 ? (
+              <button
+                type="button"
+                disabled={!product.isAvailable || product.stock <= 0}
+                onClick={() => addToCart(product.id, 1)}
+                className="btn-primary btn-add-large"
+              >
+                {product.stock <= 0 ? 'Out of Stock' : '+ Add to Cart'}
+              </button>
+            ) : (
+              <div className="detail-qty-stepper">
+                <button
+                  type="button"
+                  className="btn-stepper-btn detail-stepper-btn"
+                  onClick={() => updateQuantity(product.id, cartQty - 1)}
+                  aria-label="Decrease quantity"
+                >
+                  −
+                </button>
+                <span className="stepper-qty-val detail-stepper-val">{cartQty} in Cart</span>
+                <button
+                  type="button"
+                  className="btn-stepper-btn detail-stepper-btn"
+                  disabled={cartQty >= product.stock}
+                  onClick={() => updateQuantity(product.id, cartQty + 1)}
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+              </div>
+            )}
+
             <button
               type="button"
               disabled={!product.isAvailable || product.stock <= 0}

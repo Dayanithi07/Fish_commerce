@@ -4,9 +4,12 @@ import { useCart } from '../context/CartContext.jsx'
 import './ProductCard.css'
 
 export default function ProductCard({ product }) {
-  const { addToCart } = useCart()
+  const { items, addToCart, updateQuantity } = useCart()
 
   if (!product) return null
+
+  const cartItem = items.find((it) => it.productId === product.id)
+  const cartQty = cartItem?.quantity || 0
 
   return (
     <div className="product-card">
@@ -26,14 +29,38 @@ export default function ProductCard({ product }) {
           <Link to={`/products/${product.id}`}>{product.name}</Link>
         </h3>
         <p className="product-price">{formatPrice(product.price)}</p>
-        <button
-          type="button"
-          disabled={!product.isAvailable || product.stock <= 0}
-          onClick={() => addToCart(product.id, 1)}
-          className="btn-primary btn-add-card"
-        >
-          {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
-        </button>
+
+        {cartQty === 0 ? (
+          <button
+            type="button"
+            disabled={!product.isAvailable || product.stock <= 0}
+            onClick={() => addToCart(product.id, 1)}
+            className="btn-primary btn-add-card"
+          >
+            {product.stock <= 0 ? 'Out of Stock' : '+ Add'}
+          </button>
+        ) : (
+          <div className="card-qty-stepper">
+            <button
+              type="button"
+              className="btn-stepper-btn"
+              onClick={() => updateQuantity(product.id, cartQty - 1)}
+              aria-label="Decrease quantity"
+            >
+              −
+            </button>
+            <span className="stepper-qty-val">{cartQty}</span>
+            <button
+              type="button"
+              className="btn-stepper-btn"
+              disabled={cartQty >= product.stock}
+              onClick={() => updateQuantity(product.id, cartQty + 1)}
+              aria-label="Increase quantity"
+            >
+              +
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

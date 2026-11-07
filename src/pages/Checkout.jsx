@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { useOrders } from '../context/OrderContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { formatPrice } from '../utils/money.js'
-import { SHIPPING_FLAT, STORE_NAME, STORE_UPI_ID } from '../config.js'
+import { STORE_NAME, STORE_UPI_ID } from '../config.js'
 import './Checkout.css'
 
 export default function Checkout() {
@@ -12,6 +12,20 @@ export default function Checkout() {
   const { placeOrder } = useOrders()
   const { user } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // If user placed order directly from a specific product page, checkout that product alone!
+  const directItem = location.state?.directItem
+
+  const activeLines = directItem
+    ? [
+        {
+          product: directItem.product,
+          quantity: directItem.quantity || 1,
+          lineTotal: directItem.product.price * (directItem.quantity || 1),
+        },
+      ]
+    : lines
 
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -28,7 +42,7 @@ export default function Checkout() {
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
 
-  if (lines.length === 0) {
+  if (activeLines.length === 0) {
     return (
       <div className="container checkout-empty">
         <h2>Your Cart is Empty</h2>
@@ -38,8 +52,12 @@ export default function Checkout() {
     )
   }
 
-  const shipping = SHIPPING_FLAT
-  const total = subtotal + shipping
+  // Shipping cost removed — Free delivery
+  const activeSubtotal = directItem
+    ? directItem.product.price * (directItem.quantity || 1)
+    : subtotal
+  const shipping = 0
+  const total = activeSubtotal
 
   // Verified Store UPI Configuration
   const upiId = STORE_UPI_ID || 'ganesh123madesh@okaxis'
@@ -77,7 +95,7 @@ export default function Checkout() {
     }
 
     const orderPayload = {
-      items: lines.map((l) => ({ productId: l.product.id, quantity: l.quantity })),
+      items: activeLines.map((l) => ({ productId: l.product.id, quantity: l.quantity })),
       customer: {
         name: formData.name,
         email: formData.email,
@@ -116,6 +134,11 @@ export default function Checkout() {
   return (
     <div className="container checkout-page">
       <h1>Checkout & Payment</h1>
+      {directItem && (
+        <div style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--accent)', fontWeight: '600' }}>
+          ⚡ Direct Buy: Checking out only <strong>{directItem.product.name}</strong> (Qty: {directItem.quantity || 1})
+        </div>
+      )}
       <div className="checkout-layout">
         <form className="checkout-form" onSubmit={handleSubmit}>
           <h3>1. Contact & Shipping Details</h3>
@@ -310,7 +333,7 @@ export default function Checkout() {
         <div className="checkout-summary">
           <h3>Order Summary</h3>
           <div className="summary-items">
-            {lines.map(({ product, quantity, lineTotal }) => (
+            {activeLines.map(({ product, quantity, lineTotal }) => (
               <div key={product.id} className="summary-item">
                 <span>{product.name} × {quantity}</span>
                 <strong>{formatPrice(lineTotal)}</strong>
@@ -320,11 +343,11 @@ export default function Checkout() {
           <div className="summary-totals">
             <div className="summary-row">
               <span>Subtotal:</span>
-              <span>{formatPrice(subtotal)}</span>
+              <span>{formatPrice(activeSubtotal)}</span>
             </div>
             <div className="summary-row">
-              <span>Safe Climate Shipping:</span>
-              <span>{formatPrice(shipping)}</span>
+              <span>Safe Climate Delivery:</span>
+              <span style={{ color: '#10b981', fontWeight: '700' }}>FREE</span>
             </div>
             <div className="summary-row total-row">
               <span>Grand Total:</span>
