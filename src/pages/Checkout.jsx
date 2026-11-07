@@ -44,8 +44,8 @@ export default function Checkout() {
 
   // UPI configuration
   const upiId = STORE_UPI_ID || 'dayanithi2507@okaxis'
-  const storeName = STORE_NAME || 'Fishcommerce Aquatics'
-  const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(storeName)}&am=${total}&cu=INR&tn=${encodeURIComponent('Fishcommerce Live Livestock')}`
+  const storeName = STORE_NAME || 'VP Aquarium'
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(storeName)}&am=${total}&cu=INR&tn=${encodeURIComponent('VP Aquarium Live Livestock')}`
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`
 
   const handleCopyUpi = () => {

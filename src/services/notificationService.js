@@ -42,7 +42,7 @@ export async function sendOrderNotifications(order) {
         
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #3C1E5E 0%, #6F3FF5 100%); padding: 32px 28px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">🐠 Fishcommerce</h1>
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">🐠 VP Aquarium</h1>
           <p style="color: #e0d5fa; margin: 8px 0 0; font-size: 14px;">Healthy, Hand-Raised Aquatic Companions</p>
         </div>
 
@@ -100,7 +100,7 @@ export async function sendOrderNotifications(order) {
 
         <!-- Footer -->
         <div style="background: #fbf9ff; border-top: 1px solid #ede7f8; padding: 20px 28px; text-align: center; font-size: 12px; color: #9a8bb3;">
-          <p style="margin: 0 0 6px;">Fishcommerce Inc. — Ethical Fishkeeping & Aquaria Experts</p>
+          <p style="margin: 0 0 6px;">VP Aquarium Inc. — Ethical Fishkeeping & Aquaria Experts</p>
           <p style="margin: 0;">Need help? Reply directly to this email or visit our store.</p>
         </div>
       </div>
@@ -115,7 +115,7 @@ export async function sendOrderNotifications(order) {
 
   const adminHtml = baseEmailTemplate(
     `🚨 New Order Received: ${order.reference}`,
-    `An order has just been placed on Fishcommerce by <strong>${order.customerName}</strong> (${order.customerEmail}). Full order and dispatch details below:`
+    `An order has just been placed on VP Aquarium by <strong>${order.customerName}</strong> (${order.customerEmail}). Full order and dispatch details below:`
   )
 
   const sendEmail = async (to, subject, html) => {
@@ -129,7 +129,7 @@ export async function sendOrderNotifications(order) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'Fishcommerce <onboarding@resend.dev>',
+          from: 'VP Aquarium <onboarding@resend.dev>',
           to: [to],
           subject: subject,
           html: html,
@@ -153,7 +153,7 @@ export async function sendOrderNotifications(order) {
   const [customerResult, adminResult] = await Promise.allSettled([
     sendEmail(
       order.customerEmail,
-      `Order Confirmation - ${order.reference} | Fishcommerce`,
+      `Order Confirmation - ${order.reference} | VP Aquarium`,
       customerHtml
     ),
     sendEmail(

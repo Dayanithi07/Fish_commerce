@@ -78,7 +78,7 @@ export default function Auth() {
   return (
     <div className="container auth-page">
       <div className="auth-card">
-        <h2>{isLogin ? 'Sign In to Fishcommerce' : 'Create an Account'}</h2>
+        <h2>{isLogin ? 'Sign In to VP Aquarium' : 'Create an Account'}</h2>
 
         {generalError && <div className="alert-error">{generalError}</div>}
         {infoMessage && <div className="alert-info">{infoMessage}</div>}

@@ -12,7 +12,7 @@ export default function LogoSVG({ size = 36, className = '' }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="Fishcommerce logo"
+      aria-label="VP Aquarium logo"
       role="img"
     >
       <defs>

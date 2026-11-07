@@ -14,7 +14,7 @@ export default function OrderSuccess() {
         {order ? (
           <>
             <p className="order-ref">Reference: <strong>{order.reference}</strong></p>
-            <p>Thank you for choosing Fishcommerce, <strong>{order.customerName}</strong>. Your order is pending fulfillment.</p>
+            <p>Thank you for choosing VP Aquarium, <strong>{order.customerName}</strong>. Your order is pending fulfillment.</p>
 
             <div className="order-details-box">
               <h3 style={{ marginTop: '16px' }}>Payment & Delivery Details</h3>

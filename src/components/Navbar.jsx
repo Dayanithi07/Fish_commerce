@@ -39,7 +39,7 @@ export default function Navbar() {
           {/* Brand Logo */}
           <Link to="/" className="navbar-brand" onClick={closeMenu}>
             <LogoSVG size={32} className="brand-logo-svg" />
-            <span>Fishcommerce</span>
+            <span>VP Aquarium</span>
           </Link>
 
           {/* Desktop Navigation Links */}
