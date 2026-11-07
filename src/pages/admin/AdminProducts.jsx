@@ -6,7 +6,7 @@ import Modal from '../../components/Modal.jsx'
 import './AdminProducts.css'
 
 export default function AdminProducts() {
-  const { products, toggleAvailability, updateProduct, deleteProduct, addProduct, resetToSeed } = useProducts()
+  const { products, toggleAvailability, updateProduct, deleteProduct, addProduct } = useProducts()
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedIds, setSelectedIds] = useState([])
 
@@ -186,9 +186,6 @@ export default function AdminProducts() {
         <div className="admin-actions">
           <button type="button" onClick={() => setModalOpen(true)} className="btn-primary">
             + Add New Species
-          </button>
-          <button type="button" onClick={resetToSeed} className="btn-secondary">
-            Reset to Seed Data
           </button>
         </div>
       </div>

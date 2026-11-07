@@ -303,16 +303,6 @@ export function ProductProvider({ children }) {
     [products]
   )
 
-  const resetToSeed = useCallback(async () => {
-    if (isSupabaseConfigured) {
-      for (const item of fishData) {
-        await supabase.from('products').upsert(mapToDb(item))
-      }
-    }
-    setProducts(fishData)
-    writeJSON('products', fishData)
-  }, [])
-
   const applyStockDeltas = useCallback(
     (deltas) => {
       const currentProducts = readJSON('products', products)
@@ -363,7 +353,6 @@ export function ProductProvider({ children }) {
       updateProduct,
       deleteProduct,
       toggleAvailability,
-      resetToSeed,
       applyStockDeltas,
       refreshProducts: fetchSupabaseProducts,
     }),
@@ -376,7 +365,6 @@ export function ProductProvider({ children }) {
       updateProduct,
       deleteProduct,
       toggleAvailability,
-      resetToSeed,
       applyStockDeltas,
       fetchSupabaseProducts,
     ]
