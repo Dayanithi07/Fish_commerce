@@ -21,8 +21,15 @@ export default function Auth() {
   const [infoMessage, setInfoMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  const { login, signup, signInWithGoogle, completeAdminSetup } = useAuth()
+  const { login, signup, signInWithGoogle, completeAdminSetup, user, isAdmin } = useAuth()
   const navigate = useNavigate()
+
+  // If user completes setup and is already authenticated as admin, go straight to portal
+  useEffect(() => {
+    if (!isInviteSetup && isAdmin) {
+      navigate('/admin/products', { replace: true })
+    }
+  }, [isAdmin, isInviteSetup, navigate])
 
   useEffect(() => {
     if (invitedEmail) {
@@ -72,7 +79,8 @@ export default function Auth() {
           return
         }
 
-        navigate('/admin/products')
+        // Redirect to admin portal — role is now 'admin'
+        navigate('/admin/products', { replace: true })
         return
       }
 
@@ -203,7 +211,7 @@ export default function Auth() {
                 className="btn-primary btn-auth-submit"
                 disabled={submitting}
               >
-                {submitting ? 'Activating Admin Access...' : 'Activate Admin Account & Go to Dashboard →'}
+                {submitting ? '⏳ Activating & Redirecting to Portal...' : '🛡️ Activate Admin Account & Go to Dashboard →'}
               </button>
             </form>
           </>

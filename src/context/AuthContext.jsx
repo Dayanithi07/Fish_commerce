@@ -529,31 +529,63 @@ export function AuthProvider({ children }) {
       writeJSON('custom_admins', updated)
       setRegisteredAdmins(updated)
 
-      // Try registering with Supabase Auth too
+      // Update Supabase Auth user and profiles table
       if (isSupabaseConfigured) {
         try {
-          await supabase.auth.signUp({
-            email: trimmedEmail,
+          // The user already has a Supabase Auth session from clicking the magic link.
+          // Update their password and metadata (no new signup needed).
+          const { data: updatedAuthUser, error: updateErr } = await supabase.auth.updateUser({
             password,
-            options: {
-              data: {
-                full_name: updatedAdminRecord.name,
-                role: 'admin',
-              },
-            },
+            data: { full_name: updatedAdminRecord.name, role: 'admin' },
           })
 
-          // Authenticate with new password to initialize JWT session
-          await supabase.auth.signInWithPassword({
+          if (updateErr) {
+            // If no active session (e.g. link expired), fall back to signUp
+            await supabase.auth.signUp({
+              email: trimmedEmail,
+              password,
+              options: { data: { full_name: updatedAdminRecord.name, role: 'admin' } },
+            })
+          }
+
+          // Ensure role is 'admin' in profiles table
+          const authUserId = updatedAuthUser?.user?.id
+          if (authUserId) {
+            await supabase.from('profiles').upsert({
+              id: authUserId,
+              name: updatedAdminRecord.name,
+              email: trimmedEmail,
+              role: 'admin',
+              status: 'active',
+            }, { onConflict: 'id' })
+          } else {
+            await supabase.from('profiles')
+              .update({ role: 'admin', status: 'active', name: updatedAdminRecord.name })
+              .eq('email', trimmedEmail)
+          }
+
+          // Mark invitation as active
+          await supabase.from('admin_invitations')
+            .update({ status: 'active' })
+            .eq('email', trimmedEmail)
+
+          // Sign in with the new password to establish a fresh JWT session
+          const { data: signInData } = await supabase.auth.signInWithPassword({
             email: trimmedEmail,
             password,
           })
+
+          if (signInData?.user) {
+            const profile = await syncProfile(signInData.user)
+            return { ok: true, user: profile }
+          }
         } catch (e) {
-          // Fallback: local custom_admins guarantees offline and instant admin access
+          console.warn('[completeAdminSetup] Supabase update warning:', e)
+          // Fallback: local custom_admins guarantees offline admin access
         }
       }
 
-      // Automatically authenticate as admin
+      // Automatically authenticate as admin (local fallback)
       const adminSession = {
         id: updatedAdminRecord.id,
         name: updatedAdminRecord.name,
@@ -566,7 +598,7 @@ export function AuthProvider({ children }) {
 
       return { ok: true, user: adminSession }
     },
-    []
+    [syncProfile]
   )
 
   /**
