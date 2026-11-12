@@ -1,0 +1,102 @@
+.policy-page {
+  padding: 36px 16px 80px;
+  max-width: 860px;
+}
+
+.policy-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light, #ede7f8);
+  border-radius: var(--radius-lg, 16px);
+  padding: 36px 32px;
+  box-shadow: 0 4px 20px rgba(111, 63, 245, 0.05);
+}
+
+.policy-card h1 {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+  color: var(--text-primary, #2d1a4d);
+  margin-bottom: 6px;
+}
+
+.policy-updated {
+  font-size: 13px;
+  color: var(--text-muted, #8e7ea8);
+  margin-bottom: 28px;
+}
+
+.policy-card section {
+  margin-bottom: 26px;
+}
+
+.policy-card h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary, #2d1a4d);
+  margin: 0 0 10px;
+}
+
+.policy-card p {
+  color: var(--text-secondary, #43335e);
+  font-size: 14.5px;
+  line-height: 1.65;
+  margin: 0 0 12px;
+}
+
+.policy-card ul,
+.policy-card ol {
+  color: var(--text-secondary, #43335e);
+  font-size: 14.5px;
+  line-height: 1.65;
+  padding-left: 20px;
+  margin-bottom: 14px;
+}
+
+.policy-card li {
+  margin-bottom: 6px;
+}
+
+.policy-highlight-banner {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 28px;
+}
+
+.policy-highlight-banner h3 {
+  color: #047857;
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+
+.policy-highlight-banner p {
+  color: #1e3a2b;
+  margin: 0;
+  font-size: 14px;
+}
+
+.shipping-schedule-card {
+  background: #fbf9ff;
+  border: 1px solid #ede7f8;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 14px 0;
+}
+
+.shipping-schedule-card p {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.shipping-schedule-card p:last-child {
+  margin: 0;
+  color: var(--text-muted, #8e7ea8);
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .policy-card {
+    padding: 24px 18px;
+  }
+}

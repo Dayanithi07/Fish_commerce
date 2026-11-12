@@ -258,11 +258,15 @@ export function AuthProvider({ children }) {
         }
       }
 
+      // If this user was added to custom_admins, ensure their role is admin
+      const isCustom = (readJSON('custom_admins', []) || []).some((a) => a.email?.toLowerCase() === trimmedEmail)
+      const effectiveRole = isCustom || found.role === 'admin' ? 'admin' : (found.role || 'customer')
+
       const authUser = {
         id: found.id,
         name: found.name,
         email: found.email,
-        role: found.role || 'customer',
+        role: effectiveRole,
       }
       setUser(authUser)
       writeJSON('session', authUser)
@@ -460,9 +464,31 @@ export function AuthProvider({ children }) {
       writeJSON('custom_admins', updated)
       setRegisteredAdmins(updated)
 
-      // 2. Record in admin_invitations table if Supabase is configured
+      // 1.5 If this user already exists in local users, update their role to admin
+      const localUsers = readJSON('users', [])
+      const existingUserIdx = localUsers.findIndex((u) => u.email?.toLowerCase() === trimmedEmail)
+      if (existingUserIdx !== -1) {
+        localUsers[existingUserIdx] = { ...localUsers[existingUserIdx], role: 'admin' }
+        writeJSON('users', localUsers)
+      }
+
+      // If currently logged-in user is the one being promoted, update live session
+      const currentSession = readJSON('session', null)
+      if (currentSession && currentSession.email?.toLowerCase() === trimmedEmail) {
+        const updatedSession = { ...currentSession, role: 'admin' }
+        setUser(updatedSession)
+        writeJSON('session', updatedSession)
+      }
+
+      // 2. Record in admin_invitations and promote profiles in Supabase if configured
       if (isSupabaseConfigured) {
         try {
+          // Immediately promote in profiles table if account already exists
+          await supabase
+            .from('profiles')
+            .update({ role: 'admin', status: 'active', name: trimmedName })
+            .eq('email', trimmedEmail)
+
           await supabase.from('admin_invitations').upsert(
             { name: trimmedName, email: trimmedEmail, status: 'invited' },
             { onConflict: 'email' }

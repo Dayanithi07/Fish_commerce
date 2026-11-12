@@ -1,10 +1,12 @@
 import { useLocation, Link } from 'react-router-dom'
 import { formatPrice } from '../utils/money.js'
+import { useStoreSettings } from '../hooks/useStoreSettings.js'
 import './OrderSuccess.css'
 
 export default function OrderSuccess() {
   const { state } = useLocation()
   const order = state?.order
+  const { settings } = useStoreSettings()
 
   // Trigger browser print dialog (Save as PDF on mobile & desktop)
   const handlePrint = () => {
@@ -71,7 +73,7 @@ export default function OrderSuccess() {
             <div>
               <h1 class="brand-title">🐠 VP Aquarium</h1>
               <p class="brand-sub">Premium Pet Fish & Live Aquatic Care</p>
-              <p class="brand-sub">Support: starboy1s2s3s3@gmail.com</p>
+              <p class="brand-sub">Support: ${settings.support_email}</p>
             </div>
             <div class="invoice-tag">
               <h2 class="invoice-number">TAX INVOICE</h2>
@@ -92,7 +94,7 @@ export default function OrderSuccess() {
             <div class="info-block">
               <h4>Payment & Settlement Details</h4>
               <p><strong>Payment Mode:</strong> ${order.paymentMethod || 'UPI Payment'}</p>
-              <p><strong>Store UPI:</strong> ganesh123madesh@okaxis</p>
+              <p><strong>Store UPI:</strong> ${settings.upi_id}</p>
               ${order.paymentRef ? `<p><strong>UPI UTR / Ref:</strong> <code>${order.paymentRef}</code></p>` : ''}
               <p><strong>Status:</strong> <span style="color: #10b981; font-weight: 700;">Verified (Pending Dispatch)</span></p>
             </div>
@@ -142,7 +144,7 @@ export default function OrderSuccess() {
             3. <strong>100% Live Arrival Guarantee:</strong> Please record unboxing video. Claims honored within 2 hours of live arrival.
           </div>
 
-          <p class="footer-note">VP Aquarium Inc. · Thank you for supporting ethical pet fishkeeping!</p>
+          <p class="footer-note">${settings.store_name} · ${settings.store_address} · Support: ${settings.support_phone} | ${settings.support_email}</p>
         </div>
       </body>
       </html>

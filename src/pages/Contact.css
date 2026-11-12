@@ -1,0 +1,183 @@
+.contact-page {
+  padding: 32px 16px 60px;
+  max-width: 1100px;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.contact-header h1 {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.contact-header p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Info Card */
+.contact-info-card,
+.contact-form-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.contact-info-card h2,
+.contact-form-card h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 20px;
+}
+
+.whatsapp-contact-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #25D366;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-bottom: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+}
+
+.whatsapp-contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+  color: #ffffff;
+}
+
+.contact-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.contact-detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.contact-icon {
+  font-size: 20px;
+  min-width: 28px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.contact-detail-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contact-detail-item strong {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contact-detail-item a,
+.contact-detail-item span {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.contact-detail-item a:hover {
+  color: var(--accent);
+}
+
+.live-arrival-note {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+}
+
+.live-arrival-note strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #047857;
+  font-size: 14px;
+}
+
+.live-arrival-note p {
+  margin: 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+/* Form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contact-submit-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.contact-form-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 8px 0 0;
+}
+
+.contact-success {
+  text-align: center;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.contact-success h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.contact-success p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+}

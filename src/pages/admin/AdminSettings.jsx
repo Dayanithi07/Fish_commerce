@@ -133,17 +133,39 @@ export default function AdminSettings() {
             </div>
 
             <div className="form-group">
-              <label>Operating & Dispatch Support Hours</label>
+              <label>Operating &amp; Dispatch Support Hours</label>
               <input
                 type="text"
                 value={supportHours}
                 onChange={(e) => setSupportHours(e.target.value)}
-                placeholder="Mon - Fri: 9:00 AM - 5:00 PM"
+                placeholder="Mon – Sat: 9:00 AM – 6:00 PM IST"
               />
             </div>
 
-            <button type="submit" className="btn-primary btn-save-settings">
-              {savedContact ? 'Saved ✓' : 'Save Changes'}
+            <div className="form-group">
+              <label>Store Address (shown on invoices)</label>
+              <input
+                type="text"
+                value={storeAddress}
+                onChange={(e) => setStoreAddress(e.target.value)}
+                placeholder="City, State, India"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>WhatsApp Support Number (digits only, with country code)</label>
+              <input
+                type="text"
+                value={whatsappNumber}
+                onChange={(e) => setWhatsappNumber(e.target.value.replace(/[^0-9]/g, ''))}
+                placeholder="e.g. 919876543210"
+                maxLength={15}
+              />
+              <span className="field-hint">Used for the floating WhatsApp chat button visible to all customers.</span>
+            </div>
+
+            <button type="submit" className="btn-primary btn-save-settings" disabled={savingSettings}>
+              {savingSettings ? 'Saving to DB…' : savedContact ? '✓ Saved to Database' : 'Save Changes'}
             </button>
           </form>
         </div>
@@ -344,7 +366,7 @@ export default function AdminSettings() {
           <div className="integration-item">
             <div className="integration-info">
               <strong>Resend Transactional Email Relay</strong>
-              <p>Automated confirmation emails to customer and alerts to {ADMIN_EMAIL}</p>
+              <p>Automated confirmation emails to customer and alerts to {settings.support_email}</p>
             </div>
             <span className="badge-status badge-active">API Active</span>
           </div>

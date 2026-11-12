@@ -65,6 +65,9 @@ export default function Navbar() {
             <NavLink to="/about" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               About
             </NavLink>
+            <NavLink to="/contact" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              Contact
+            </NavLink>
             {isAuthenticated && !isAdmin && (
               <NavLink to="/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                 My Orders
@@ -167,6 +170,9 @@ export default function Navbar() {
             <nav className="mobile-links">
               <NavLink to="/about" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
                 About
+              </NavLink>
+              <NavLink to="/contact" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
+                Contact
               </NavLink>
               {isAuthenticated && !isAdmin && (
                 <NavLink to="/orders" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
