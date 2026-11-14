@@ -1,31 +1,57 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { SUPER_ADMIN, DEMO_ADMIN } from '../../config.js'
-import { ADMIN_EMAIL } from '../../services/notificationService.js'
 import { isSupabaseConfigured } from '../../lib/supabase.js'
 import { useToast } from '../../components/Toast.jsx'
+import { useStoreSettings } from '../../hooks/useStoreSettings.js'
 import './AdminSettings.css'
 
 export default function AdminSettings() {
   const { user, inviteAdmin, removeAdmin, registeredAdmins, fetchAdminsFromDB } = useAuth()
   const { showToast } = useToast()
+  const { settings, saveSettings, saving: savingSettings } = useStoreSettings()
 
-  // Contact info state
-  const [notificationEmail, setNotificationEmail] = useState(ADMIN_EMAIL)
-  const [adminPhone, setAdminPhone] = useState('+1 (555) 382-7474')
-  const [supportHours, setSupportHours] = useState('Mon - Sat: 9:00 AM - 6:00 PM EST')
+  // Contact info state — initialized from live store_settings
+  const [notificationEmail, setNotificationEmail] = useState('')
+  const [adminPhone, setAdminPhone] = useState('')
+  const [supportHours, setSupportHours] = useState('')
+  const [storeAddress, setStoreAddress] = useState('')
+  const [whatsappNumber, setWhatsappNumber] = useState('')
   const [savedContact, setSavedContact] = useState(false)
 
-  // DB sync state
+  // Sync form fields whenever settings load from DB
+  useEffect(() => {
+    if (settings) {
+      setNotificationEmail(settings.support_email || '')
+      setAdminPhone(settings.support_phone || '')
+      setSupportHours(settings.support_hours || '')
+      setStoreAddress(settings.store_address || '')
+      setWhatsappNumber(settings.whatsapp_number || '')
+    }
+  }, [settings])
+
+  // DB sync state for admin accounts
   const [fetchingAdmins, setFetchingAdmins] = useState(false)
 
   // Load admins from DB on mount
   useEffect(() => {
+    let mounted = true
     const load = async () => {
       setFetchingAdmins(true)
-      try { await fetchAdminsFromDB() } finally { setFetchingAdmins(false) }
+      try {
+        if (typeof fetchAdminsFromDB === 'function') {
+          await fetchAdminsFromDB()
+        }
+      } catch (err) {
+        console.warn('Could not fetch admins from DB:', err)
+      } finally {
+        if (mounted) setFetchingAdmins(false)
+      }
     }
     load()
+    return () => {
+      mounted = false
+    }
   }, [fetchAdminsFromDB])
 
   // New admin invitation form state
@@ -34,11 +60,26 @@ export default function AdminSettings() {
   const [adminError, setAdminError] = useState('')
   const [lastInviteLink, setLastInviteLink] = useState('')
 
-  const handleSaveContact = (e) => {
+  const handleSaveContact = async (e) => {
     e.preventDefault()
-    setSavedContact(true)
-    showToast('Admin contact preferences updated successfully!', { type: 'success' })
-    setTimeout(() => setSavedContact(false), 3000)
+    try {
+      const result = await saveSettings({
+        support_email: notificationEmail,
+        support_phone: adminPhone,
+        support_hours: supportHours,
+        store_address: storeAddress,
+        whatsapp_number: whatsappNumber,
+      })
+      if (result.ok) {
+        setSavedContact(true)
+        showToast('Store settings saved to database successfully!', { type: 'success' })
+        setTimeout(() => setSavedContact(false), 3000)
+      } else {
+        showToast('Failed to save settings: ' + (result.error || 'Unknown error'), { type: 'error' })
+      }
+    } catch (err) {
+      showToast('Error saving settings: ' + err.message, { type: 'error' })
+    }
   }
 
   const handleInviteAdmin = async (e) => {
@@ -91,7 +132,7 @@ export default function AdminSettings() {
         <div className="settings-card">
           <h2>Store Administrator Info</h2>
           <p className="card-desc">
-            Primary administrative contact displayed on customer order summaries and store support channels.
+            Primary administrative contact displayed on customer order summaries, bills, and support channels.
           </p>
 
           <form onSubmit={handleSaveContact}>
@@ -109,12 +150,12 @@ export default function AdminSettings() {
             </div>
 
             <div className="form-group">
-              <label>Order Alert Notification Email (Resend)</label>
+              <label>Order Alert Notification Email</label>
               <input
                 type="email"
                 value={notificationEmail}
                 onChange={(e) => setNotificationEmail(e.target.value)}
-                placeholder="alerts@fishcommerce.com"
+                placeholder="alerts@vp-aquarium.com"
                 required
               />
               <span className="field-hint">
@@ -128,7 +169,7 @@ export default function AdminSettings() {
                 type="text"
                 value={adminPhone}
                 onChange={(e) => setAdminPhone(e.target.value)}
-                placeholder="+1 (555) 000-0000"
+                placeholder="+91 98765 43210"
               />
             </div>
 
@@ -245,7 +286,13 @@ export default function AdminSettings() {
             type="button"
             onClick={async () => {
               setFetchingAdmins(true)
-              try { await fetchAdminsFromDB() } finally { setFetchingAdmins(false) }
+              try {
+                if (typeof fetchAdminsFromDB === 'function') {
+                  await fetchAdminsFromDB()
+                }
+              } finally {
+                setFetchingAdmins(false)
+              }
             }}
             disabled={fetchingAdmins}
             style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: '700', cursor: fetchingAdmins ? 'default' : 'pointer', opacity: fetchingAdmins ? 0.6 : 1 }}
@@ -289,6 +336,7 @@ export default function AdminSettings() {
               {registeredAdmins
                 ?.filter(
                   (adm) =>
+                    adm &&
                     adm.email &&
                     adm.email.toLowerCase() !== SUPER_ADMIN.email.toLowerCase() &&
                     adm.email.toLowerCase() !== DEMO_ADMIN.email.toLowerCase()
@@ -298,8 +346,8 @@ export default function AdminSettings() {
                   const inviteUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/auth?setup=admin&email=${encodeURIComponent(adm.email)}&name=${encodeURIComponent(adm.name || '')}`
 
                   return (
-                    <tr key={adm.id}>
-                      <td><strong>{adm.name}</strong></td>
+                    <tr key={adm.id || adm.email}>
+                      <td><strong>{adm.name || 'Staff Member'}</strong></td>
                       <td><code>{adm.email}</code></td>
                       <td><span className="badge-role badge-role--custom">Custom Admin</span></td>
                       <td>
@@ -366,7 +414,7 @@ export default function AdminSettings() {
           <div className="integration-item">
             <div className="integration-info">
               <strong>Resend Transactional Email Relay</strong>
-              <p>Automated confirmation emails to customer and alerts to {settings.support_email}</p>
+              <p>Automated confirmation emails to customer and alerts to {settings?.support_email || 'store admin'}</p>
             </div>
             <span className="badge-status badge-active">API Active</span>
           </div>

@@ -38,25 +38,63 @@ const AdminOrders = lazy(() => import('./pages/admin/AdminOrders.jsx'))
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings.jsx'))
 
 class ErrorBoundary extends Component {
-  state = { hasError: false }
+  state = { hasError: false, error: null }
 
-  static getDerivedStateFromError() {
-    return { hasError: true }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
   }
 
   componentDidCatch(error, info) {
     console.error('Unhandled UI error:', error, info)
   }
 
+  handleReset = () => {
+    this.setState({ hasError: false, error: null })
+  }
+
   render() {
     if (this.state.hasError) {
       return (
         <div className="error-panel" role="alert">
-          <h1>Something went wrong</h1>
-          <p>Please reload the page. Your cart and orders are safe in this browser.</p>
-          <button type="button" className="btn-primary" onClick={() => window.location.reload()}>
-            Reload
-          </button>
+          <div className="error-card-inner">
+            <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>⚠️</span>
+            <h1>Something went wrong</h1>
+            <p>An unexpected error occurred while rendering this section.</p>
+            {this.state.error?.message && (
+              <pre className="error-details-pre">
+                {this.state.error.message}
+              </pre>
+            )}
+            <div className="error-actions-group">
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => {
+                  this.handleReset()
+                  window.history.back()
+                }}
+              >
+                ← Go to Previous Page
+              </button>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => {
+                  this.handleReset()
+                  window.location.href = '/'
+                }}
+              >
+                Return to Storefront
+              </button>
+              <button
+                type="button"
+                className="btn-reload-outline"
+                onClick={() => window.location.reload()}
+              >
+                ↻ Reload
+              </button>
+            </div>
+          </div>
         </div>
       )
     }

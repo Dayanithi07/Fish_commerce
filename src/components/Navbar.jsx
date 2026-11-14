@@ -42,7 +42,7 @@ export default function Navbar() {
             <span>VP Aquarium</span>
           </Link>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Navigation Links — Streamlined to core shopping items */}
           <nav className="navbar-links">
             <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               Home
@@ -61,12 +61,6 @@ export default function Navbar() {
             </Link>
             <NavLink to="/care" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               Care Guide
-            </NavLink>
-            <NavLink to="/about" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              About
-            </NavLink>
-            <NavLink to="/contact" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              Contact
             </NavLink>
             {isAuthenticated && !isAdmin && (
               <NavLink to="/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
