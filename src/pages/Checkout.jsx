@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext.jsx'
 import { useOrders } from '../context/OrderContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { formatPrice } from '../utils/money.js'
-import { STORE_NAME, STORE_UPI_ID } from '../config.js'
+import { STORE_NAME } from '../config.js'
 import './Checkout.css'
 
 export default function Checkout() {
@@ -55,10 +55,6 @@ export default function Checkout() {
     }
   })
 
-  // Payment method selection: 'razorpay' (default standard gateway) or 'upi_manual'
-  const [paymentMethod, setPaymentMethod] = useState('razorpay')
-  const [upiRef, setUpiRef] = useState('')
-  const [copied, setCopied] = useState(false)
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
 
@@ -72,24 +68,14 @@ export default function Checkout() {
     )
   }
 
-  // Shipping cost removed — Free delivery
+  // Free safe climate delivery
   const activeSubtotal = directItem
     ? directItem.product.price * (directItem.quantity || 1)
     : subtotal
   const shipping = 0
   const total = activeSubtotal
 
-  // Store & UPI Configuration
-  const upiId = STORE_UPI_ID || 'ganesh123madesh@okaxis'
   const storeName = STORE_NAME || 'VP Aquarium'
-  const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(storeName)}&am=${total}&cu=INR&tn=${encodeURIComponent('VP Aquarium Live Livestock')}`
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`
-
-  const handleCopyUpi = () => {
-    navigator.clipboard?.writeText(upiId)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2500)
-  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -167,14 +153,10 @@ export default function Checkout() {
       return
     }
 
-    if (paymentMethod === 'razorpay') {
-      await handleRazorpayPayment()
-    } else {
-      await handleManualUpiPayment()
-    }
+    await handleRazorpayPayment()
   }
 
-  // 1. Razorpay Standard Checkout Flow
+  // Razorpay Standard Checkout Flow
   const handleRazorpayPayment = async () => {
     const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_U03LOsD9tLnsmu'
 
@@ -296,44 +278,7 @@ export default function Checkout() {
     }
   }
 
-  // 2. Manual Store UPI Reference Flow
-  const handleManualUpiPayment = async () => {
-    setSubmitting(true)
 
-    // Validate UPI Transaction Reference / UTR (Standard Indian 12-digit numeric reference)
-    const cleanUtr = upiRef.trim().replace(/\s+/g, '')
-    if (!cleanUtr || !/^\d{12}$/.test(cleanUtr)) {
-      setSubmitting(false)
-      setErrors((prev) => ({
-        ...prev,
-        upiRef: 'Please enter the valid 12-digit numeric UPI UTR / Transaction Reference number from your payment app.',
-      }))
-      return
-    }
-
-    const orderPayload = {
-      items: activeLines.map((l) => ({ productId: l.product.id, quantity: l.quantity })),
-      customer: {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-      },
-      address: {
-        street: formData.street,
-        city: formData.city,
-        postalCode: formData.postalCode,
-      },
-      notes: formData.notes,
-      paymentMethod: 'Direct UPI (QR / App)',
-      paymentRef: cleanUtr,
-    }
-
-    try {
-      await finalizeOrder(orderPayload)
-    } finally {
-      setSubmitting(false)
-    }
-  }
 
   return (
     <div className="container checkout-page">
@@ -458,152 +403,32 @@ export default function Checkout() {
             />
           </div>
 
-          {/* Payment Method Selector */}
+          {/* Payment Section - Standard Razorpay Gateway */}
           <div className="payment-section">
-            <h3>
-              2. Select Payment Method
-              <span className="payment-badge">Secure 256-bit Encrypted</span>
+            <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+              <span>2. Payment via Razorpay</span>
+              <span className="payment-badge">Instant Verification</span>
             </h3>
 
-            <div className="payment-methods-grid">
-              {/* Option A: Razorpay Standard Checkout */}
-              <label
-                className={`payment-method-card ${paymentMethod === 'razorpay' ? 'selected' : ''}`}
-                onClick={() => setPaymentMethod('razorpay')}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="razorpay"
-                  checked={paymentMethod === 'razorpay'}
-                  onChange={() => setPaymentMethod('razorpay')}
-                  className="payment-method-radio"
-                />
-                <div className="payment-method-info">
-                  <span className="payment-method-title">
-                    ⚡ Razorpay Gateway
-                  </span>
-                  <span className="payment-method-desc">
-                    Instant automated verification via UPI, GPay, PhonePe, Cards & Netbanking.
-                  </span>
+            <div className="razorpay-checkout-box">
+              <div className="razorpay-box-header">
+                <strong style={{ fontSize: '14px', color: '#1e1b4b' }}>
+                  Supported Payment Modes:
+                </strong>
+                <div className="razorpay-supported-badges">
+                  <span className="rzp-badge">UPI / GPay / PhonePe</span>
+                  <span className="rzp-badge">Credit / Debit Cards</span>
+                  <span className="rzp-badge">Netbanking</span>
+                  <span className="rzp-badge">Paytm / Wallets</span>
                 </div>
-              </label>
-
-              {/* Option B: Direct UPI QR / Manual Transfer */}
-              <label
-                className={`payment-method-card ${paymentMethod === 'upi_manual' ? 'selected' : ''}`}
-                onClick={() => setPaymentMethod('upi_manual')}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="upi_manual"
-                  checked={paymentMethod === 'upi_manual'}
-                  onChange={() => setPaymentMethod('upi_manual')}
-                  className="payment-method-radio"
-                />
-                <div className="payment-method-info">
-                  <span className="payment-method-title">
-                    📱 Direct UPI QR Code
-                  </span>
-                  <span className="payment-method-desc">
-                    Scan store QR code directly and provide the 12-digit UTR receipt number.
-                  </span>
-                </div>
-              </label>
+              </div>
+              <p className="razorpay-instruction">
+                When you click <strong>"Proceed to Pay via Razorpay"</strong>, the secure checkout modal will open with your pre-filled contact details.
+              </p>
+              <div className="razorpay-security-note">
+                🔒 256-Bit Encrypted · PCI-DSS Level 1 Certified · RBI Regulated
+              </div>
             </div>
-
-            {/* Razorpay Information Box */}
-            {paymentMethod === 'razorpay' && (
-              <div className="razorpay-checkout-box">
-                <div className="razorpay-box-header">
-                  <strong style={{ fontSize: '14px', color: '#1e1b4b' }}>
-                    Supported Payment Options:
-                  </strong>
-                  <div className="razorpay-supported-badges">
-                    <span className="rzp-badge">UPI / GPay / PhonePe</span>
-                    <span className="rzp-badge">Credit / Debit Cards</span>
-                    <span className="rzp-badge">Netbanking</span>
-                    <span className="rzp-badge">Paytm / Wallets</span>
-                  </div>
-                </div>
-                <p className="razorpay-instruction">
-                  Clicking <strong>"Pay via Razorpay"</strong> below will open the official Razorpay checkout window. Your payment will be verified cryptographically and confirmed automatically.
-                </p>
-                <div className="razorpay-security-note">
-                  🔒 PCI-DSS Level 1 Certified & RBI Regulated Gateway
-                </div>
-              </div>
-            )}
-
-            {/* Direct UPI QR Transfer Box */}
-            {paymentMethod === 'upi_manual' && (
-              <div className="upi-payment-box">
-                <div className="upi-qr-wrap">
-                  <img
-                    src={qrCodeUrl}
-                    alt="Scan to Pay via UPI"
-                    className="upi-qr-image"
-                    width={180}
-                    height={180}
-                  />
-                  <span className="upi-scan-hint">Scan with GPay, PhonePe, Paytm, BHIM</span>
-                </div>
-
-                <div className="upi-details-pane">
-                  <div className="upi-id-card">
-                    <span className="upi-label">Store UPI ID:</span>
-                    <div className="upi-copy-row">
-                      <code className="upi-address">{upiId}</code>
-                      <button
-                        type="button"
-                        onClick={handleCopyUpi}
-                        className="btn-copy-upi"
-                      >
-                        {copied ? '✓ Copied' : 'Copy'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="upi-amount-row">
-                    <span>Pay Exact Amount:</span>
-                    <strong className="upi-amount-value">{formatPrice(total)}</strong>
-                  </div>
-
-                  {/* One-tap UPI deep link button for Mobile */}
-                  <a
-                    href={upiUrl}
-                    className="btn-open-upi-app"
-                  >
-                    ⚡ Open in UPI App (GPay / PhonePe / Paytm)
-                  </a>
-
-                  <div className="form-group utr-group">
-                    <label htmlFor="upiRef">
-                      12-Digit UPI Transaction UTR / Ref No. <span className="required">*</span>
-                    </label>
-                    <input
-                      id="upiRef"
-                      name="upiRef"
-                      type="text"
-                      value={upiRef}
-                      onChange={(e) => {
-                        setUpiRef(e.target.value)
-                        if (errors.upiRef) setErrors((prev) => ({ ...prev, upiRef: null }))
-                      }}
-                      placeholder="e.g. 431289104812"
-                      maxLength={20}
-                      className={errors.upiRef ? 'input-error' : ''}
-                      required={paymentMethod === 'upi_manual'}
-                    />
-                    {errors.upiRef && <span className="field-error">{errors.upiRef}</span>}
-                    <small className="field-hint">
-                      Enter the 12-digit UTR/Ref from your UPI app receipt to confirm your live livestock dispatch.
-                    </small>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           <button
@@ -612,10 +437,8 @@ export default function Checkout() {
             className="btn-primary btn-submit-order"
           >
             {submitting
-              ? 'Processing Payment...'
-              : paymentMethod === 'razorpay'
-              ? `⚡ Pay via Razorpay (${formatPrice(total)})`
-              : `Confirm & Place Order (${formatPrice(total)})`}
+              ? 'Opening Razorpay Secure Checkout...'
+              : `Proceed to Pay via Razorpay (${formatPrice(total)})`}
           </button>
         </form>
 
