@@ -394,3 +394,123 @@
   padding: 60px 0;
   text-align: center;
 }
+
+/* Payment Method Selection Tabs / Cards */
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.payment-method-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.payment-method-card:hover {
+  border-color: rgba(111, 63, 245, 0.5);
+  background: rgba(111, 63, 245, 0.02);
+}
+
+.payment-method-card.selected {
+  border-color: var(--accent);
+  background: rgba(111, 63, 245, 0.06);
+  box-shadow: 0 4px 14px rgba(111, 63, 245, 0.12);
+}
+
+.payment-method-radio {
+  margin-top: 3px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.payment-method-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-method-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.payment-method-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.razorpay-checkout-box {
+  background: linear-gradient(135deg, rgba(51, 147, 245, 0.05) 0%, rgba(111, 63, 245, 0.08) 100%);
+  border: 1.5px solid rgba(51, 147, 245, 0.3);
+  border-radius: var(--radius-md);
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+.razorpay-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.razorpay-supported-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.rzp-badge {
+  font-size: 11px;
+  font-weight: 700;
+  background: #ffffff;
+  border: 1px solid rgba(51, 147, 245, 0.35);
+  color: #0b69a3;
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.razorpay-instruction {
+  font-size: 13.5px;
+  color: #3e3256;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.razorpay-security-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #059669;
+  font-weight: 600;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+@media (max-width: 600px) {
+  .payment-methods-grid {
+    grid-template-columns: 1fr;
+  }
+}
