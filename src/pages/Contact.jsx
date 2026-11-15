@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Mail, Phone, Clock, MapPin, ShieldCheck, CheckCircle2, Send } from 'lucide-react'
 import { useStoreSettings } from '../hooks/useStoreSettings.js'
 import { useToast } from '../components/Toast.jsx'
 import './Contact.css'
@@ -86,28 +87,28 @@ export default function Contact() {
 
           <div className="contact-detail-list">
             <div className="contact-detail-item">
-              <span className="contact-icon">📧</span>
+              <span className="contact-icon"><Mail size={16} strokeWidth={1.75} /></span>
               <div>
                 <strong>Email Support</strong>
                 <a href={`mailto:${settings.support_email}`}>{settings.support_email}</a>
               </div>
             </div>
             <div className="contact-detail-item">
-              <span className="contact-icon">📞</span>
+              <span className="contact-icon"><Phone size={16} strokeWidth={1.75} /></span>
               <div>
                 <strong>Phone</strong>
                 <a href={`tel:${settings.support_phone}`}>{settings.support_phone}</a>
               </div>
             </div>
             <div className="contact-detail-item">
-              <span className="contact-icon">🕐</span>
+              <span className="contact-icon"><Clock size={16} strokeWidth={1.75} /></span>
               <div>
                 <strong>Support Hours</strong>
                 <span>{settings.support_hours}</span>
               </div>
             </div>
             <div className="contact-detail-item">
-              <span className="contact-icon">📍</span>
+              <span className="contact-icon"><MapPin size={16} strokeWidth={1.75} /></span>
               <div>
                 <strong>Location</strong>
                 <span>{settings.store_address}</span>
@@ -116,7 +117,10 @@ export default function Contact() {
           </div>
 
           <div className="live-arrival-note">
-            <strong>🐟 100% Live Arrival Guarantee</strong>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <ShieldCheck size={18} strokeWidth={2} color="#059669" />
+              <strong>100% Live Arrival Guarantee</strong>
+            </div>
             <p>Record your unboxing on video. Claims accepted within 2 hours of delivery. We'll arrange a replacement or full refund.</p>
           </div>
         </div>
@@ -126,7 +130,7 @@ export default function Contact() {
           <h2>Send a Message</h2>
           {submitted ? (
             <div className="contact-success">
-              <span style={{ fontSize: '40px' }}>✅</span>
+              <CheckCircle2 size={44} color="#059669" strokeWidth={1.75} style={{ marginBottom: '12px' }} />
               <h3>Message Received!</h3>
               <p>We'll get back to you at <strong>{form.email || 'your email'}</strong> within 24 hours.</p>
               <button onClick={() => setSubmitted(false)} className="btn-primary">Send another message</button>
@@ -157,7 +161,8 @@ export default function Contact() {
                 />
               </div>
               <button type="submit" className="btn-primary contact-submit-btn" disabled={submitting}>
-                {submitting ? 'Sending…' : '📨 Send Message'}
+                <Send size={15} strokeWidth={2} style={{ marginRight: '6px' }} />
+                <span>{submitting ? 'Sending…' : 'Send Message'}</span>
               </button>
               <p className="contact-form-note">We reply within 24 hours on working days.</p>
             </form>

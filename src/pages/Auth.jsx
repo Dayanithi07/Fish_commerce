@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { ShieldCheck, Loader2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import './Auth.css'
 
@@ -136,7 +137,7 @@ export default function Auth() {
         {isInviteSetup ? (
           <>
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-              <span style={{ fontSize: '36px' }}>🛡️</span>
+              <ShieldCheck size={36} color="var(--accent)" strokeWidth={1.75} style={{ margin: '0 auto 8px', display: 'block' }} />
               <h2 style={{ margin: '8px 0 4px 0' }}>VP Aquarium Admin Setup</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '14px', margin: 0 }}>
                 Welcome to the Store Management Team. Configure your password to activate your admin privileges.
@@ -211,7 +212,7 @@ export default function Auth() {
                 className="btn-primary btn-auth-submit"
                 disabled={submitting}
               >
-                {submitting ? '⏳ Activating & Redirecting to Portal...' : '🛡️ Activate Admin Account & Go to Dashboard →'}
+                {submitting ? 'Activating & Redirecting to Portal...' : 'Activate Admin Account & Go to Dashboard →'}
               </button>
             </form>
           </>

@@ -114,7 +114,7 @@
   color: #ffffff;
   border-radius: var(--radius-md);
   padding: 4px 8px;
-  box-shadow: 0 4px 14px rgba(111, 63, 245, 0.25);
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
   min-height: 48px;
   box-sizing: border-box;
 }
@@ -167,20 +167,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #10B981, #059669);
+  background: #059669;
   color: #ffffff;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
   min-height: 48px;
 }
 
 .btn-place-order-large:hover {
-  background: linear-gradient(135deg, #059669, #047857);
+  background: #047857;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
 }
 
 .btn-place-order-large:disabled {

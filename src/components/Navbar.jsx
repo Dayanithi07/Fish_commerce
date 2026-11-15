@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import { ShoppingCart, Sparkles, LogOut } from 'lucide-react'
 import { useCart } from '../context/CartContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import LogoSVG from './LogoSVG.jsx'
@@ -84,7 +85,7 @@ export default function Navbar() {
                 className="btn-cart-pill desktop-only-cart"
                 aria-label="Open Cart"
               >
-                <span className="cart-icon">🛒</span>
+                <ShoppingCart size={15} strokeWidth={1.5} className="cart-icon" />
                 <span>Cart ({itemCount})</span>
               </button>
             )}
@@ -97,7 +98,8 @@ export default function Navbar() {
               aria-label="Start Tour"
               title="Take a quick tour of VP Aquarium"
             >
-              💡 Tour
+              <Sparkles size={14} strokeWidth={1.5} />
+              <span>Tour</span>
             </button>
 
             {/* Desktop Auth: Sign In or Profile */}
@@ -189,7 +191,8 @@ export default function Navbar() {
                   className="drawer-logout-btn"
                   onClick={() => { logout(); closeMenu() }}
                 >
-                  <span>🚪</span> Logout
+                  <LogOut size={15} strokeWidth={1.5} />
+                  <span>Logout</span>
                 </button>
               </>
             )}

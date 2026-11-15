@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Outlet, NavLink, Navigate } from 'react-router-dom'
+import { Settings } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useOrders } from '../../context/OrderContext.jsx'
 import { useToast } from '../../components/Toast.jsx'

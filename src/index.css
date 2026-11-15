@@ -3,33 +3,33 @@
   Owner: A2 (Design System and Shared UI). Token names come from PROJECT_REQUIREMENTS.md section 7.1.
 */
 :root {
-  --bg-page: #F9F6FE;
+  --bg-page: #F8FAFC;
   --bg-surface: #FFFFFF;
-  --bg-lavender: #E4D5F9;
-  --text-primary: #3C1E5E;
-  --text-muted: #6B6578;
-  --accent: #6F3FF5;
-  --accent-dark: #5B30D6;
-  --border: #EFEAEF;
+  --bg-lavender: #F1F5F9;
+  --text-primary: #0F172A;
+  --text-muted: #475569;
+  --accent: #0284C7;
+  --accent-dark: #0369A1;
+  --border: #E2E8F0;
 
-  --success: #1F9D6B;
-  --success-bg: #E3F6EE;
-  --warning: #B7791F;
-  --warning-bg: #FEF3D7;
-  --danger: #D14343;
-  --danger-bg: #FDE8E8;
-  --info: #2F6FDE;
-  --info-bg: #E3EDFD;
+  --success: #059669;
+  --success-bg: #ECFDF5;
+  --warning: #D97706;
+  --warning-bg: #FFFBEB;
+  --danger: #DC2626;
+  --danger-bg: #FEF2F2;
+  --info: #0284C7;
+  --info-bg: #F0F9FF;
 
-  --admin-bar: #3C1E5E;
+  --admin-bar: #0F172A;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
 
-  --shadow-card: 0 4px 20px rgba(111, 63, 245, 0.08);
-  --shadow-hover: 0 10px 30px rgba(111, 63, 245, 0.16);
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-hover: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 10px 24px -3px rgba(15, 23, 42, 0.08);
 
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
@@ -200,11 +200,11 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(111, 63, 245, 0.1);
-  color: var(--accent, #6f3ff5);
-  border: 1px solid rgba(111, 63, 245, 0.25);
+  background: var(--bg-lavender);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
   padding: 10px 18px;
-  border-radius: var(--radius-md, 8px);
+  border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
@@ -212,7 +212,8 @@ img {
 }
 
 .btn-secondary:hover {
-  background: rgba(111, 63, 245, 0.18);
+  background: #E2E8F0;
+  color: var(--accent);
 }
 
 .btn-reload-outline {

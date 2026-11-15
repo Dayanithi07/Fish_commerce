@@ -39,7 +39,7 @@
   gap: 8px;
   font-weight: 800;
   font-size: 18px;
-  color: #3C1E5E;
+  color: var(--text-primary);
   text-decoration: none;
   letter-spacing: -0.3px;
   white-space: nowrap;
@@ -49,13 +49,11 @@
 .brand-logo-svg {
   flex-shrink: 0;
   display: block;
-  /* Drop shadow glow effect on the SVG logo in the navbar */
-  filter: drop-shadow(0 0 6px rgba(111, 63, 245, 0.45));
-  transition: filter 0.25s ease;
+  transition: opacity 0.2s ease;
 }
 
 .navbar-brand:hover .brand-logo-svg {
-  filter: drop-shadow(0 0 10px rgba(111, 63, 245, 0.75));
+  opacity: 0.9;
 }
 
 /* ── Desktop Navigation Links ── */
@@ -69,7 +67,7 @@
 
 .navbar-links a {
   text-decoration: none;
-  color: #3C1E5E;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 13.5px;
   padding: 6px 12px;
@@ -80,25 +78,25 @@
 
 .navbar-links a:hover {
   color: var(--accent);
-  background: rgba(111, 63, 245, 0.08);
+  background: rgba(2, 132, 199, 0.08);
 }
 
 .navbar-links a.active {
   color: #ffffff;
-  background: var(--accent, #6F3FF5);
-  box-shadow: 0 4px 14px rgba(111, 63, 245, 0.35);
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
 }
 
 .navbar-links .admin-link {
-  color: #6F3FF5;
-  background: rgba(111, 63, 245, 0.1);
+  color: var(--accent);
+  background: rgba(2, 132, 199, 0.08);
   padding: 6px 12px;
   border-radius: 9999px;
 }
 
 .navbar-links .admin-link.active {
   color: #ffffff;
-  background: #6F3FF5;
+  background: var(--accent);
 }
 
 /* ── Right Action Area ── */
@@ -121,7 +119,7 @@
   gap: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #3C1E5E;
+  color: var(--text-primary);
 }
 
 .user-name {
@@ -132,22 +130,23 @@
 }
 
 .btn-tour-navbar {
-  background: rgba(111, 63, 245, 0.08);
-  border: 1px solid rgba(111, 63, 245, 0.2);
-  color: var(--accent);
+  background: var(--bg-lavender);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 6px 12px;
   border-radius: 999px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   transition: all 0.2s;
 }
 
 .btn-tour-navbar:hover {
-  background: rgba(111, 63, 245, 0.16);
+  background: #e2e8f0;
+  color: var(--accent);
   transform: translateY(-1px);
 }
 
@@ -157,13 +156,14 @@
   font-weight: 600;
   font-size: 14px;
   padding: 6px 14px;
-  border: 1.5px solid rgba(111, 63, 245, 0.35);
+  border: 1.5px solid var(--border);
   border-radius: 9999px;
   transition: all 0.2s ease;
 }
 
 .btn-login:hover {
-  background: rgba(111, 63, 245, 0.08);
+  background: var(--bg-lavender);
+  border-color: var(--accent);
 }
 
 .btn-logout {
@@ -178,32 +178,33 @@
 }
 
 .btn-logout:hover {
-  background: rgba(209, 67, 67, 0.08);
+  background: var(--danger-bg);
 }
 
 .btn-cart-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(111, 63, 245, 0.15);
-  color: #5B30D6;
-  border: 1px solid rgba(111, 63, 245, 0.25);
+  background: var(--bg-lavender);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
   padding: 7px 15px;
   border-radius: 9999px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn-cart-pill:hover {
-  background: #6F3FF5;
+  background: var(--accent);
   color: #ffffff;
+  border-color: var(--accent);
   transform: translateY(-1px);
 }
 
 .cart-icon {
-  font-size: 14px;
+  display: block;
 }
 
 /* ── Mobile Hamburger Toggle ── */
@@ -223,7 +224,7 @@
 .navbar-hamburger .bar {
   width: 24px;
   height: 2.5px;
-  background-color: #3C1E5E;
+  background-color: var(--text-primary);
   border-radius: 4px;
   transition: all 0.25s ease;
 }
@@ -277,10 +278,10 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6F3FF5, #9b6dfa);
+  background: var(--accent);
   color: #ffffff;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -297,7 +298,7 @@
 .drawer-user-name {
   font-size: 15px;
   font-weight: 700;
-  color: #3C1E5E;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -314,12 +315,12 @@
 .drawer-signin-btn {
   display: block;
   text-align: center;
-  background: var(--accent, #6F3FF5);
+  background: var(--accent);
   color: #ffffff;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
   padding: 12px 20px;
-  border-radius: 9999px;
+  border-radius: var(--radius-md);
   text-decoration: none;
   margin-bottom: 4px;
   transition: opacity 0.2s ease;
@@ -331,7 +332,7 @@
 
 .drawer-divider {
   height: 1px;
-  background: rgba(239, 234, 239, 0.8);
+  background: var(--border);
   margin: 10px 0;
 }
 
@@ -344,7 +345,7 @@
 
 .mobile-links a {
   text-decoration: none;
-  color: #3C1E5E;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 600;
   padding: 10px 12px;
@@ -356,20 +357,20 @@
 }
 
 .mobile-links a:hover {
-  background: rgba(111, 63, 245, 0.06);
+  background: rgba(2, 132, 199, 0.06);
   color: var(--accent);
 }
 
 .mobile-links a.active {
-  color: #6F3FF5;
-  background: rgba(111, 63, 245, 0.08);
+  color: var(--accent);
+  background: rgba(2, 132, 199, 0.08);
   font-weight: 700;
-  border-left: 3px solid #6F3FF5;
+  border-left: 3px solid var(--accent);
   padding-left: 14px;
 }
 
 .mobile-links .admin-link {
-  color: #6F3FF5;
+  color: var(--accent);
 }
 
 /* ── Drawer: Logout Button ── */

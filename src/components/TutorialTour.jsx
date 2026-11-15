@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Fish, Utensils, Zap, ShoppingCart, CreditCard, Sparkles, X } from 'lucide-react'
 import './TutorialTour.css'
 
 const TOUR_STEPS = [
   {
     badge: 'Welcome',
-    icon: '🐟',
-    title: 'Welcome to VP Aquarium!',
+    icon: Fish,
+    title: 'Welcome to VP Aquarium',
     description:
       'Discover healthy, hand-raised pet fish, vibrant freshwater species, and premium aquarium foods delivered with expert acclimation care support.',
     highlight: 'header',
-    tip: 'Tip: You can replay this tour anytime from the footer or navbar!',
+    tip: 'You can replay this tour anytime from the footer or navbar.',
   },
   {
     badge: 'Explore Products',
-    icon: '🥣',
+    icon: Utensils,
     title: 'Live Fish & Specialized Food',
     description:
       'Easily navigate between our live freshwater species (Betta, Tetras, Guppies) and our dedicated Fish Food section with targeted nutritional feeds.',
@@ -23,28 +24,28 @@ const TOUR_STEPS = [
   },
   {
     badge: 'Smart Steppers & Direct Buy',
-    icon: '⚡',
-    title: 'Quantity Stepper & 1-Tap Buy',
+    icon: Zap,
+    title: 'Quantity Stepper & Direct Buy',
     description:
-      'Use interactive [-] [+] steppers right on product cards. Want just one species immediately? Hit "⚡ Place Order" on any product page to buy only that item without touching your existing cart!',
+      'Use interactive quantity steppers right on product cards. Want just one species immediately? Hit "Place Order" on any product page to buy only that item without touching your existing cart.',
     highlight: 'stepper-feature',
     tip: 'Single-item direct orders keep your regular cart safe and separate.',
   },
   {
     badge: 'Quick Cart',
-    icon: '🛒',
+    icon: ShoppingCart,
     title: 'Instant Cart Drawer',
     description:
-      'Tap the floating cart button anytime to inspect your items, update fish quantities, and proceed to our fast, streamlined checkout.',
+      'Tap the cart button anytime to inspect your items, update fish quantities, and proceed to our fast, streamlined checkout.',
     highlight: 'cart-drawer',
     tip: 'Your cart items are automatically saved in your browser.',
   },
   {
     badge: 'Payment & Delivery',
-    icon: '📱',
-    title: 'Free Delivery & 1-Tap UPI QR',
+    icon: CreditCard,
+    title: 'Free Delivery & Secure Checkout',
     description:
-      'Zero shipping fees on all orders! Pay effortlessly via GPay, PhonePe, Paytm, or UPI QR code, enter your 12-digit UTR reference, and instantly download your tax invoice.',
+      'Zero shipping fees on all orders! Pay effortlessly via UPI, Cards, Netbanking or Wallets with RBI-regulated Razorpay checkout, and instantly download your tax invoice.',
     highlight: 'payment-upi',
     tip: 'Your shipping address is securely remembered for subsequent checkouts.',
   },
@@ -66,39 +67,39 @@ export default function TutorialTour() {
     }
   }, [])
 
-  // Global event listener so user or buttons can trigger the tour anytime
+  // Listen for manual trigger (from footer link or navbar button)
   useEffect(() => {
-    const handleTriggerTour = () => {
+    const handleStartTour = () => {
       setCurrentStep(0)
       setIsOpen(true)
     }
-    window.addEventListener('start-vp-tour', handleTriggerTour)
-    return () => window.removeEventListener('start-vp-tour', handleTriggerTour)
+    window.addEventListener('start-vp-tour', handleStartTour)
+    return () => window.removeEventListener('start-vp-tour', handleStartTour)
   }, [])
 
-  // Keyboard navigation
+  // Lock body scroll when modal is active
   useEffect(() => {
-    if (!isOpen) return
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') handleClose()
-      if (e.key === 'ArrowRight' || e.key === 'Enter') handleNext()
-      if (e.key === 'ArrowLeft') handleBack()
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, currentStep])
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
-  const handleClose = () => {
-    localStorage.setItem('vp_tour_completed', 'true')
-    setIsOpen(false)
-  }
+  if (!isOpen) return null
+
+  const step = TOUR_STEPS[currentStep]
+  const isLast = currentStep === TOUR_STEPS.length - 1
+  const StepIcon = step.icon
 
   const handleNext = () => {
-    if (currentStep < TOUR_STEPS.length - 1) {
-      setCurrentStep((prev) => prev + 1)
+    if (isLast) {
+      handleComplete()
     } else {
-      handleClose()
-      navigate('/products')
+      setCurrentStep((prev) => prev + 1)
     }
   }
 
@@ -108,35 +109,40 @@ export default function TutorialTour() {
     }
   }
 
-  if (!isOpen) return null
+  const handleClose = () => {
+    setIsOpen(false)
+    localStorage.setItem('vp_tour_completed', 'true')
+  }
 
-  const step = TOUR_STEPS[currentStep]
-  const isLast = currentStep === TOUR_STEPS.length - 1
+  const handleComplete = () => {
+    handleClose()
+    navigate('/products')
+  }
 
   return (
-    <div className="vp-tour-overlay" role="dialog" aria-modal="true" aria-label="Store Guide Tour">
+    <div className="vp-tour-overlay" role="dialog" aria-modal="true" aria-label="Store Guide">
       <div className="vp-tour-backdrop" onClick={handleClose} />
-
       <div className="vp-tour-card">
-        {/* Top Header */}
-        <div className="vp-tour-card-header">
-          <span className="vp-tour-badge">
-            <span className="vp-tour-pulse-dot" />
-            {step.badge}
+        {/* Top Header Badge & Close */}
+        <div className="vp-tour-header">
+          <span className="vp-tour-step-badge">
+            {step.badge} · {currentStep + 1} of {TOUR_STEPS.length}
           </span>
           <button
             type="button"
-            className="vp-tour-btn-close"
+            className="vp-tour-close-btn"
             onClick={handleClose}
             aria-label="Skip Tour"
           >
-            ✕
+            <X size={16} strokeWidth={2} />
           </button>
         </div>
 
         {/* Hero Icon & Title */}
         <div className="vp-tour-visual">
-          <div className="vp-tour-icon-wrap">{step.icon}</div>
+          <div className="vp-tour-icon-wrap">
+            <StepIcon size={26} strokeWidth={1.75} color="var(--accent)" />
+          </div>
         </div>
 
         <h3 className="vp-tour-title">{step.title}</h3>
@@ -144,7 +150,7 @@ export default function TutorialTour() {
 
         {step.tip && (
           <div className="vp-tour-tip">
-            <span className="vp-tour-tip-icon">💡</span>
+            <Sparkles size={14} strokeWidth={1.75} className="vp-tour-tip-icon" />
             <span className="vp-tour-tip-text">{step.tip}</span>
           </div>
         )}
@@ -187,7 +193,7 @@ export default function TutorialTour() {
               className="btn-primary vp-tour-btn-next"
               onClick={handleNext}
             >
-              {isLast ? 'Start Shopping 🚀' : 'Next →'}
+              {isLast ? 'Start Shopping' : 'Next →'}
             </button>
           </div>
         </div>

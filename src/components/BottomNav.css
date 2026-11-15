@@ -23,8 +23,8 @@
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(111, 63, 245, 0.12);
-    box-shadow: 0 -4px 20px rgba(60, 30, 94, 0.08);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.05);
     padding-bottom: max(4px, env(safe-area-inset-bottom));
   }
 
@@ -37,7 +37,7 @@
     gap: 3px;
     padding: 6px 0;
     text-decoration: none;
-    color: #8C829E;
+    color: var(--text-muted);
     background: none;
     border: none;
     cursor: pointer;
@@ -111,17 +111,17 @@
     position: absolute;
     top: -4px;
     right: -8px;
-    background: #6F3FF5;
+    background: var(--accent);
     color: #ffffff;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 700;
     min-width: 17px;
     height: 17px;
     line-height: 17px;
     border-radius: 9999px;
     text-align: center;
     padding: 0 4px;
-    box-shadow: 0 2px 6px rgba(111, 63, 245, 0.4);
+    box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3);
     border: 1.5px solid #ffffff;
   }
 }

@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { Zap } from 'lucide-react'
 import { useProducts } from '../context/ProductContext.jsx'
 import { useCart } from '../context/CartContext.jsx'
 import { formatPrice } from '../utils/money.js'
@@ -128,7 +129,8 @@ export default function ProductDetail() {
               onClick={handlePlaceOrder}
               className="btn-place-order-large"
             >
-              ⚡ Place Order
+              <Zap size={16} strokeWidth={2} style={{ marginRight: '6px' }} />
+              <span>Place Order</span>
             </button>
           </div>
         </div>

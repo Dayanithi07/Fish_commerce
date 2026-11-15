@@ -11,7 +11,7 @@ export default function RefundPolicy() {
         <p className="policy-updated">Last Updated: November 2026</p>
 
         <div className="policy-highlight-banner">
-          <h3>🐟 100% Live Arrival Guarantee (D.O.A. Policy)</h3>
+          <h3>100% Live Arrival Guarantee (D.O.A. Policy)</h3>
           <p>
             We take utmost care in climate-controlled oxygen packing for all our livestock. In the unfortunate event that any fish arrives Dead on Arrival (D.O.A.), we guarantee an immediate replacement or full refund under the terms below.
           </p>

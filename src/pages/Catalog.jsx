@@ -38,7 +38,7 @@ export default function Catalog() {
 
   return (
     <div className="container catalog-page">
-      <h1>{foodOnly ? '🐟 Fish Food' : 'Fish Catalog'}</h1>
+      <h1>{foodOnly ? 'Fish Food' : 'Fish Catalog'}</h1>
       <FilterBar
         waterFilter={waterFilter}
         setWaterFilter={setWaterFilter}

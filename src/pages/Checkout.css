@@ -89,7 +89,7 @@
   font-weight: 700;
   margin-top: 18px;
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 14px rgba(111, 63, 245, 0.35);
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
   cursor: pointer;
 }
 
@@ -296,10 +296,15 @@
 .perk-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 13px;
-  font-weight: 600;
-  color: #4b3e65;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.perk-icon {
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .grand-total-highlight {
@@ -335,10 +340,15 @@
 .perk-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 13px;
-  font-weight: 600;
-  color: #4b3e65;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.perk-icon {
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .grand-total-highlight {
@@ -456,8 +466,8 @@
 }
 
 .razorpay-checkout-box {
-  background: linear-gradient(135deg, rgba(51, 147, 245, 0.05) 0%, rgba(111, 63, 245, 0.08) 100%);
-  border: 1.5px solid rgba(51, 147, 245, 0.3);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 22px;
   margin-bottom: 20px;
@@ -481,18 +491,17 @@
 
 .rzp-badge {
   font-size: 11px;
-  font-weight: 700;
-  background: #ffffff;
-  border: 1px solid rgba(51, 147, 245, 0.35);
-  color: #0b69a3;
+  font-weight: 600;
+  background: var(--bg-lavender);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
   padding: 4px 10px;
   border-radius: 999px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .razorpay-instruction {
   font-size: 13.5px;
-  color: #3e3256;
+  color: var(--text-muted);
   line-height: 1.5;
   margin-bottom: 12px;
 }

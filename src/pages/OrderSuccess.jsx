@@ -1,4 +1,5 @@
 import { useLocation, Link } from 'react-router-dom'
+import { Printer, Download } from 'lucide-react'
 import { formatPrice } from '../utils/money.js'
 import { useStoreSettings } from '../hooks/useStoreSettings.js'
 import './OrderSuccess.css'
@@ -223,7 +224,8 @@ export default function OrderSuccess() {
                 className="btn-print-bill"
                 title="Print or Save as PDF"
               >
-                🖨️ Print / Save as PDF
+                <Printer size={16} strokeWidth={1.5} style={{ marginRight: '6px' }} />
+                <span>Print / Save as PDF</span>
               </button>
               <button
                 type="button"
@@ -231,7 +233,8 @@ export default function OrderSuccess() {
                 className="btn-download-bill"
                 title="Download HTML Invoice Slip"
               >
-                📥 Download Invoice (.html)
+                <Download size={16} strokeWidth={1.5} style={{ marginRight: '6px' }} />
+                <span>Download Invoice (.html)</span>
               </button>
             </div>
           </>

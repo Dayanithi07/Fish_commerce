@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Package, Phone, Mail } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useOrders } from '../../context/OrderContext.jsx'
 import { formatPrice } from '../../utils/money.js'
@@ -66,7 +67,7 @@ export default function MyOrders() {
         <div className="user-orders-list">
           {myOrders.length === 0 ? (
             <div className="empty-orders-state">
-              <span className="empty-icon">📦</span>
+              <Package size={44} strokeWidth={1.5} color="var(--text-muted)" style={{ marginBottom: '8px' }} />
               <h3>No Orders Found Yet</h3>
               <p>You haven't placed any fish orders with this account yet.</p>
               <Link to="/products" className="btn-primary" style={{ marginTop: '16px' }}>
@@ -142,13 +143,19 @@ function OrderCard({ order }) {
         {/* Shipping & Payment summary */}
         <div className="order-summary-column">
           <h4>Shipping Address</h4>
-          <p className="shipping-address-text">
+          <div className="shipping-address-text">
             <strong>{order.customerName}</strong><br />
             {order.street}<br />
             {order.city}, {order.postalCode}<br />
-            📞 {order.customerPhone}<br />
-            ✉️ {order.customerEmail}
-          </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+              <Phone size={13} strokeWidth={1.5} />
+              <span>{order.customerPhone}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+              <Mail size={13} strokeWidth={1.5} />
+              <span>{order.customerEmail}</span>
+            </div>
+          </div>
           {order.notes && (
             <p className="order-notes-box">
               <strong>Delivery Notes:</strong> {order.notes}

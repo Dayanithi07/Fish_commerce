@@ -1,5 +1,6 @@
 import { Component, Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import { AlertCircle } from 'lucide-react'
 
 import { ToastProvider } from './components/Toast.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
@@ -17,19 +18,21 @@ import WhatsAppButton from './components/WhatsAppButton.jsx'
 
 import Home from './pages/Home.jsx'
 import Catalog from './pages/Catalog.jsx'
-import ProductDetail from './pages/ProductDetail.jsx'
-import Checkout from './pages/Checkout.jsx'
-import OrderSuccess from './pages/OrderSuccess.jsx'
-import Auth from './pages/Auth.jsx'
-import Care from './pages/Care.jsx'
-import About from './pages/About.jsx'
-import Contact from './pages/Contact.jsx'
-import Terms from './pages/Terms.jsx'
-import Privacy from './pages/Privacy.jsx'
-import RefundPolicy from './pages/RefundPolicy.jsx'
-import ShippingPolicy from './pages/ShippingPolicy.jsx'
-import MyOrders from './pages/customer/MyOrders.jsx'
 import NotFound from './pages/NotFound.jsx'
+
+// Lazy-load everything except the landing page and catalog
+const ProductDetail = lazy(() => import('./pages/ProductDetail.jsx'))
+const Checkout = lazy(() => import('./pages/Checkout.jsx'))
+const OrderSuccess = lazy(() => import('./pages/OrderSuccess.jsx'))
+const Auth = lazy(() => import('./pages/Auth.jsx'))
+const Care = lazy(() => import('./pages/Care.jsx'))
+const About = lazy(() => import('./pages/About.jsx'))
+const Contact = lazy(() => import('./pages/Contact.jsx'))
+const Terms = lazy(() => import('./pages/Terms.jsx'))
+const Privacy = lazy(() => import('./pages/Privacy.jsx'))
+const RefundPolicy = lazy(() => import('./pages/RefundPolicy.jsx'))
+const ShippingPolicy = lazy(() => import('./pages/ShippingPolicy.jsx'))
+const MyOrders = lazy(() => import('./pages/customer/MyOrders.jsx'))
 
 // Admin pages lazy-loaded
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout.jsx'))
@@ -57,7 +60,7 @@ class ErrorBoundary extends Component {
       return (
         <div className="error-panel" role="alert">
           <div className="error-card-inner">
-            <span style={{ fontSize: '48px', display: 'block', marginBottom: '12px' }}>⚠️</span>
+            <AlertCircle size={44} color="#dc2626" strokeWidth={1.75} style={{ margin: '0 auto 12px', display: 'block' }} />
             <h1>Something went wrong</h1>
             <p>An unexpected error occurred while rendering this section.</p>
             {this.state.error?.message && (

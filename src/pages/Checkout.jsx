@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { ShieldCheck, PackageCheck, Clock, Zap, Lock } from 'lucide-react'
 import { useCart } from '../context/CartContext.jsx'
 import { useOrders } from '../context/OrderContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -284,8 +285,9 @@ export default function Checkout() {
     <div className="container checkout-page">
       <h1>Checkout & Payment</h1>
       {directItem && (
-        <div style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--accent)', fontWeight: '600' }}>
-          ⚡ Direct Buy: Checking out only <strong>{directItem.product.name}</strong> (Qty: {directItem.quantity || 1})
+        <div style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--accent)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Zap size={15} strokeWidth={2} />
+          <span>Direct Buy: Checking out only <strong>{directItem.product.name}</strong> (Qty: {directItem.quantity || 1})</span>
         </div>
       )}
       <div className="checkout-layout">
@@ -426,7 +428,8 @@ export default function Checkout() {
                 When you click <strong>"Proceed to Pay via Razorpay"</strong>, the secure checkout modal will open with your pre-filled contact details.
               </p>
               <div className="razorpay-security-note">
-                🔒 256-Bit Encrypted · PCI-DSS Level 1 Certified · RBI Regulated
+                <Lock size={14} strokeWidth={2} />
+                <span>256-Bit Encrypted · PCI-DSS Level 1 Certified · RBI Regulated</span>
               </div>
             </div>
           </div>
@@ -469,15 +472,15 @@ export default function Checkout() {
 
           <div className="checkout-perks">
             <div className="perk-item">
-              <span className="perk-icon">🛡️</span>
+              <ShieldCheck size={18} strokeWidth={1.75} className="perk-icon" />
               <span>100% Live Arrival Guarantee</span>
             </div>
             <div className="perk-item">
-              <span className="perk-icon">📦</span>
+              <PackageCheck size={18} strokeWidth={1.75} className="perk-icon" />
               <span>Insulated Oxygen-Packed Transport</span>
             </div>
             <div className="perk-item">
-              <span className="perk-icon">⚡</span>
+              <Clock size={18} strokeWidth={1.75} className="perk-icon" />
               <span>Instant WhatsApp & Email Order Updates</span>
             </div>
           </div>
