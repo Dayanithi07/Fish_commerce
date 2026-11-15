@@ -56,6 +56,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       order_id: order.id,
+      key_id: key_id,
       amount: order.amount,
       currency: order.currency,
       receipt: order.receipt,

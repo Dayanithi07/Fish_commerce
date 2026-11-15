@@ -196,7 +196,7 @@ export default function Checkout() {
 
       // Step 2: Open Razorpay Standard Checkout Modal
       const options = {
-        key: keyId,
+        key: orderData.key_id || keyId,
         amount: orderData.amount,
         currency: orderData.currency || 'INR',
         name: storeName,
