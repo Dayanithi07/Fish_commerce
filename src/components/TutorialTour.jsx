@@ -89,6 +89,24 @@ export default function TutorialTour() {
     }
   }, [isOpen])
 
+  // Restore Escape dismissal and keyboard navigation (CodeRabbit finding)
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        handleClose()
+      } else if (e.key === 'ArrowRight') {
+        setCurrentStep((prev) => (prev < TOUR_STEPS.length - 1 ? prev + 1 : prev))
+      } else if (e.key === 'ArrowLeft') {
+        setCurrentStep((prev) => (prev > 0 ? prev - 1 : prev))
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen])
+
   if (!isOpen) return null
 
   const step = TOUR_STEPS[currentStep]

@@ -210,7 +210,7 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent);
+  background: var(--accent-dark, #0369A1);
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -222,7 +222,7 @@ img {
 }
 
 .btn-primary:hover {
-  background: var(--accent-dark);
+  background: #075985;
 }
 
 /* Enhanced Error Panel */
