@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom'
-import { Printer, Download, CheckCircle2 } from 'lucide-react'
+import { Printer, Download, CheckCircle2, Package } from 'lucide-react'
 import { formatPrice } from '../utils/money.js'
 import { useStoreSettings } from '../hooks/useStoreSettings.js'
 import './OrderSuccess.css'
@@ -244,8 +244,18 @@ export default function OrderSuccess() {
           <p>Your order was received successfully.</p>
         )}
 
-        <div className="success-actions">
-          <Link to="/products" className="btn-primary">Continue Shopping</Link>
+        <div className="success-actions" style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link
+            to={order?.reference ? `/orders?ref=${encodeURIComponent(order.reference)}` : '/orders'}
+            className="btn-secondary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}
+          >
+            <Package size={16} strokeWidth={1.5} />
+            <span>Track in My Orders</span>
+          </Link>
+          <Link to="/products" className="btn-primary">
+            Continue Shopping
+          </Link>
         </div>
       </div>
     </div>

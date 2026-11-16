@@ -174,6 +174,66 @@ export function OrderProvider({ children }) {
     [orders]
   )
 
+  const fetchOrderByReference = useCallback(
+    async (reference) => {
+      const clean = (reference || '').trim().toUpperCase()
+      if (!clean) return null
+      const local = orders.find((o) => o.reference?.toUpperCase() === clean)
+      if (local) return local
+
+      if (isSupabaseConfigured) {
+        try {
+          const { data, error } = await supabase
+            .from('orders')
+            .select(`
+              *,
+              items:order_items(*),
+              timeline:order_status_events(*)
+            `)
+            .ilike('reference', clean)
+            .maybeSingle()
+
+          if (!error && data) {
+            const formatted = {
+              id: data.id,
+              reference: data.reference,
+              userId: data.user_id,
+              customerName: data.customer_name,
+              customerEmail: data.customer_email,
+              customerPhone: data.customer_phone,
+              street: data.street,
+              city: data.city,
+              postalCode: data.postal_code,
+              notes: data.notes,
+              subtotal: data.subtotal_cents / 100,
+              shipping: data.shipping_cents / 100,
+              total: data.total_cents / 100,
+              status: data.status,
+              items: (data.items || []).map((it) => ({
+                productId: it.product_id,
+                name: it.name,
+                price: it.price_cents / 100,
+                quantity: it.quantity,
+                image: it.image_url,
+              })),
+              timeline: (data.timeline || []).map((ev) => ({
+                status: ev.status,
+                at: ev.at,
+              })),
+              createdAt: data.created_at,
+              updatedAt: data.updated_at,
+            }
+            return formatted
+          }
+        } catch (err) {
+          console.warn('[OrderContext] fetchOrderByReference error:', err)
+        }
+      }
+      return null
+    },
+    [orders]
+  )
+
   /**
    * Place a new order
    */
@@ -431,6 +491,7 @@ export function OrderProvider({ children }) {
       updateOrderStatus,
       getOrderById,
       getOrderByReference,
+      fetchOrderByReference,
       getUserOrders,
       refreshOrders: fetchSupabaseOrders,
     }),
@@ -444,6 +505,7 @@ export function OrderProvider({ children }) {
       updateOrderStatus,
       getOrderById,
       getOrderByReference,
+      fetchOrderByReference,
       getUserOrders,
       fetchSupabaseOrders,
     ]

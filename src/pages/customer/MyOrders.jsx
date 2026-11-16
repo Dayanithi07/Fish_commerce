@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Package, Phone, Mail } from 'lucide-react'
+import { useMemo, useState, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { Package, Phone, Mail, Search } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useOrders } from '../../context/OrderContext.jsx'
 import { formatPrice } from '../../utils/money.js'
@@ -8,22 +8,62 @@ import './MyOrders.css'
 
 export default function MyOrders() {
   const { user, isAuthenticated } = useAuth()
-  const { getUserOrders, getOrderByReference } = useOrders()
+  const { getUserOrders, getOrderByReference, fetchOrderByReference } = useOrders()
+  const [searchParams] = useSearchParams()
   const [guestLookupRef, setGuestLookupRef] = useState('')
   const [lookupResult, setLookupResult] = useState(null)
   const [lookupSearched, setLookupSearched] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
+
+  const refQuery = searchParams.get('ref')
+
+  // Auto-lookup if ?ref= is present in URL
+  useEffect(() => {
+    if (refQuery && refQuery.trim()) {
+      const cleanRef = refQuery.trim().toUpperCase()
+      setGuestLookupRef(cleanRef)
+      setLookupSearched(true)
+
+      const syncFound = getOrderByReference(cleanRef)
+      if (syncFound) {
+        setLookupResult(syncFound)
+      } else if (fetchOrderByReference) {
+        setIsSearching(true)
+        fetchOrderByReference(cleanRef)
+          .then((res) => setLookupResult(res || null))
+          .finally(() => setIsSearching(false))
+      }
+    }
+  }, [refQuery, getOrderByReference, fetchOrderByReference])
 
   const myOrders = useMemo(() => {
     if (!isAuthenticated || !user) return []
     return getUserOrders(user.id, user.email)
   }, [isAuthenticated, user, getUserOrders])
 
-  const handleLookup = (e) => {
+  const handleLookup = async (e) => {
     e.preventDefault()
     if (!guestLookupRef.trim()) return
-    const found = getOrderByReference(guestLookupRef.trim())
-    setLookupResult(found || null)
+    const cleanRef = guestLookupRef.trim().toUpperCase()
     setLookupSearched(true)
+
+    const syncFound = getOrderByReference(cleanRef)
+    if (syncFound) {
+      setLookupResult(syncFound)
+      return
+    }
+
+    if (fetchOrderByReference) {
+      setIsSearching(true)
+      try {
+        const res = await fetchOrderByReference(cleanRef)
+        setLookupResult(res || null)
+      } finally {
+        setIsSearching(false)
+      }
+    } else {
+      setLookupResult(null)
+    }
   }
 
   return (
@@ -32,6 +72,25 @@ export default function MyOrders() {
         <h1>My Order Details & History</h1>
         <p>Track your live fish deliveries and view historical purchases.</p>
       </div>
+
+      {/* Prominently display tracked order if referenced or searched */}
+      {lookupResult && (
+        <div className="lookup-result-section" style={{ marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <h3 style={{ margin: 0, fontSize: '15px', color: 'var(--accent, #0284c7)' }}>
+              Tracked Order: <code>{lookupResult.reference}</code>
+            </h3>
+            <button
+              type="button"
+              onClick={() => { setLookupResult(null); setLookupSearched(false); setGuestLookupRef(''); }}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted, #64748b)', cursor: 'pointer', fontSize: '13px', textDecoration: 'underline' }}
+            >
+              Clear Filter
+            </button>
+          </div>
+          <OrderCard order={lookupResult} />
+        </div>
+      )}
 
       {!isAuthenticated ? (
         <div className="guest-lookup-card">
@@ -45,27 +104,25 @@ export default function MyOrders() {
               onChange={(e) => setGuestLookupRef(e.target.value)}
               className="lookup-input"
             />
-            <button type="submit" className="btn-primary">Track Order</button>
+            <button type="submit" className="btn-primary" disabled={isSearching}>
+              {isSearching ? 'Searching...' : 'Track Order'}
+            </button>
             <Link to="/auth" className="btn-secondary" style={{ textDecoration: 'none' }}>
               Sign In to Account
             </Link>
           </form>
 
-          {lookupSearched && (
+          {lookupSearched && !isSearching && !lookupResult && (
             <div className="lookup-result-section">
-              {lookupResult ? (
-                <OrderCard order={lookupResult} />
-              ) : (
-                <div className="no-order-found">
-                  No order found matching reference "<strong>{guestLookupRef}</strong>". Please verify your reference.
-                </div>
-              )}
+              <div className="no-order-found">
+                No order found matching reference "<strong>{guestLookupRef}</strong>". Please verify your reference number.
+              </div>
             </div>
           )}
         </div>
       ) : (
         <div className="user-orders-list">
-          {myOrders.length === 0 ? (
+          {myOrders.length === 0 && !lookupResult ? (
             <div className="empty-orders-state">
               <Package size={44} strokeWidth={1.5} color="var(--text-muted)" style={{ marginBottom: '8px' }} />
               <h3>No Orders Found Yet</h3>
@@ -75,7 +132,9 @@ export default function MyOrders() {
               </Link>
             </div>
           ) : (
-            myOrders.map((order) => <OrderCard key={order.id} order={order} />)
+            myOrders
+              .filter((o) => !lookupResult || o.id !== lookupResult.id)
+              .map((order) => <OrderCard key={order.id} order={order} />)
           )}
         </div>
       )}

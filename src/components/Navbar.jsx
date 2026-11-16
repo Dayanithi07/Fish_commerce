@@ -63,11 +63,9 @@ export default function Navbar() {
             <NavLink to="/care" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
               Care Guide
             </NavLink>
-            {isAuthenticated && !isAdmin && (
-              <NavLink to="/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                My Orders
-              </NavLink>
-            )}
+            <NavLink to="/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              {isAuthenticated ? 'My Orders' : 'Track Order'}
+            </NavLink>
             {isAdmin && (
               <NavLink to="/admin/products" className={({ isActive }) => `admin-link ${isActive ? 'active' : ''}`}>
                 Admin Portal
@@ -170,11 +168,9 @@ export default function Navbar() {
               <NavLink to="/contact" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
                 Contact
               </NavLink>
-              {isAuthenticated && !isAdmin && (
-                <NavLink to="/orders" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
-                  My Orders
-                </NavLink>
-              )}
+              <NavLink to="/orders" onClick={closeMenu} className={({ isActive }) => `mobile-link ${isActive ? 'active' : ''}`}>
+                {isAuthenticated ? 'My Orders' : 'Track Order'}
+              </NavLink>
               {isAdmin && (
                 <NavLink to="/admin/products" onClick={closeMenu} className={({ isActive }) => `admin-link mobile-link ${isActive ? 'active' : ''}`}>
                   Admin Portal
