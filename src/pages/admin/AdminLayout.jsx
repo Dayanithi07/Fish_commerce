@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Outlet, NavLink, Navigate } from 'react-router-dom'
-import { Settings } from 'lucide-react'
+import { Settings, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useOrders } from '../../context/OrderContext.jsx'
 import { useToast } from '../../components/Toast.jsx'
@@ -28,7 +28,9 @@ export default function AdminLayout() {
       <header className="admin-bar">
         <div className="container admin-bar-inner">
           <div className="admin-title-wrap">
-            <span className="admin-icon">⚙️</span>
+            <span className="admin-icon">
+              <Settings size={18} />
+            </span>
             <span className="admin-title">Admin Management Portal</span>
           </div>
 
@@ -43,13 +45,13 @@ export default function AdminLayout() {
               Delivered History
             </NavLink>
             <NavLink to="/admin/settings" className={({ isActive }) => (isActive ? 'active' : '')}>
-              ⚙ Contact & Settings
+              <Settings size={14} /> Contact &amp; Settings
             </NavLink>
           </nav>
 
           <div className="admin-user-controls">
             <NavLink to="/" className="admin-store-link">
-              ← Storefront
+              <ArrowLeft size={14} /> Storefront
             </NavLink>
             <button type="button" onClick={logout} className="btn-admin-logout">
               Logout

@@ -33,12 +33,12 @@ export default function Contact() {
     try {
       const html = `
         <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px;">
-          <h2 style="color: #3C1E5E; margin-top: 0;">📬 New Customer Support Request</h2>
+          <h2 style="color: #0F172A; margin-top: 0;">New Customer Support Request</h2>
           <p><strong>Name:</strong> ${form.name}</p>
           <p><strong>Email:</strong> ${form.email}</p>
           <p><strong>Subject:</strong> ${form.subject || '(none)'}</p>
           <p><strong>Message:</strong></p>
-          <blockquote style="border-left: 3px solid #6F3FF5; margin: 0; padding: 10px 16px; color: #374151; background: #f9f7ff;">
+          <blockquote style="border-left: 3px solid #0284C7; margin: 0; padding: 10px 16px; color: #334155; background: #f8fafc;">
             ${form.message.replace(/\n/g, '<br/>')}
           </blockquote>
           <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 20px 0;" />

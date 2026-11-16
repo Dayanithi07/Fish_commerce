@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom'
-import { Printer, Download } from 'lucide-react'
+import { Printer, Download, CheckCircle2 } from 'lucide-react'
 import { formatPrice } from '../utils/money.js'
 import { useStoreSettings } from '../hooks/useStoreSettings.js'
 import './OrderSuccess.css'
@@ -62,17 +62,17 @@ export default function OrderSuccess() {
           th { background: #f7f3fd; color: #5a4b75; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 12px; text-align: left; }
           .totals-table { width: 280px; margin-left: auto; margin-bottom: 24px; }
           .totals-table td { padding: 6px 12px; font-size: 14px; }
-          .totals-table .grand-total { font-size: 18px; font-weight: 800; color: #6F3FF5; border-top: 2px dashed #ede7f8; }
+          .totals-table .grand-total { font-size: 18px; font-weight: 800; color: #0284c7; border-top: 2px dashed #e2e8f0; }
           .payment-badge { background: #e6f9f0; border: 1px solid #10b981; color: #065f46; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; }
-          .acclimation-box { background: #fbf9ff; border: 1px solid #ede7f8; border-radius: 8px; padding: 14px 18px; font-size: 12px; color: #6a5a82; line-height: 1.6; }
-          .footer-note { text-align: center; font-size: 12px; color: #9c8fb5; margin-top: 28px; }
+          .acclimation-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; font-size: 12px; color: #475569; line-height: 1.6; }
+          .footer-note { text-align: center; font-size: 12px; color: #94a3b8; margin-top: 28px; }
         </style>
       </head>
       <body>
         <div class="invoice-card">
           <div class="header">
             <div>
-              <h1 class="brand-title">🐠 VP Aquarium</h1>
+              <h1 class="brand-title">VP Aquarium</h1>
               <p class="brand-sub">Premium Pet Fish & Live Aquatic Care</p>
               <p class="brand-sub">Support: ${settings.support_email}</p>
             </div>
@@ -132,7 +132,7 @@ export default function OrderSuccess() {
           </table>
 
           <div class="payment-badge">
-            ✓ <strong>Payment Confirmed via UPI:</strong> Thank you for your purchase with VP Aquarium. Your companion is being acclimated and prepared for safe dispatch.
+            <strong>Payment Confirmed via Razorpay:</strong> Thank you for your purchase with VP Aquarium. Your companion is being acclimated and prepared for safe dispatch.
           </div>
 
           <div class="acclimation-box">
@@ -165,7 +165,9 @@ export default function OrderSuccess() {
   return (
     <div className="container order-success-page">
       <div className="success-card">
-        <div className="success-icon">✓</div>
+        <div className="success-icon">
+          <CheckCircle2 size={40} />
+        </div>
         <h1>Order Confirmed!</h1>
         {order ? (
           <>
@@ -175,7 +177,7 @@ export default function OrderSuccess() {
             <div className="order-details-box printable-invoice-section">
               <div className="invoice-header-row">
                 <div>
-                  <h3 style={{ margin: 0, color: 'var(--accent)' }}>🐠 VP Aquarium</h3>
+                  <h3 style={{ margin: 0, color: 'var(--accent)' }}>VP Aquarium</h3>
                   <small style={{ color: 'var(--text-secondary)' }}>Official Livestock Order Bill</small>
                 </div>
                 <div style={{ textAlign: 'right' }}>

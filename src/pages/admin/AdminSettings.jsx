@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Check, Mail, RefreshCw, Copy } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { SUPER_ADMIN, DEMO_ADMIN } from '../../config.js'
 import { isSupabaseConfigured } from '../../lib/supabase.js'
@@ -206,7 +207,7 @@ export default function AdminSettings() {
             </div>
 
             <button type="submit" className="btn-primary btn-save-settings" disabled={savingSettings}>
-              {savingSettings ? 'Saving to DB…' : savedContact ? '✓ Saved to Database' : 'Save Changes'}
+              {savingSettings ? 'Saving to DB…' : savedContact ? <><Check size={14} /> Saved to Database</> : 'Save Changes'}
             </button>
           </form>
         </div>
@@ -218,25 +219,27 @@ export default function AdminSettings() {
             Invite staff members to manage inventory, fish food catalog, and orders. An email invitation with a secure password setup link will be delivered to their inbox.
           </p>
 
-          {adminError && <div className="alert-error" style={{ marginBottom: '14px' }}>{adminError}</div>}
+          {adminError && <div className="alert-error settings-alert">{adminError}</div>}
 
           {lastInviteLink && (
-            <div style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px', padding: '12px', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
-                <strong style={{ color: '#059669', fontSize: '13px' }}>✓ Invitation Link Generated</strong>
+            <div className="invite-link-box">
+              <div className="invite-link-header">
+                <strong className="invite-link-title">
+                  <Check size={14} /> Invitation Link Generated
+                </strong>
                 <button
                   type="button"
                   onClick={() => handleCopyLink(lastInviteLink)}
-                  style={{ background: '#059669', color: '#fff', border: 'none', borderRadius: '4px', padding: '3px 8px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                  className="btn-copy-link"
                 >
-                  Copy Link
+                  <Copy size={11} /> Copy Link
                 </button>
               </div>
               <input
                 type="text"
                 readOnly
                 value={lastInviteLink}
-                style={{ fontSize: '11px', background: '#fff', border: '1px solid #d1d5db', borderRadius: '4px', padding: '4px 6px', width: '100%', boxSizing: 'border-box' }}
+                className="invite-link-input"
               />
             </div>
           )}
@@ -262,7 +265,7 @@ export default function AdminSettings() {
                 placeholder="e.g. alex@vp-aquarium.com"
                 required
               />
-              <span className="field-hint" style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
+              <span className="field-hint">
                 A secure setup link will be emailed to this address so the admin can configure their own password.
               </span>
             </div>
@@ -272,16 +275,16 @@ export default function AdminSettings() {
               className="btn-primary btn-save-settings"
               disabled={invitingAdmin}
             >
-              {invitingAdmin ? 'Sending Invitation...' : '✉️ Send Admin Invitation'}
+              {invitingAdmin ? 'Sending Invitation...' : <><Mail size={14} /> Send Admin Invitation</>}
             </button>
           </form>
         </div>
       </div>
 
       {/* Full-Width Section: Active Administrators Roster */}
-      <div className="settings-card" style={{ marginTop: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '4px' }}>
-          <h2 style={{ margin: 0 }}>Active Store Administrators</h2>
+      <div className="settings-card settings-card--roster">
+        <div className="roster-header">
+          <h2>Active Store Administrators</h2>
           <button
             type="button"
             onClick={async () => {
@@ -295,9 +298,10 @@ export default function AdminSettings() {
               }
             }}
             disabled={fetchingAdmins}
-            style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: '700', cursor: fetchingAdmins ? 'default' : 'pointer', opacity: fetchingAdmins ? 0.6 : 1 }}
+            className="btn-refresh"
           >
-            {fetchingAdmins ? '↻ Syncing…' : '↻ Refresh from DB'}
+            <RefreshCw size={12} className={fetchingAdmins ? 'spin' : ''} />
+            {fetchingAdmins ? 'Syncing…' : 'Refresh from DB'}
           </button>
         </div>
         <p className="card-desc">Staff accounts authorized to manage products, pricing, and order dispatch. Status is fetched live from the database.</p>
@@ -310,7 +314,7 @@ export default function AdminSettings() {
                 <th>Email Address</th>
                 <th>Access Level</th>
                 <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th className="th-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -320,7 +324,7 @@ export default function AdminSettings() {
                 <td><code>{SUPER_ADMIN.email}</code></td>
                 <td><span className="badge-role badge-role--super">Super Admin</span></td>
                 <td><span className="badge-status badge-active">Active</span></td>
-                <td style={{ textAlign: 'right', color: 'var(--text-muted)', fontSize: '12px' }}>Protected</td>
+                <td className="actions-protected">Protected</td>
               </tr>
 
               {/* Demo Admin */}
@@ -329,7 +333,7 @@ export default function AdminSettings() {
                 <td><code>{DEMO_ADMIN.email}</code></td>
                 <td><span className="badge-role badge-role--staff">Staff Admin</span></td>
                 <td><span className="badge-status badge-active">Active</span></td>
-                <td style={{ textAlign: 'right', color: 'var(--text-muted)', fontSize: '12px' }}>System Default</td>
+                <td className="actions-protected">System Default</td>
               </tr>
 
               {/* Custom Created / Invited Admins (Strictly excluding SUPER_ADMIN) */}
@@ -352,22 +356,22 @@ export default function AdminSettings() {
                       <td><span className="badge-role badge-role--custom">Custom Admin</span></td>
                       <td>
                         {isPending ? (
-                          <span className="badge-status" style={{ background: '#fef3c7', color: '#b45309' }}>
+                          <span className="badge-status badge-invited">
                             Invited (Pending)
                           </span>
                         ) : (
                           <span className="badge-status badge-active">Active</span>
                         )}
                       </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
+                      <td className="td-right">
+                        <div className="admin-actions">
                           {isPending && (
                             <button
                               type="button"
                               onClick={() => handleCopyLink(inviteUrl)}
-                              style={{ background: 'transparent', border: '1px solid var(--accent)', color: 'var(--accent)', borderRadius: '4px', padding: '3px 8px', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}
+                              className="btn-copy-link-outline"
                             >
-                              Copy Link
+                              <Copy size={11} /> Copy Link
                             </button>
                           )}
                           <button
@@ -388,7 +392,7 @@ export default function AdminSettings() {
       </div>
 
       {/* Integration & Provider Status */}
-      <div className="settings-card" style={{ marginTop: '24px' }}>
+      <div className="settings-card settings-card--integrations">
         <h2>Services & Integrations Health</h2>
         <p className="card-desc">Real-time status of backend, authentication, and notification relays.</p>
 

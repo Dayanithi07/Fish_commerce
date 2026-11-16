@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { ShieldCheck, PackageCheck, Clock, Zap, Lock } from 'lucide-react'
+import { ShieldCheck, PackageCheck, Clock, Zap, Lock, Check } from 'lucide-react'
 import { useCart } from '../context/CartContext.jsx'
 import { useOrders } from '../context/OrderContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -159,10 +159,10 @@ export default function Checkout() {
 
   // Razorpay Standard Checkout Flow
   const handleRazorpayPayment = async () => {
-    const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_U03LOsD9tLnsmu'
+    const keyId = (import.meta.env.VITE_RAZORPAY_KEY_ID || '').trim()
 
     if (typeof window.Razorpay === 'undefined') {
-      alert('Razorpay Checkout SDK is still loading or blocked. Please refresh the page or try UPI QR.')
+      alert('Razorpay Checkout SDK is still loading or blocked. Please refresh the page.')
       return
     }
 
@@ -210,7 +210,7 @@ export default function Checkout() {
           contact: formData.phone,
         },
         theme: {
-          color: '#6F3FF5', // Brand purple
+          color: '#0284C7', // Ocean blue brand accent
         },
         handler: async function (response) {
           // Step 3: Send verification payload to /api/verify-payment
@@ -295,8 +295,8 @@ export default function Checkout() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
             <h3 style={{ margin: 0 }}>1. Contact & Shipping Details</h3>
             {hasSavedDetails && (
-              <span style={{ fontSize: '11px', background: 'rgba(16, 185, 129, 0.1)', color: '#059669', padding: '3px 8px', borderRadius: '6px', fontWeight: '600' }}>
-                ✓ Autofilled from previous order (Editable)
+              <span style={{ fontSize: '11px', background: 'rgba(16, 185, 129, 0.1)', color: '#059669', padding: '3px 8px', borderRadius: '6px', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Check size={11} /> Autofilled from previous order (Editable)
               </span>
             )}
           </div>

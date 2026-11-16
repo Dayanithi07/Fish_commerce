@@ -37,30 +37,30 @@ export async function sendOrderNotifications(order) {
     <!DOCTYPE html>
     <html>
     <head><meta charset="utf-8" /></head>
-    <body style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f7f4fc; margin: 0; padding: 24px; color: #2d1a4d;">
-      <div style="max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(111,63,245,0.08); border: 1px solid #ede7f8;">
+    <body style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #0f172a;">
+      <div style="max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(15,23,42,0.06); border: 1px solid #e2e8f0;">
         
         <!-- Header -->
-        <div style="background: linear-gradient(135deg, #3C1E5E 0%, #6F3FF5 100%); padding: 32px 28px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">🐠 VP Aquarium</h1>
-          <p style="color: #e0d5fa; margin: 8px 0 0; font-size: 14px;">Healthy, Hand-Raised Aquatic Companions</p>
+        <div style="background: linear-gradient(135deg, #0f172a 0%, #0284c7 100%); padding: 32px 28px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">VP Aquarium</h1>
+          <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 14px;">Healthy, Hand-Raised Aquatic Companions</p>
         </div>
 
         <!-- Body -->
         <div style="padding: 28px;">
-          <h2 style="color: #2d1a4d; margin-top: 0; font-size: 20px;">${headline}</h2>
-          <p style="color: #6a5a82; line-height: 1.5; font-size: 14px;">${recipientNote}</p>
+          <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">${headline}</h2>
+          <p style="color: #475569; line-height: 1.5; font-size: 14px;">${recipientNote}</p>
 
-          <div style="background: #fbf9ff; border: 1px solid #ede7f8; border-radius: 12px; padding: 16px 20px; margin: 20px 0;">
-            <p style="margin: 0 0 6px; font-size: 13px; color: #8876a3;">ORDER REFERENCE</p>
-            <p style="margin: 0; font-size: 18px; font-weight: 800; color: #6F3FF5; letter-spacing: 0.5px;">${order.reference}</p>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 20px 0;">
+            <p style="margin: 0 0 6px; font-size: 13px; color: #64748b;">ORDER REFERENCE</p>
+            <p style="margin: 0; font-size: 18px; font-weight: 800; color: #0284c7; letter-spacing: 0.5px;">${order.reference}</p>
           </div>
 
           <!-- Items Table -->
-          <h3 style="font-size: 15px; color: #2d1a4d; margin: 24px 0 10px; border-bottom: 2px solid #ede7f8; padding-bottom: 8px;">Order Summary</h3>
+          <h3 style="font-size: 15px; color: #0f172a; margin: 24px 0 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Order Summary</h3>
           <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
             <thead>
-              <tr style="color: #8876a3; font-size: 12px; text-transform: uppercase;">
+              <tr style="color: #64748b; font-size: 12px; text-transform: uppercase;">
                 <th style="text-align: left; padding-bottom: 8px;">Species</th>
                 <th style="text-align: center; padding-bottom: 8px;">Qty</th>
                 <th style="text-align: right; padding-bottom: 8px;">Total</th>
@@ -72,34 +72,34 @@ export async function sendOrderNotifications(order) {
           </table>
 
           <!-- Totals -->
-          <div style="margin-top: 18px; border-top: 1px solid #ede7f8; padding-top: 14px; font-size: 14px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #6a5a82;">
+          <div style="margin-top: 18px; border-top: 1px solid #e2e8f0; padding-top: 14px; font-size: 14px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #475569;">
               <span>Subtotal:</span>
               <span style="font-weight: 600;">${fmt(order.subtotalCents)}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #6a5a82;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #475569;">
               <span>Delivery & Safe Packaging:</span>
               <span style="font-weight: 700; color: #10b981;">FREE</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #ede7f8; font-size: 17px; font-weight: 800; color: #2d1a4d;">
+            <div style="display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #e2e8f0; font-size: 17px; font-weight: 800; color: #0f172a;">
               <span>Total Paid:</span>
-              <span style="color: #6F3FF5;">${fmt(order.totalCents)}</span>
+              <span style="color: #0284c7;">${fmt(order.totalCents)}</span>
             </div>
           </div>
 
           <!-- Delivery & Payment Address -->
-          <h3 style="font-size: 15px; color: #2d1a4d; margin: 26px 0 10px; border-bottom: 2px solid #ede7f8; padding-bottom: 8px;">Delivery & Payment Details</h3>
-          <p style="margin: 4px 0; font-size: 14px; color: #43335e;"><strong>Name:</strong> ${order.customerName}</p>
-          <p style="margin: 4px 0; font-size: 14px; color: #43335e;"><strong>Email:</strong> ${order.customerEmail}</p>
-          <p style="margin: 4px 0; font-size: 14px; color: #43335e;"><strong>Phone:</strong> ${order.customerPhone}</p>
-          <p style="margin: 4px 0; font-size: 14px; color: #43335e;"><strong>Address:</strong> ${order.street}, ${order.city} ${order.postalCode}</p>
-          ${order.paymentMethod ? `<p style="margin: 4px 0; font-size: 14px; color: #43335e;"><strong>Payment Method:</strong> ${order.paymentMethod}</p>` : ''}
-          ${order.paymentRef && order.paymentRef !== 'COD' ? `<p style="margin: 4px 0; font-size: 14px; color: #43335e;"><strong>Transaction UTR:</strong> ${order.paymentRef}</p>` : ''}
-          ${order.notes ? `<p style="margin: 4px 0; font-size: 14px; color: #43335e;"><strong>Delivery Notes:</strong> ${order.notes}</p>` : ''}
+          <h3 style="font-size: 15px; color: #0f172a; margin: 26px 0 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Delivery & Payment Details</h3>
+          <p style="margin: 4px 0; font-size: 14px; color: #334155;"><strong>Name:</strong> ${order.customerName}</p>
+          <p style="margin: 4px 0; font-size: 14px; color: #334155;"><strong>Email:</strong> ${order.customerEmail}</p>
+          <p style="margin: 4px 0; font-size: 14px; color: #334155;"><strong>Phone:</strong> ${order.customerPhone}</p>
+          <p style="margin: 4px 0; font-size: 14px; color: #334155;"><strong>Address:</strong> ${order.street}, ${order.city} ${order.postalCode}</p>
+          ${order.paymentMethod ? `<p style="margin: 4px 0; font-size: 14px; color: #334155;"><strong>Payment Method:</strong> ${order.paymentMethod}</p>` : ''}
+          ${order.paymentRef && order.paymentRef !== 'COD' ? `<p style="margin: 4px 0; font-size: 14px; color: #334155;"><strong>Transaction UTR:</strong> ${order.paymentRef}</p>` : ''}
+          ${order.notes ? `<p style="margin: 4px 0; font-size: 14px; color: #334155;"><strong>Delivery Notes:</strong> ${order.notes}</p>` : ''}
         </div>
 
         <!-- Footer -->
-        <div style="background: #fbf9ff; border-top: 1px solid #ede7f8; padding: 20px 28px; text-align: center; font-size: 12px; color: #9a8bb3;">
+        <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 28px; text-align: center; font-size: 12px; color: #64748b;">
           <p style="margin: 0 0 6px;">VP Aquarium Inc. — Ethical Fishkeeping & Aquaria Experts</p>
           <p style="margin: 0;">Need help? Reply directly to this email or visit our store.</p>
         </div>
@@ -109,12 +109,12 @@ export async function sendOrderNotifications(order) {
   `
 
   const customerHtml = baseEmailTemplate(
-    'Thank you for your order! 🌊',
+    'Thank you for your order!',
     `We have received your order <strong>${order.reference}</strong> and our aquatic specialists are preparing your companions for safe, climate-controlled dispatch.`
   )
 
   const adminHtml = baseEmailTemplate(
-    `🚨 New Order Received: ${order.reference}`,
+    `New Order Received: ${order.reference}`,
     `An order has just been placed on VP Aquarium by <strong>${order.customerName}</strong> (${order.customerEmail}). Full order and dispatch details below:`
   )
 

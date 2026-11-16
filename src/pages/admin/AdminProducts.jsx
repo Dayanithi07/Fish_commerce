@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { Fish, UtensilsCrossed, Camera } from 'lucide-react'
 import { useProducts } from '../../context/ProductContext.jsx'
 import { formatPrice } from '../../utils/money.js'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase.js'
@@ -252,7 +253,15 @@ export default function AdminProducts() {
                   </td>
                   <td>
                     <span className={`badge ${isFood ? 'badge--custom' : 'badge--water'}`}>
-                      {isFood ? '🥫 Food' : '🐟 Fish'}
+                      {isFood ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <UtensilsCrossed size={12} /> Food
+                        </span>
+                      ) : (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Fish size={12} /> Fish
+                        </span>
+                      )}
                     </span>
                   </td>
                   <td>
@@ -311,14 +320,14 @@ export default function AdminProducts() {
               className={`category-pill ${newFish.productType === 'fish' ? 'active' : ''}`}
               onClick={() => setNewFish((prev) => ({ ...prev, productType: 'fish' }))}
             >
-              🐟 Live Fish Species
+              <Fish size={14} style={{ marginRight: '6px' }} /> Live Fish Species
             </button>
             <button
               type="button"
               className={`category-pill ${newFish.productType === 'food' ? 'active' : ''}`}
               onClick={() => setNewFish((prev) => ({ ...prev, productType: 'food' }))}
             >
-              🥫 Aquarium Fish Food
+              <UtensilsCrossed size={14} style={{ marginRight: '6px' }} /> Aquarium Fish Food
             </button>
           </div>
 
@@ -421,7 +430,9 @@ export default function AdminProducts() {
                   role="button"
                   tabIndex={0}
                 >
-                  <div className="dropzone-icon">📷</div>
+                  <div className="dropzone-icon">
+                    <Camera size={28} />
+                  </div>
                   <div className="dropzone-text">
                     <strong>Click to upload an image</strong> or drag and drop
                   </div>

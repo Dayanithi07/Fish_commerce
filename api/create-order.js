@@ -24,8 +24,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' })
   }
 
-  const key_id = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || ''
-  const key_secret = process.env.RAZORPAY_KEY_SECRET || ''
+  const key_id = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || '').trim()
+  const key_secret = (process.env.RAZORPAY_KEY_SECRET || '').trim()
 
   if (!key_id || !key_secret) {
     return res.status(401).json({ error: 'Razorpay API credentials not configured on server.' })

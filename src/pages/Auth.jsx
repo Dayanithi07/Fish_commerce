@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ShieldCheck, Loader2 } from 'lucide-react'
+import { ShieldCheck, Loader2, Check } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import './Auth.css'
 
@@ -172,8 +172,8 @@ export default function Auth() {
                   style={{ background: '#f8fafc', color: '#64748b', cursor: 'not-allowed' }}
                   required
                 />
-                <span style={{ fontSize: '11px', color: '#059669', fontWeight: '600', marginTop: '4px', display: 'block' }}>
-                  ✓ Verified administrator invite
+                <span style={{ fontSize: '11px', color: '#059669', fontWeight: '600', marginTop: '4px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <Check size={12} /> Verified administrator invite
                 </span>
               </div>
 
