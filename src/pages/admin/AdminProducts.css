@@ -30,7 +30,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f4eefa;
+  background: #f0f9ff;
   border: 1.5px solid var(--accent);
   padding: 12px 18px;
   border-radius: var(--radius-md);
@@ -129,7 +129,7 @@
 }
 
 .row-selected {
-  background: #faf6fe;
+  background: #f0f9ff;
 }
 
 .status-tag {
@@ -204,7 +204,7 @@
 
 .image-dropzone:hover {
   border-color: var(--accent);
-  background: #f7f2fe;
+  background: #f0f9ff;
 }
 
 .dropzone-icon {
@@ -232,8 +232,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  background: #fbf9ff;
-  border: 1.5px solid #d5c8ed;
+  background: #f8fafc;
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 12px;
 }
@@ -320,7 +320,7 @@
 .category-pill.active {
   background: #ffffff;
   color: var(--accent);
-  box-shadow: 0 2px 8px rgba(111, 63, 245, 0.15);
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
 }
 
 @media (max-width: 640px) {
