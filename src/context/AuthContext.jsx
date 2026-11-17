@@ -258,9 +258,9 @@ export function AuthProvider({ children }) {
         }
       }
 
-      // Offline fallback: Check local registered accounts
-      if (!isSupabaseConfigured) {
-        // Built-in admin offline fallback when Supabase is not configured
+      // Offline fallback: Check local registered accounts (active only during local offline development)
+      if (import.meta.env.DEV && !isSupabaseConfigured) {
+        // Built-in admin offline fallback when Supabase is not configured in local dev
         if (trimmedEmail === SUPER_ADMIN.email.toLowerCase() && password === 'Dayanithi@28') {
           const superAdminUser = {
             id: 'super_admin_dayanithi',

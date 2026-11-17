@@ -1,5 +1,5 @@
 // Order context, history, Supabase integration, and automated Resend notifications.
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js'
 import { readJSON, writeJSON, subscribe } from '../utils/storage.js'
 import { newId, newOrderReference } from '../utils/id.js'
@@ -34,6 +34,11 @@ export function OrderProvider({ children }) {
   })
 
   const [latestIncoming, setLatestIncoming] = useState(null)
+  const userRef = useRef(user)
+
+  useEffect(() => {
+    userRef.current = user
+  }, [user])
 
   // Map a DB row (snake_case) to our camelCase format
   const mapDbOrder = (o) => ({
@@ -92,12 +97,10 @@ export function OrderProvider({ children }) {
         console.warn('[OrderContext] Direct orders fetch note:', error.message || error)
       }
 
-      // 2. For authenticated customers, also fetch via RPC (SECURITY DEFINER bypasses RLS)
+      // 2. For authenticated customers, also fetch via RPC (SECURITY DEFINER bypasses RLS safely)
       if (requestEmail) {
         try {
-          const { data: custOrders, error: custErr } = await supabase.rpc('get_customer_orders', {
-            p_email: requestEmail,
-          })
+          const { data: custOrders, error: custErr } = await supabase.rpc('get_customer_orders')
           if (!custErr && Array.isArray(custOrders)) {
             fetchSucceeded = true
             // RPC returns camelCase JSONB — merge with direct results, dedup by id
@@ -110,8 +113,8 @@ export function OrderProvider({ children }) {
         }
       }
 
-      // Discard response if user changed or logged out during request
-      if ((user?.id || null) !== requestUserId || (user?.email || null) !== requestEmail) {
+      // Discard response if active user changed or logged out during request
+      if ((userRef.current?.id || null) !== requestUserId || (userRef.current?.email || null) !== requestEmail) {
         return
       }
 
@@ -134,7 +137,7 @@ export function OrderProvider({ children }) {
     } catch (err) {
       console.warn('[OrderContext] Fetch orders error:', err)
     }
-  }, [user])
+  }, [user?.id, user?.email])
 
   // Supabase Realtime Listener for new orders
   useEffect(() => {
