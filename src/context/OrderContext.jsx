@@ -9,7 +9,6 @@ import { validateCheckout } from '../utils/validators.js'
 import { useProducts } from './ProductContext.jsx'
 import { useAuth } from './AuthContext.jsx'
 import { useCart } from './CartContext.jsx'
-import { mockOrders } from '../data/mockOrders.js'
 import { sendOrderNotifications } from '../services/notificationService.js'
 
 const OrderContext = createContext(null)
@@ -31,15 +30,47 @@ export function OrderProvider({ children }) {
     if (Array.isArray(stored) && stored.length > 0) {
       return stored
     }
-    return mockOrders
+    return []
   })
 
   const [latestIncoming, setLatestIncoming] = useState(null)
+
+  // Map a DB row (snake_case) to our camelCase format
+  const mapDbOrder = (o) => ({
+    id: o.id,
+    reference: o.reference,
+    userId: o.user_id,
+    customerName: o.customer_name,
+    customerEmail: o.customer_email,
+    customerPhone: o.customer_phone,
+    street: o.street,
+    city: o.city,
+    postalCode: o.postal_code,
+    notes: o.notes,
+    subtotal: o.subtotal_cents / 100,
+    shipping: o.shipping_cents / 100,
+    total: o.total_cents / 100,
+    status: o.status,
+    items: (o.items || []).map((it) => ({
+      productId: it.product_id,
+      name: it.name,
+      price: it.price_cents / 100,
+      quantity: it.quantity,
+      image: it.image_url,
+    })),
+    timeline: (o.timeline || []).map((ev) => ({
+      status: ev.status,
+      at: ev.at,
+    })),
+    createdAt: o.created_at,
+    updatedAt: o.updated_at,
+  })
 
   // Fetch orders from Supabase if configured
   const fetchSupabaseOrders = useCallback(async () => {
     if (!isSupabaseConfigured) return
     try {
+      // 1. Try direct table query (RLS will filter: admins see all, customers see own)
       const { data, error } = await supabase
         .from('orders')
         .select(`
@@ -49,68 +80,41 @@ export function OrderProvider({ children }) {
         `)
         .order('created_at', { ascending: false })
 
-      if (error) {
-        console.warn('[OrderContext] Supabase fetch note (using local orders):', error.message || error)
-        return
-      }
-      if (data) {
-        const formatted = data.map((o) => ({
-          id: o.id,
-          reference: o.reference,
-          userId: o.user_id,
-          customerName: o.customer_name,
-          customerEmail: o.customer_email,
-          customerPhone: o.customer_phone,
-          street: o.street,
-          city: o.city,
-          postalCode: o.postal_code,
-          notes: o.notes,
-          subtotal: o.subtotal_cents / 100,
-          shipping: o.shipping_cents / 100,
-          total: o.total_cents / 100,
-          status: o.status,
-          items: (o.items || []).map((it) => ({
-            productId: it.product_id,
-            name: it.name,
-            price: it.price_cents / 100,
-            quantity: it.quantity,
-            image: it.image_url,
-          })),
-          timeline: (o.timeline || []).map((ev) => ({
-            status: ev.status,
-            at: ev.at,
-          })),
-          createdAt: o.created_at,
-          updatedAt: o.updated_at,
-        }))
-
-        setOrders(formatted)
-        writeJSON('orders', formatted)
+      let dbOrders = []
+      if (!error && data) {
+        dbOrders = data.map(mapDbOrder)
+      } else if (error) {
+        console.warn('[OrderContext] Direct orders fetch note:', error.message || error)
       }
 
-      // If authenticated customer, also fetch persistent customer orders via RPC
+      // 2. For authenticated customers, also fetch via RPC (SECURITY DEFINER bypasses RLS)
       if (user?.email) {
         try {
           const { data: custOrders, error: custErr } = await supabase.rpc('get_customer_orders', {
             p_email: user.email,
           })
           if (!custErr && Array.isArray(custOrders) && custOrders.length > 0) {
-            setOrders((prev) => {
-              const existingIds = new Set(prev.map((o) => o.id || o.reference))
-              const newItems = custOrders.filter((o) => !existingIds.has(o.id || o.reference))
-              const merged = [...newItems, ...prev]
-              writeJSON('orders', merged)
-              return merged
-            })
+            // RPC returns camelCase JSONB — merge with direct results, dedup by id
+            const existingIds = new Set(dbOrders.map((o) => o.id))
+            const newFromRpc = custOrders.filter((o) => !existingIds.has(o.id))
+            dbOrders = [...dbOrders, ...newFromRpc]
           }
         } catch (e) {
-          // RPC fallback
+          // RPC may not exist if migration not applied — silent fallback
         }
+      }
+
+      // 3. Sort by date and update state
+      dbOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+      if (dbOrders.length > 0) {
+        setOrders(dbOrders)
+        writeJSON('orders', dbOrders)
       }
     } catch (err) {
       console.warn('[OrderContext] Fetch orders error:', err)
     }
-  }, [])
+  }, [user])
 
   // Supabase Realtime Listener for new orders
   useEffect(() => {
@@ -361,7 +365,7 @@ export function OrderProvider({ children }) {
       if (isSupabaseConfigured) {
         try {
           // Attempt atomic RPC call
-          const { error: rpcErr } = await supabase.rpc('place_order', {
+          const { data: rpcData, error: rpcErr } = await supabase.rpc('place_order', {
             p_reference: reference,
             p_user_id: user?.id || null,
             p_customer_name: customer.name.trim(),
@@ -377,7 +381,9 @@ export function OrderProvider({ children }) {
             p_items: orderItems,
           })
 
-          if (rpcErr) {
+          if (!rpcErr && rpcData?.orderId) {
+            newOrderRecord.id = rpcData.orderId
+          } else if (rpcErr) {
             console.warn('[OrderContext] RPC failed, falling back to direct inserts:', rpcErr)
             // Direct insert fallback
             const { data: insertedOrder, error: orderErr } = await supabase
@@ -500,11 +506,12 @@ export function OrderProvider({ children }) {
     (targetUserId, targetEmail) => {
       const uid = targetUserId || user?.id
       const mail = (targetEmail || user?.email || '').toLowerCase().trim()
-      return orders.filter(
-        (o) =>
-          (uid && o.userId === uid) ||
-          (mail && o.customerEmail?.toLowerCase() === mail)
-      )
+      return orders.filter((o) => {
+        const orderEmail = (o.customerEmail || '').toLowerCase().trim()
+        const isUserMatch = Boolean(uid && o.userId && o.userId === uid)
+        const isEmailMatch = Boolean(mail && orderEmail && orderEmail === mail)
+        return isUserMatch || isEmailMatch
+      })
     },
     [orders, user]
   )

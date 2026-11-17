@@ -8,17 +8,14 @@ export const SHIPPING_FLAT = 0
 export const STORE_NAME = 'VP Aquarium'
 export const STORE_UPI_ID = 'ganesh123madesh@okaxis'
 
-// Super Admin Credentials
+// Admin email identifiers only — authentication via Supabase Auth (no passwords in client)
 export const SUPER_ADMIN = {
   email: 'starboy1s2s3s3@gmail.com',
-  password: 'Dayanithi@28',
   name: 'Dayanithi (Super Admin)',
 }
 
-// Demo Admin Credentials (for staff testing)
 export const DEMO_ADMIN = {
   email: 'admin@vpaquarium.com',
-  password: 'admin123',
   name: 'Admin Staff',
 }
 

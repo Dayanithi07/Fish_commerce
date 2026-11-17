@@ -215,57 +215,7 @@ export function AuthProvider({ children }) {
         }
       }
 
-      // 1. Check Super Admin credentials
-      if (
-        trimmedEmail === SUPER_ADMIN.email.toLowerCase() &&
-        password === SUPER_ADMIN.password
-      ) {
-        const superAdminUser = {
-          id: 'super_admin_dayanithi',
-          name: SUPER_ADMIN.name,
-          email: SUPER_ADMIN.email,
-          role: 'admin',
-          isSuperAdmin: true,
-        }
-        setUser(superAdminUser)
-        writeJSON('session', superAdminUser)
-        return { ok: true, user: superAdminUser }
-      }
-
-      // 2. Check Demo Admin credentials
-      if (
-        trimmedEmail === DEMO_ADMIN.email.toLowerCase() &&
-        password === DEMO_ADMIN.password
-      ) {
-        const demoAdminUser = {
-          id: 'demo_admin_staff',
-          name: DEMO_ADMIN.name,
-          email: DEMO_ADMIN.email,
-          role: 'admin',
-        }
-        setUser(demoAdminUser)
-        writeJSON('session', demoAdminUser)
-        return { ok: true, user: demoAdminUser }
-      }
-
-      // 3. Check Custom Created Admins
-      const customAdmins = readJSON('custom_admins', registeredAdmins)
-      const foundCustomAdmin = customAdmins.find(
-        (a) => a.email.toLowerCase() === trimmedEmail && a.password === password
-      )
-      if (foundCustomAdmin) {
-        const customAdminUser = {
-          id: foundCustomAdmin.id,
-          name: foundCustomAdmin.name,
-          email: foundCustomAdmin.email,
-          role: 'admin',
-        }
-        setUser(customAdminUser)
-        writeJSON('session', customAdminUser)
-        return { ok: true, user: customAdminUser }
-      }
-
-      // 4. If Supabase is active, try Supabase Auth
+      // Primary path: Supabase Auth
       if (isSupabaseConfigured) {
         try {
           const { data, error } = await supabase.auth.signInWithPassword({
@@ -281,19 +231,14 @@ export function AuthProvider({ children }) {
           // Surface specific Supabase auth errors (wrong password, email not confirmed, etc.)
           if (error) {
             const msg = error.message || ''
-            if (
-              msg.includes('Invalid login credentials') ||
-              msg.includes('Email not confirmed')
-            ) {
-              return {
-                ok: false,
-                error: {
-                  code: 'SUPABASE_AUTH',
-                  message: msg.includes('Email not confirmed')
-                    ? 'Please check your email inbox and confirm your account before signing in.'
-                    : 'Incorrect email or password.',
-                },
-              }
+            return {
+              ok: false,
+              error: {
+                code: 'SUPABASE_AUTH',
+                message: msg.includes('Email not confirmed')
+                  ? 'Please check your email inbox and confirm your account before signing in.'
+                  : 'Incorrect email or password.',
+              },
             }
           }
         } catch (fetchErr) {
@@ -302,7 +247,7 @@ export function AuthProvider({ children }) {
         }
       }
 
-      // 5. Fallback: Check local registered customer accounts
+      // Offline fallback: Check local registered customer accounts
       const users = readJSON('users', [])
       const found = users.find((u) => u.email.toLowerCase() === trimmedEmail)
       if (!found || found.password !== password) {
@@ -312,7 +257,6 @@ export function AuthProvider({ children }) {
         }
       }
 
-      // Local fallback — use the role stored in local users array
       const effectiveRole = found.role || 'customer'
 
       const authUser = {
@@ -325,7 +269,7 @@ export function AuthProvider({ children }) {
       writeJSON('session', authUser)
       return { ok: true, user: authUser }
     },
-    [syncProfile, registeredAdmins]
+    [syncProfile]
   )
 
   /**

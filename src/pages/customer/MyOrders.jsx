@@ -8,12 +8,19 @@ import './MyOrders.css'
 
 export default function MyOrders() {
   const { user, isAuthenticated } = useAuth()
-  const { getUserOrders, getOrderByReference, fetchOrderByReference } = useOrders()
+  const { getUserOrders, getOrderByReference, fetchOrderByReference, refreshOrders } = useOrders()
   const [searchParams] = useSearchParams()
   const [guestLookupRef, setGuestLookupRef] = useState('')
   const [lookupResult, setLookupResult] = useState(null)
   const [lookupSearched, setLookupSearched] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+
+  // Fetch latest orders from Supabase DB on page load
+  useEffect(() => {
+    if (refreshOrders) {
+      refreshOrders()
+    }
+  }, [refreshOrders])
 
   const refQuery = searchParams.get('ref')
 
