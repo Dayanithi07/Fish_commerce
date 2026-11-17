@@ -55,11 +55,15 @@ CREATE POLICY "Only admins can delete orders"
   ON public.orders FOR DELETE
   USING (public.is_admin());
 
--- 5. Fix order_status_events: only admins can insert
+-- 5. Fix order_status_events: only admins can update status; customers/guests can only insert initial 'Pending' event
 DROP POLICY IF EXISTS "Anyone can insert status events" ON public.order_status_events;
-CREATE POLICY "Admins and system can insert status events"
+DROP POLICY IF EXISTS "Admins and system can insert status events" ON public.order_status_events;
+CREATE POLICY "Admins or initial pending status events can be inserted"
   ON public.order_status_events FOR INSERT
-  WITH CHECK (true);  -- place_order RPC is SECURITY DEFINER, so this is fine
+  WITH CHECK (
+    public.is_admin()
+    OR status = 'Pending'
+  );
 
 -- 6. Fix storage: only admins can upload/modify product images
 DROP POLICY IF EXISTS "Public Upload to product-images" ON storage.objects;

@@ -231,14 +231,25 @@ export function AuthProvider({ children }) {
           // Surface specific Supabase auth errors (wrong password, email not confirmed, etc.)
           if (error) {
             const msg = error.message || ''
-            return {
-              ok: false,
-              error: {
-                code: 'SUPABASE_AUTH',
-                message: msg.includes('Email not confirmed')
-                  ? 'Please check your email inbox and confirm your account before signing in.'
-                  : 'Incorrect email or password.',
-              },
+            const isNetworkFailure =
+              error.status === 0 ||
+              msg.includes('Failed to fetch') ||
+              msg.includes('NetworkError') ||
+              msg.includes('ERR_NAME_NOT_RESOLVED') ||
+              msg.includes('timeout')
+
+            if (isNetworkFailure) {
+              console.warn('[login] Supabase network failure, trying local fallback:', msg)
+            } else {
+              return {
+                ok: false,
+                error: {
+                  code: 'SUPABASE_AUTH',
+                  message: msg.includes('Email not confirmed')
+                    ? 'Please check your email inbox and confirm your account before signing in.'
+                    : 'Incorrect email or password.',
+                },
+              }
             }
           }
         } catch (fetchErr) {
@@ -586,6 +597,20 @@ export function AuthProvider({ children }) {
         }
       }
 
+      // Keep local users store in sync for offline fallback login
+      const currentUsers = readJSON('users', [])
+      const updatedUsers = [
+        {
+          id: updatedAdminRecord.id,
+          name: updatedAdminRecord.name,
+          email: trimmedEmail,
+          password,
+          role: 'admin',
+        },
+        ...currentUsers.filter((u) => u.email.toLowerCase() !== trimmedEmail),
+      ]
+      writeJSON('users', updatedUsers)
+
       // Automatically authenticate as admin (local fallback)
       const adminSession = {
         id: updatedAdminRecord.id,
@@ -629,6 +654,13 @@ export function AuthProvider({ children }) {
     const next = current.filter((a) => a.email.toLowerCase() !== trimmed)
     writeJSON('custom_admins', next)
     setRegisteredAdmins(next)
+
+    // Ensure local offline users store also reflects role revocation
+    const currentUsers = readJSON('users', [])
+    const updatedUsers = currentUsers.map((u) =>
+      u.email.toLowerCase() === trimmed ? { ...u, role: 'customer' } : u
+    )
+    writeJSON('users', updatedUsers)
 
     if (isSupabaseConfigured) {
       try {

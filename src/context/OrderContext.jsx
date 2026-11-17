@@ -81,8 +81,10 @@ export function OrderProvider({ children }) {
         .order('created_at', { ascending: false })
 
       let dbOrders = []
+      let fetchSucceeded = false
       if (!error && data) {
         dbOrders = data.map(mapDbOrder)
+        fetchSucceeded = true
       } else if (error) {
         console.warn('[OrderContext] Direct orders fetch note:', error.message || error)
       }
@@ -93,7 +95,8 @@ export function OrderProvider({ children }) {
           const { data: custOrders, error: custErr } = await supabase.rpc('get_customer_orders', {
             p_email: user.email,
           })
-          if (!custErr && Array.isArray(custOrders) && custOrders.length > 0) {
+          if (!custErr && Array.isArray(custOrders)) {
+            fetchSucceeded = true
             // RPC returns camelCase JSONB — merge with direct results, dedup by id
             const existingIds = new Set(dbOrders.map((o) => o.id))
             const newFromRpc = custOrders.filter((o) => !existingIds.has(o.id))
@@ -107,7 +110,7 @@ export function OrderProvider({ children }) {
       // 3. Sort by date and update state
       dbOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
-      if (dbOrders.length > 0) {
+      if (fetchSucceeded) {
         setOrders(dbOrders)
         writeJSON('orders', dbOrders)
       }
