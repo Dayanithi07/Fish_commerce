@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { ShieldCheck, PackageCheck, Clock, Zap, Lock, Check } from 'lucide-react'
 import { useCart } from '../context/CartContext.jsx'
@@ -11,7 +11,7 @@ import './Checkout.css'
 export default function Checkout() {
   const { lines, subtotal } = useCart()
   const { placeOrder } = useOrders()
-  const { user } = useAuth()
+  const { user, updateUserProfile } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -58,6 +58,21 @@ export default function Checkout() {
 
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
+
+  // Auto-fill from authenticated user profile when loaded
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone || '',
+        street: prev.street || user.street || '',
+        city: prev.city || user.city || '',
+        postalCode: prev.postalCode || user.postalCode || '',
+      }))
+    }
+  }, [user])
 
   if (activeLines.length === 0) {
     return (
@@ -119,6 +134,18 @@ export default function Checkout() {
     }
 
     saveCheckoutDetails()
+
+    // Persist address into DB profile if authenticated
+    if (user && updateUserProfile) {
+      updateUserProfile({
+        name: formData.name,
+        phone: formData.phone,
+        street: formData.street,
+        city: formData.city,
+        postalCode: formData.postalCode,
+      }).catch(() => {})
+    }
+
     navigate('/order-success', { state: { order: res.order } })
     return true
   }

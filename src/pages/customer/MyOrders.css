@@ -1,5 +1,5 @@
 .my-orders-page {
-  padding-block: 28px 60px;
+  padding-block: 28px 100px;
 }
 
 .orders-header {
@@ -223,9 +223,17 @@
   padding: 24px;
 }
 
+@media (max-width: 820px) {
+  .order-card-body {
+    grid-template-columns: 1fr !important;
+    gap: 24px;
+    padding: 18px 16px;
+  }
+}
+
 @media (max-width: 600px) {
   .my-orders-page {
-    padding: 20px 0 40px;
+    padding-block: 20px 100px;
   }
   .guest-lookup-card {
     padding: 18px;
@@ -255,12 +263,13 @@
     gap: 20px;
   }
   .order-line-item {
-    gap: 10px;
-    padding: 8px;
+    gap: 12px;
+    padding: 10px;
+    flex-wrap: wrap;
   }
   .line-item-thumb {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
   }
 }
 
@@ -363,7 +372,7 @@
 
 @media (max-width: 640px) {
   .my-orders-page {
-    padding-block: 20px 48px;
+    padding-block: 20px 100px;
     padding-inline: 4px;
   }
 

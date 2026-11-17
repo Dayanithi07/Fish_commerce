@@ -87,6 +87,26 @@ export function OrderProvider({ children }) {
         setOrders(formatted)
         writeJSON('orders', formatted)
       }
+
+      // If authenticated customer, also fetch persistent customer orders via RPC
+      if (user?.email) {
+        try {
+          const { data: custOrders, error: custErr } = await supabase.rpc('get_customer_orders', {
+            p_email: user.email,
+          })
+          if (!custErr && Array.isArray(custOrders) && custOrders.length > 0) {
+            setOrders((prev) => {
+              const existingIds = new Set(prev.map((o) => o.id || o.reference))
+              const newItems = custOrders.filter((o) => !existingIds.has(o.id || o.reference))
+              const merged = [...newItems, ...prev]
+              writeJSON('orders', merged)
+              return merged
+            })
+          }
+        } catch (e) {
+          // RPC fallback
+        }
+      }
     } catch (err) {
       console.warn('[OrderContext] Fetch orders error:', err)
     }
@@ -183,6 +203,15 @@ export function OrderProvider({ children }) {
 
       if (isSupabaseConfigured) {
         try {
+          // 1. Try secure RPC lookup first
+          const { data: rpcData, error: rpcErr } = await supabase.rpc('get_order_by_reference', {
+            p_ref: clean,
+          })
+          if (!rpcErr && rpcData && rpcData.id) {
+            return rpcData
+          }
+
+          // 2. Direct query fallback
           const { data, error } = await supabase
             .from('orders')
             .select(`

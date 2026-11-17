@@ -57,17 +57,26 @@ export function AuthProvider({ children }) {
       'Aquarist'
 
     // Try reading profile row if Supabase is active
+    let phone = ''
+    let street = ''
+    let city = ''
+    let postalCode = ''
+
     if (isSupabaseConfigured) {
       try {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('name, role')
+          .select('name, role, phone, street, city, postal_code')
           .eq('id', sessionUser.id)
           .maybeSingle()
 
         if (profile) {
           if (profile.name) name = profile.name
           if (profile.role) role = profile.role
+          phone = profile.phone || ''
+          street = profile.street || ''
+          city = profile.city || ''
+          postalCode = profile.postal_code || ''
         } else if (isSpecialAdmin) {
           // Ensure admin role recorded
           await supabase.from('profiles').upsert({
@@ -98,6 +107,10 @@ export function AuthProvider({ children }) {
       name,
       email,
       role,
+      phone,
+      street,
+      city,
+      postalCode,
       avatarUrl: sessionUser.user_metadata?.avatar_url || null,
     }
 
@@ -464,31 +477,9 @@ export function AuthProvider({ children }) {
       writeJSON('custom_admins', updated)
       setRegisteredAdmins(updated)
 
-      // 1.5 If this user already exists in local users, update their role to admin
-      const localUsers = readJSON('users', [])
-      const existingUserIdx = localUsers.findIndex((u) => u.email?.toLowerCase() === trimmedEmail)
-      if (existingUserIdx !== -1) {
-        localUsers[existingUserIdx] = { ...localUsers[existingUserIdx], role: 'admin' }
-        writeJSON('users', localUsers)
-      }
-
-      // If currently logged-in user is the one being promoted, update live session
-      const currentSession = readJSON('session', null)
-      if (currentSession && currentSession.email?.toLowerCase() === trimmedEmail) {
-        const updatedSession = { ...currentSession, role: 'admin' }
-        setUser(updatedSession)
-        writeJSON('session', updatedSession)
-      }
-
-      // 2. Record in admin_invitations and promote profiles in Supabase if configured
+      // Record pending invitation in Supabase admin_invitations table
       if (isSupabaseConfigured) {
         try {
-          // Immediately promote in profiles table if account already exists
-          await supabase
-            .from('profiles')
-            .update({ role: 'admin', status: 'active', name: trimmedName })
-            .eq('email', trimmedEmail)
-
           await supabase.from('admin_invitations').upsert(
             { name: trimmedName, email: trimmedEmail, status: 'invited' },
             { onConflict: 'email' }
@@ -497,7 +488,7 @@ export function AuthProvider({ children }) {
           console.warn('[inviteAdmin] DB upsert warning:', err)
         }
 
-        // 3. Send invitation email via Supabase Auth OTP — works for ANY email address
+        // Send invitation email via Supabase Auth OTP — works for ANY email address
         try {
           const { error: otpError } = await supabase.auth.signInWithOtp({
             email: trimmedEmail,
@@ -727,6 +718,42 @@ export function AuthProvider({ children }) {
     removeKey('session')
   }, [])
 
+  /**
+   * Update User Profile (persists delivery address, phone, and name to Supabase & local storage)
+   */
+  const updateUserProfile = useCallback(
+    async (fields) => {
+      if (!user) return { ok: false, error: 'No authenticated user' }
+
+      const updated = {
+        ...user,
+        ...fields,
+      }
+      setUser(updated)
+      writeJSON('session', updated)
+
+      if (isSupabaseConfigured && user.id) {
+        try {
+          const updatePayload = {
+            updated_at: new Date().toISOString(),
+          }
+          if (fields.name) updatePayload.name = fields.name
+          if (fields.phone) updatePayload.phone = fields.phone
+          if (fields.street) updatePayload.street = fields.street
+          if (fields.city) updatePayload.city = fields.city
+          if (fields.postalCode) updatePayload.postal_code = fields.postalCode
+
+          await supabase.from('profiles').update(updatePayload).eq('id', user.id)
+        } catch (e) {
+          console.warn('[updateUserProfile] DB update warning:', e)
+        }
+      }
+
+      return { ok: true, user: updated }
+    },
+    [user]
+  )
+
   const value = useMemo(
     () => ({
       user,
@@ -737,6 +764,7 @@ export function AuthProvider({ children }) {
       signup,
       signInWithGoogle,
       logout,
+      updateUserProfile,
       inviteAdmin,
       completeAdminSetup,
       addAdmin,
@@ -753,6 +781,7 @@ export function AuthProvider({ children }) {
       signup,
       signInWithGoogle,
       logout,
+      updateUserProfile,
       inviteAdmin,
       completeAdminSetup,
       addAdmin,
