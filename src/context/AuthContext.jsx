@@ -608,14 +608,14 @@ export function AuthProvider({ children }) {
             .eq('email', trimmedEmail)
 
           // Sign in with the new password to establish a fresh JWT session
-          const { data: signInData } = await supabase.auth.signInWithPassword({
+          const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
             email: trimmedEmail,
             password,
           })
 
           if (signInData?.user) {
             const profile = await syncProfile(signInData.user)
-            // Populate offline users cache with authenticated user ID before returning
+            // Populate offline users cache with authenticated user ID and verified profile role
             const currentUsers = readJSON('users', [])
             const updatedUsers = [
               {
@@ -623,12 +623,32 @@ export function AuthProvider({ children }) {
                 name: updatedAdminRecord.name,
                 email: trimmedEmail,
                 password,
-                role: 'admin',
+                role: profile?.role || 'customer',
               },
               ...currentUsers.filter((u) => u.email.toLowerCase() !== trimmedEmail),
             ]
             writeJSON('users', updatedUsers)
             return { ok: true, user: profile }
+          }
+
+          if (signInErr) {
+            const msg = signInErr.message || ''
+            const isNetworkFailure =
+              signInErr.status === 0 ||
+              msg.includes('Failed to fetch') ||
+              msg.includes('NetworkError') ||
+              msg.includes('ERR_NAME_NOT_RESOLVED') ||
+              msg.includes('timeout')
+
+            if (!isNetworkFailure) {
+              return {
+                ok: false,
+                error: {
+                  code: 'SETUP_AUTH_FAILED',
+                  message: msg || 'Failed to authenticate newly configured administrator credentials.',
+                },
+              }
+            }
           }
         } catch (e) {
           console.warn('[completeAdminSetup] Supabase update warning:', e)
