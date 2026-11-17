@@ -44,46 +44,73 @@ export function AuthProvider({ children }) {
     }
 
     const email = sessionUser.email?.toLowerCase() || ''
-    const customAdminList = readJSON('custom_admins', [])
-    const isCustomAdmin = customAdminList.some((a) => a.email.toLowerCase() === email)
-    const isMetadataAdmin = sessionUser.user_metadata?.role === 'admin'
-    const isSpecialAdmin = ADMIN_EMAILS.includes(email) || isCustomAdmin || isMetadataAdmin
+    const isHardcodedAdmin = ADMIN_EMAILS.includes(email)
 
-    let role = isSpecialAdmin ? 'admin' : 'customer'
     let name =
       sessionUser.user_metadata?.full_name ||
       sessionUser.user_metadata?.name ||
       email.split('@')[0] ||
       'Aquarist'
 
-    // Try reading profile row if Supabase is active
+    // DB profile role is the single source of truth (except for hardcoded ADMIN_EMAILS)
+    let role = isHardcodedAdmin ? 'admin' : 'customer'
     let phone = ''
     let street = ''
     let city = ''
     let postalCode = ''
+    let dbReached = false
 
     if (isSupabaseConfigured) {
       try {
-        const { data: profile } = await supabase
+        // Try fetching with extended columns; fall back to core columns if migration not applied yet
+        let profile = null
+        let profileError = null
+        const { data: d1, error: e1 } = await supabase
           .from('profiles')
           .select('name, role, phone, street, city, postal_code')
           .eq('id', sessionUser.id)
           .maybeSingle()
 
-        if (profile) {
+        if (e1 && e1.code === 'PGRST204' || (e1 && e1.message?.includes('column'))) {
+          // Extended columns don't exist yet — query core columns only
+          const { data: d2, error: e2 } = await supabase
+            .from('profiles')
+            .select('name, role')
+            .eq('id', sessionUser.id)
+            .maybeSingle()
+          profile = d2
+          profileError = e2
+        } else {
+          profile = d1
+          profileError = e1
+        }
+
+        if (!profileError && profile) {
+          dbReached = true
           if (profile.name) name = profile.name
-          if (profile.role) role = profile.role
+          // DB role is authoritative — only hardcoded admins override it
+          role = isHardcodedAdmin ? 'admin' : (profile.role || 'customer')
           phone = profile.phone || ''
           street = profile.street || ''
           city = profile.city || ''
           postalCode = profile.postal_code || ''
-        } else if (isSpecialAdmin) {
-          // Ensure admin role recorded
+        } else if (!profileError && !profile && isHardcodedAdmin) {
+          dbReached = true
+          // Ensure admin role recorded for hardcoded admin
           await supabase.from('profiles').upsert({
             id: sessionUser.id,
             name,
             email,
             role: 'admin',
+          })
+        } else if (!profileError && !profile) {
+          dbReached = true
+          // New user — create profile row as customer
+          await supabase.from('profiles').upsert({
+            id: sessionUser.id,
+            name,
+            email,
+            role: 'customer',
           })
         }
       } catch (err) {
@@ -91,14 +118,28 @@ export function AuthProvider({ children }) {
       }
     }
 
-    // If verified as custom admin, cache in local custom_admins (strictly excluding SUPER_ADMIN / DEMO_ADMIN)
-    if (role === 'admin' && !isCustomAdmin && !ADMIN_EMAILS.includes(email)) {
+    // Only if DB was unreachable, check localStorage custom_admins as offline fallback
+    if (!dbReached && !isHardcodedAdmin) {
+      const customAdminList = readJSON('custom_admins', [])
+      const isCustomAdmin = customAdminList.some((a) => a.email.toLowerCase() === email)
+      if (isCustomAdmin) role = 'admin'
+    }
+
+    // Keep local custom_admins in sync with DB truth
+    if (role === 'admin' && !isHardcodedAdmin) {
       const currentAdmins = readJSON('custom_admins', [])
       if (!currentAdmins.some((a) => a.email && a.email.toLowerCase() === email)) {
         writeJSON('custom_admins', [
           ...currentAdmins,
           { id: sessionUser.id, name, email, role: 'admin', status: 'active' },
         ])
+      }
+    } else if (role !== 'admin' && !isHardcodedAdmin && dbReached) {
+      // User is NOT admin in DB — remove from local custom_admins cache
+      const currentAdmins = readJSON('custom_admins', [])
+      const cleaned = currentAdmins.filter((a) => a.email?.toLowerCase() !== email)
+      if (cleaned.length !== currentAdmins.length) {
+        writeJSON('custom_admins', cleaned)
       }
     }
 
@@ -271,9 +312,8 @@ export function AuthProvider({ children }) {
         }
       }
 
-      // If this user was added to custom_admins, ensure their role is admin
-      const isCustom = (readJSON('custom_admins', []) || []).some((a) => a.email?.toLowerCase() === trimmedEmail)
-      const effectiveRole = isCustom || found.role === 'admin' ? 'admin' : (found.role || 'customer')
+      // Local fallback — use the role stored in local users array
+      const effectiveRole = found.role || 'customer'
 
       const authUser = {
         id: found.id,
