@@ -69,6 +69,9 @@ export function OrderProvider({ children }) {
   // Fetch orders from Supabase if configured
   const fetchSupabaseOrders = useCallback(async () => {
     if (!isSupabaseConfigured) return
+    const requestUserId = user?.id || null
+    const requestEmail = user?.email || null
+
     try {
       // 1. Try direct table query (RLS will filter: admins see all, customers see own)
       const { data, error } = await supabase
@@ -90,10 +93,10 @@ export function OrderProvider({ children }) {
       }
 
       // 2. For authenticated customers, also fetch via RPC (SECURITY DEFINER bypasses RLS)
-      if (user?.email) {
+      if (requestEmail) {
         try {
           const { data: custOrders, error: custErr } = await supabase.rpc('get_customer_orders', {
-            p_email: user.email,
+            p_email: requestEmail,
           })
           if (!custErr && Array.isArray(custOrders)) {
             fetchSucceeded = true
@@ -107,12 +110,26 @@ export function OrderProvider({ children }) {
         }
       }
 
+      // Discard response if user changed or logged out during request
+      if ((user?.id || null) !== requestUserId || (user?.email || null) !== requestEmail) {
+        return
+      }
+
       // 3. Sort by date and update state
       dbOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
       if (fetchSucceeded) {
-        setOrders(dbOrders)
-        writeJSON('orders', dbOrders)
+        setOrders((prev) => {
+          // Reconcile: preserve any locally placed orders pending remote sync (< 60s old)
+          const remoteRefs = new Set(dbOrders.map((o) => o.reference))
+          const pendingLocal = prev.filter(
+            (o) => !remoteRefs.has(o.reference) && o.status === 'Pending' && (Date.now() - new Date(o.createdAt).getTime() < 60000)
+          )
+          const merged = [...pendingLocal, ...dbOrders]
+          merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          writeJSON('orders', merged)
+          return merged
+        })
       }
     } catch (err) {
       console.warn('[OrderContext] Fetch orders error:', err)
@@ -422,9 +439,13 @@ export function OrderProvider({ children }) {
                 quantity: it.quantity,
               }))
               await supabase.from('order_items').insert(itemRows)
-              await supabase.from('order_status_events').insert([
-                { order_id: insertedOrder.id, status: 'Pending' },
-              ])
+              try {
+                await supabase.from('order_status_events').insert([
+                  { order_id: insertedOrder.id, status: 'Pending' },
+                ])
+              } catch {
+                // order_status_events is admin-only; fallback succeeds with orders & order_items
+              }
             }
           }
         } catch (dbErr) {

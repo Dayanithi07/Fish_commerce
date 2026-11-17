@@ -258,7 +258,33 @@ export function AuthProvider({ children }) {
         }
       }
 
-      // Offline fallback: Check local registered customer accounts
+      // Offline fallback: Check local registered accounts
+      if (!isSupabaseConfigured) {
+        // Built-in admin offline fallback when Supabase is not configured
+        if (trimmedEmail === SUPER_ADMIN.email.toLowerCase() && password === 'Dayanithi@28') {
+          const superAdminUser = {
+            id: 'super_admin_dayanithi',
+            name: SUPER_ADMIN.name,
+            email: SUPER_ADMIN.email,
+            role: 'admin',
+          }
+          setUser(superAdminUser)
+          writeJSON('session', superAdminUser)
+          return { ok: true, user: superAdminUser }
+        }
+        if (trimmedEmail === DEMO_ADMIN.email.toLowerCase() && password === 'admin123') {
+          const demoAdminUser = {
+            id: 'demo_admin_staff',
+            name: DEMO_ADMIN.name,
+            email: DEMO_ADMIN.email,
+            role: 'admin',
+          }
+          setUser(demoAdminUser)
+          writeJSON('session', demoAdminUser)
+          return { ok: true, user: demoAdminUser }
+        }
+      }
+
       const users = readJSON('users', [])
       const found = users.find((u) => u.email.toLowerCase() === trimmedEmail)
       if (!found || found.password !== password) {
@@ -589,6 +615,19 @@ export function AuthProvider({ children }) {
 
           if (signInData?.user) {
             const profile = await syncProfile(signInData.user)
+            // Populate offline users cache with authenticated user ID before returning
+            const currentUsers = readJSON('users', [])
+            const updatedUsers = [
+              {
+                id: signInData.user.id,
+                name: updatedAdminRecord.name,
+                email: trimmedEmail,
+                password,
+                role: 'admin',
+              },
+              ...currentUsers.filter((u) => u.email.toLowerCase() !== trimmedEmail),
+            ]
+            writeJSON('users', updatedUsers)
             return { ok: true, user: profile }
           }
         } catch (e) {
