@@ -4,6 +4,7 @@
 -- ==============================================================================
 
 -- 1. Prevent privilege escalation: users cannot update their own role in profiles
+-- unless promoted by an admin or accepting a valid pending invitation
 DROP POLICY IF EXISTS "Profiles are updateable by owner" ON public.profiles;
 CREATE POLICY "Profiles are updateable by owner"
   ON public.profiles FOR UPDATE
@@ -14,6 +15,14 @@ CREATE POLICY "Profiles are updateable by owner"
     AND (
       public.is_admin()
       OR role = (SELECT p.role FROM public.profiles p WHERE p.id = auth.uid())
+      OR (
+        role = 'admin'
+        AND EXISTS (
+          SELECT 1 FROM public.admin_invitations ai
+          WHERE lower(ai.email) = lower(public.profiles.email)
+            AND ai.status = 'invited'
+        )
+      )
     )
   );
 

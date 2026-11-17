@@ -103,10 +103,16 @@ export function OrderProvider({ children }) {
           const { data: custOrders, error: custErr } = await supabase.rpc('get_customer_orders')
           if (!custErr && Array.isArray(custOrders)) {
             fetchSucceeded = true
-            // RPC returns camelCase JSONB — merge with direct results, dedup by id
-            const existingIds = new Set(dbOrders.map((o) => o.id))
-            const newFromRpc = custOrders.filter((o) => !existingIds.has(o.id))
-            dbOrders = [...dbOrders, ...newFromRpc]
+            // Prefer the later, complete RPC version when matching order IDs exist
+            const rpcMap = new Map(custOrders.map((o) => [o.id, o]))
+            const merged = dbOrders.map((o) => rpcMap.get(o.id) || o)
+            const directIds = new Set(dbOrders.map((o) => o.id))
+            for (const rpcOrder of custOrders) {
+              if (!directIds.has(rpcOrder.id)) {
+                merged.push(rpcOrder)
+              }
+            }
+            dbOrders = merged
           }
         } catch (e) {
           // RPC may not exist if migration not applied — silent fallback
@@ -123,12 +129,12 @@ export function OrderProvider({ children }) {
 
       if (fetchSucceeded) {
         setOrders((prev) => {
-          // Reconcile: preserve any locally placed orders pending remote sync (< 60s old)
+          // Reconcile: retain local orders that are explicitly unsynced (!o.synced) or unconfirmed
           const remoteRefs = new Set(dbOrders.map((o) => o.reference))
-          const pendingLocal = prev.filter(
-            (o) => !remoteRefs.has(o.reference) && o.status === 'Pending' && (Date.now() - new Date(o.createdAt).getTime() < 60000)
+          const unconfirmedLocal = prev.filter(
+            (o) => !remoteRefs.has(o.reference) && o.synced === false
           )
-          const merged = [...pendingLocal, ...dbOrders]
+          const merged = [...unconfirmedLocal, ...dbOrders]
           merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           writeJSON('orders', merged)
           return merged
@@ -382,6 +388,7 @@ export function OrderProvider({ children }) {
         timeline: [{ status: 'Pending', at: now }],
         createdAt: now,
         updatedAt: now,
+        synced: false,
       }
 
       // If Supabase is active, persist to PostgreSQL
@@ -406,6 +413,7 @@ export function OrderProvider({ children }) {
 
           if (!rpcErr && rpcData?.orderId) {
             newOrderRecord.id = rpcData.orderId
+            newOrderRecord.synced = true
           } else if (rpcErr) {
             console.warn('[OrderContext] RPC failed, falling back to direct inserts:', rpcErr)
             // Direct insert fallback
@@ -433,6 +441,7 @@ export function OrderProvider({ children }) {
 
             if (!orderErr && insertedOrder) {
               newOrderRecord.id = insertedOrder.id
+              newOrderRecord.synced = true
               const itemRows = orderItems.map((it) => ({
                 order_id: insertedOrder.id,
                 product_id: it.productId,

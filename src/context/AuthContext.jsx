@@ -283,6 +283,23 @@ export function AuthProvider({ children }) {
           writeJSON('session', demoAdminUser)
           return { ok: true, user: demoAdminUser }
         }
+
+        // Compatibility lookup for existing offline custom admins
+        const customAdmins = readJSON('custom_admins', [])
+        const foundCustom = customAdmins.find(
+          (a) => a.email?.toLowerCase() === trimmedEmail && a.password === password
+        )
+        if (foundCustom) {
+          const customAdminUser = {
+            id: foundCustom.id,
+            name: foundCustom.name,
+            email: foundCustom.email,
+            role: 'admin',
+          }
+          setUser(customAdminUser)
+          writeJSON('session', customAdminUser)
+          return { ok: true, user: customAdminUser }
+        }
       }
 
       const users = readJSON('users', [])
@@ -587,22 +604,35 @@ export function AuthProvider({ children }) {
           }
 
           // Ensure role is 'admin' in profiles table
+          let profileWriteError = null
           const authUserId = updatedAuthUser?.user?.id
           if (authUserId) {
-            await supabase.from('profiles').upsert({
+            const { error: upsertErr } = await supabase.from('profiles').upsert({
               id: authUserId,
               name: updatedAdminRecord.name,
               email: trimmedEmail,
               role: 'admin',
               status: 'active',
             }, { onConflict: 'id' })
+            profileWriteError = upsertErr
           } else {
-            await supabase.from('profiles')
+            const { error: updateErr } = await supabase.from('profiles')
               .update({ role: 'admin', status: 'active', name: updatedAdminRecord.name })
               .eq('email', trimmedEmail)
+            profileWriteError = updateErr
           }
 
-          // Mark invitation as active
+          if (profileWriteError) {
+            return {
+              ok: false,
+              error: {
+                code: 'PROFILE_UPDATE_FAILED',
+                message: `Failed to persist administrator role: ${profileWriteError.message}`,
+              },
+            }
+          }
+
+          // Mark invitation as active only after profile role has persisted
           await supabase.from('admin_invitations')
             .update({ status: 'active' })
             .eq('email', trimmedEmail)
