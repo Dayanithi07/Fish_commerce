@@ -12,7 +12,8 @@ export default function Contact() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
-  const whatsappNumber = (settings.whatsapp_number || '').replace(/\D/g, '')
+  const rawWa = (settings.whatsapp_number || '').replace(/\D/g, '')
+  const whatsappNumber = rawWa.length === 10 ? `91${rawWa}` : rawWa
   const whatsappHref = whatsappNumber.length >= 10
     ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi VP Aquarium, I need help with...')}`
     : null

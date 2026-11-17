@@ -212,6 +212,23 @@ export default function Checkout() {
         theme: {
           color: '#0284C7', // Ocean blue brand accent
         },
+        retry: {
+          enabled: true,
+          max_count: 3,
+        },
+        notes: {
+          store: 'VP Aquarium',
+          customer_name: formData.name,
+          customer_phone: formData.phone,
+        },
+        modal: {
+          confirm_close: true,
+          escape: true,
+          backdropclose: false,
+          ondismiss: function () {
+            setSubmitting(false)
+          },
+        },
         handler: async function (response) {
           // Step 3: Send verification payload to /api/verify-payment
           try {
@@ -256,11 +273,6 @@ export default function Checkout() {
             setSubmitting(false)
             alert('Verification network error: ' + (verifyErr.message || 'Please contact support.'))
           }
-        },
-        modal: {
-          ondismiss: function () {
-            setSubmitting(false)
-          },
         },
       }
 
@@ -427,6 +439,9 @@ export default function Checkout() {
               <p className="razorpay-instruction">
                 When you click <strong>"Proceed to Pay via Razorpay"</strong>, the secure checkout modal will open with your pre-filled contact details.
               </p>
+              <div className="razorpay-device-tips" style={{ margin: '12px 0', padding: '10px 14px', background: '#f0f9ff', borderRadius: '8px', border: '1px solid #bae6fd', fontSize: '13px', color: '#0369a1', lineHeight: '1.5' }}>
+                <strong>Desktop Tip:</strong> Scan the instant <strong>UPI QR Code</strong> displayed in the payment modal with Google Pay, PhonePe, or Paytm on your phone for rapid confirmation.
+              </div>
               <div className="razorpay-security-note">
                 <Lock size={14} strokeWidth={2} />
                 <span>256-Bit Encrypted · PCI-DSS Level 1 Certified · RBI Regulated</span>

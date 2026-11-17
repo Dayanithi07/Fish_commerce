@@ -4,13 +4,16 @@ import './WhatsAppButton.css'
 export default function WhatsAppButton() {
   const { settings } = useStoreSettings()
 
-  const number = settings.whatsapp_number || ''
-  if (!number || number.replace(/\D/g, '').length < 10) return null
+  const rawDigits = (settings.whatsapp_number || '').replace(/\D/g, '')
+  if (!rawDigits || rawDigits.length < 10) return null
+
+  // Ensure India country code 91 is included if only 10 digits were entered
+  const formattedNumber = rawDigits.length === 10 ? `91${rawDigits}` : rawDigits
 
   const message = encodeURIComponent(
     'Hi! I have a question about VP Aquarium. Can you help me?'
   )
-  const href = `https://wa.me/${number.replace(/\D/g, '')}?text=${message}`
+  const href = `https://wa.me/${formattedNumber}?text=${message}`
 
   return (
     <a

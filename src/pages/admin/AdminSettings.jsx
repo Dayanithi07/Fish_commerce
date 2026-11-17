@@ -64,12 +64,15 @@ export default function AdminSettings() {
   const handleSaveContact = async (e) => {
     e.preventDefault()
     try {
+      const rawWa = (whatsappNumber || '').replace(/\D/g, '')
+      const finalWhatsapp = rawWa.length === 10 ? `91${rawWa}` : rawWa
+
       const result = await saveSettings({
         support_email: notificationEmail,
         support_phone: adminPhone,
         support_hours: supportHours,
         store_address: storeAddress,
-        whatsapp_number: whatsappNumber,
+        whatsapp_number: finalWhatsapp,
       })
       if (result.ok) {
         setSavedContact(true)
@@ -195,15 +198,17 @@ export default function AdminSettings() {
             </div>
 
             <div className="form-group">
-              <label>WhatsApp Support Number (digits only, with country code)</label>
+              <label>WhatsApp Support Number</label>
               <input
                 type="text"
                 value={whatsappNumber}
                 onChange={(e) => setWhatsappNumber(e.target.value.replace(/[^0-9]/g, ''))}
-                placeholder="e.g. 919876543210"
+                placeholder="e.g. 9003919901"
                 maxLength={15}
               />
-              <span className="field-hint">Used for the floating WhatsApp chat button visible to all customers.</span>
+              <span className="field-hint">
+                Enter your 10-digit number (e.g. <code>9003919901</code>). India country code (+91) is automatically included so the customer WhatsApp button opens your chat properly.
+              </span>
             </div>
 
             <button type="submit" className="btn-primary btn-save-settings" disabled={savingSettings}>
