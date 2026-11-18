@@ -365,6 +365,21 @@
   }
   .admin-form .form-row {
     grid-template-columns: 1fr;
-    gap: 0;
+    gap: 12px;
+  }
+  .admin-form .form-group {
+    margin-bottom: 14px;
+  }
+  .product-category-switcher {
+    gap: 6px;
+    padding: 4px;
+    margin-bottom: 14px;
+  }
+  .category-pill {
+    padding: 9px 10px;
+    font-size: 13px;
+  }
+  .image-dropzone {
+    padding: 16px 12px;
   }
 }
