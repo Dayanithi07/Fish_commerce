@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Fish, UtensilsCrossed, Camera } from 'lucide-react'
+import { Fish, UtensilsCrossed, Camera, Pencil } from 'lucide-react'
 import { useProducts } from '../../context/ProductContext.jsx'
 import { formatPrice } from '../../utils/money.js'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase.js'
@@ -9,9 +9,10 @@ import './AdminProducts.css'
 export default function AdminProducts() {
   const { products, toggleAvailability, updateProduct, deleteProduct, addProduct } = useProducts()
   const [modalOpen, setModalOpen] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
   const [selectedIds, setSelectedIds] = useState([])
 
-  const [newFish, setNewFish] = useState({
+  const initialFormState = {
     name: '',
     productType: 'fish',
     price: '',
@@ -23,13 +24,50 @@ export default function AdminProducts() {
     description: '',
     stock: '10',
     isAvailable: true,
-  })
+  }
+
+  const [newFish, setNewFish] = useState(initialFormState)
 
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [errors, setErrors] = useState({})
   const fileInputRef = useRef(null)
+
+  const resetForm = () => {
+    setNewFish(initialFormState)
+    setEditingProduct(null)
+    setImageFile(null)
+    setImagePreview(null)
+    setErrors({})
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleOpenAdd = () => {
+    resetForm()
+    setModalOpen(true)
+  }
+
+  const handleStartEdit = (p) => {
+    setErrors({})
+    setEditingProduct(p)
+    setNewFish({
+      name: p.name || '',
+      productType: p.productType || 'fish',
+      price: String(p.price ?? ''),
+      waterType: p.waterType || 'Freshwater',
+      careLevel: p.careLevel || 'Beginner',
+      temperament: p.temperament || 'Peaceful',
+      minTankSize: String(p.minTankSize ?? 10),
+      diet: p.diet || 'Flakes',
+      description: p.description || '',
+      stock: String(p.stock ?? 10),
+      isAvailable: p.isAvailable !== false,
+    })
+    setImageFile(null)
+    setImagePreview(p.image || null)
+    setModalOpen(true)
+  }
 
   // Multi-select helpers
   const allSelected = products.length > 0 && selectedIds.length === products.length
@@ -102,13 +140,13 @@ export default function AdminProducts() {
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  const handleCreate = async (e) => {
+  const handleSave = async (e) => {
     e.preventDefault()
     setErrors({})
     setUploading(true)
 
     try {
-      let finalImageUrl = '/images/placeholder.svg'
+      let finalImageUrl = editingProduct?.image || '/images/placeholder.svg'
 
       if (imageFile) {
         if (isSupabaseConfigured) {
@@ -131,45 +169,48 @@ export default function AdminProducts() {
               finalImageUrl = publicUrlData.publicUrl
             } else {
               console.warn('[Storage upload fallback to Data URL]:', uploadError)
-              finalImageUrl = imagePreview || '/images/placeholder.svg'
+              finalImageUrl = imagePreview || finalImageUrl
             }
           } catch (storageErr) {
             console.warn('[Storage error, using image preview]:', storageErr)
-            finalImageUrl = imagePreview || '/images/placeholder.svg'
+            finalImageUrl = imagePreview || finalImageUrl
           }
         } else {
-          finalImageUrl = imagePreview || '/images/placeholder.svg'
+          finalImageUrl = imagePreview || finalImageUrl
+        }
+      } else if (imagePreview) {
+        finalImageUrl = imagePreview
+      }
+
+      if (editingProduct) {
+        const res = await updateProduct(editingProduct.id, {
+          ...newFish,
+          price: Number(newFish.price),
+          stock: Number(newFish.stock),
+          minTankSize: Number(newFish.minTankSize || 10),
+          image: finalImageUrl,
+        })
+
+        if (!res.ok) {
+          if (res.error?.details) setErrors(res.error.details)
+          else alert(res.error?.message || 'Failed to update product')
+          return
+        }
+      } else {
+        const res = await addProduct({
+          ...newFish,
+          image: finalImageUrl,
+        })
+
+        if (!res.ok) {
+          if (res.error?.details) setErrors(res.error.details)
+          else alert(res.error?.message || 'Failed to add product')
+          return
         }
       }
 
-      const res = await addProduct({
-        ...newFish,
-        image: finalImageUrl,
-      })
-
-      if (!res.ok) {
-        if (res.error?.details) setErrors(res.error.details)
-        else alert(res.error?.message || 'Failed to add product')
-        return
-      }
-
       setModalOpen(false)
-      setNewFish({
-        name: '',
-        productType: 'fish',
-        price: '',
-        waterType: 'Freshwater',
-        careLevel: 'Beginner',
-        temperament: 'Peaceful',
-        minTankSize: '10',
-        diet: 'Flakes',
-        description: '',
-        stock: '10',
-        isAvailable: true,
-      })
-      setImageFile(null)
-      setImagePreview(null)
-      if (fileInputRef.current) fileInputRef.current.value = ''
+      resetForm()
     } finally {
       setUploading(false)
     }
@@ -185,7 +226,7 @@ export default function AdminProducts() {
           </p>
         </div>
         <div className="admin-actions">
-          <button type="button" onClick={() => setModalOpen(true)} className="btn-primary">
+          <button type="button" onClick={handleOpenAdd} className="btn-primary">
             + Add New Species
           </button>
         </div>
@@ -285,6 +326,15 @@ export default function AdminProducts() {
                   <td>
                     <button
                       type="button"
+                      onClick={() => handleStartEdit(p)}
+                      className="btn-action btn-edit"
+                      title="Edit product details"
+                    >
+                      <Pencil size={12} style={{ marginRight: '4px', verticalAlign: '-1px' }} />
+                      Edit
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => toggleAvailability(p.id)}
                       className="btn-action"
                     >
@@ -309,10 +359,17 @@ export default function AdminProducts() {
 
       <Modal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={newFish.productType === 'food' ? 'Add Aquarium Fish Food' : 'Add New Species'}
+        onClose={() => {
+          setModalOpen(false)
+          resetForm()
+        }}
+        title={
+          editingProduct
+            ? (newFish.productType === 'food' ? 'Edit Aquarium Fish Food' : 'Edit Species')
+            : (newFish.productType === 'food' ? 'Add Aquarium Fish Food' : 'Add New Species')
+        }
       >
-        <form onSubmit={handleCreate} className="admin-form">
+        <form onSubmit={handleSave} className="admin-form">
           {/* Category Switcher: Live Fish vs Fish Food */}
           <div className="product-category-switcher">
             <button
@@ -468,7 +525,11 @@ export default function AdminProducts() {
             style={{ width: '100%', marginTop: '12px' }}
             disabled={uploading}
           >
-            {uploading ? 'Uploading Image & Saving...' : (newFish.productType === 'food' ? 'Save Fish Food' : 'Save Species')}
+            {uploading
+              ? 'Uploading Image & Saving...'
+              : editingProduct
+              ? (newFish.productType === 'food' ? 'Update Fish Food' : 'Update Species')
+              : (newFish.productType === 'food' ? 'Save Fish Food' : 'Save Species')}
           </button>
         </form>
       </Modal>

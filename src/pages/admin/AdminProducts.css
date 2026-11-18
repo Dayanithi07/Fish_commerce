@@ -159,11 +159,24 @@
   font-size: 13px;
   font-weight: 600;
   transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-action:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.btn-edit {
+  color: var(--accent, #0284c7);
+}
+
+.btn-edit:hover {
+  background: var(--accent, #0284c7);
+  color: #ffffff;
+  border-color: var(--accent, #0284c7);
 }
 
 .btn-delete {
