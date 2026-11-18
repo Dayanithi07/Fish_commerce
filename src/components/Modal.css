@@ -9,8 +9,7 @@
   align-items: center;
   justify-content: center;
   padding: 20px 16px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
 .modal-content {
@@ -76,6 +75,7 @@
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   overscroll-behavior: contain;
   padding: 20px;
 }
@@ -88,8 +88,8 @@
   }
 
   .modal-content {
-    max-height: 90dvh;
-    max-height: 90vh;
+    max-height: 88dvh;
+    max-height: 88vh;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     border-top-left-radius: 20px;
@@ -121,7 +121,8 @@
   }
 
   .modal-body {
-    padding: 16px 18px max(28px, env(safe-area-inset-bottom, 28px));
+    padding: 16px 18px max(32px, env(safe-area-inset-bottom, 32px));
+    touch-action: pan-y;
   }
 }
 
@@ -133,4 +134,5 @@
     transform: translateY(0);
   }
 }
+
 
